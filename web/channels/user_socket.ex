@@ -5,7 +5,8 @@ defmodule Hello.UserSocket do
   # channel "room:*", Hello.RoomChannel
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket
+  transport :websocket, Phoenix.Transports.WebSocket,
+    timeout: 45_000 # Ensures idle connections are closed by the app before the 55 second timeout window of Heroku.
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can

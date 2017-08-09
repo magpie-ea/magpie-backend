@@ -1,4 +1,4 @@
-defmodule Hello.ChannelCase do
+defmodule WoqWebapp.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -20,22 +20,22 @@ defmodule Hello.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
 
-      alias Hello.Repo
+      alias WoqWebapp.Repo
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
 
 
       # The default endpoint for testing
-      @endpoint Hello.Endpoint
+      @endpoint WoqWebapp.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Hello.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(WoqWebapp.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Hello.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(WoqWebapp.Repo, {:shared, self()})
     end
 
     :ok

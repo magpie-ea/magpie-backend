@@ -1,12 +1,12 @@
-defmodule Hello.Web do
+defmodule WoqWebapp.Web do
   @moduledoc """
   A module that keeps using definitions for controllers,
   views and so on.
 
   This can be used in your application as:
 
-      use Hello.Web, :controller
-      use Hello.Web, :view
+      use WoqWebapp.Web, :controller
+      use WoqWebapp.Web, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -30,12 +30,12 @@ defmodule Hello.Web do
     quote do
       use Phoenix.Controller
 
-      alias Hello.Repo
+      alias WoqWebapp.Repo
       import Ecto
       import Ecto.Query
 
-      import Hello.Router.Helpers
-      import Hello.Gettext
+      import WoqWebapp.Router.Helpers
+      import WoqWebapp.Gettext
     end
   end
 
@@ -49,9 +49,9 @@ defmodule Hello.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import Hello.Router.Helpers
-      import Hello.ErrorHelpers
-      import Hello.Gettext
+      import WoqWebapp.Router.Helpers
+      import WoqWebapp.ErrorHelpers
+      import WoqWebapp.Gettext
     end
   end
 
@@ -65,10 +65,10 @@ defmodule Hello.Web do
     quote do
       use Phoenix.Channel
 
-      alias Hello.Repo
+      alias WoqWebapp.Repo
       import Ecto
       import Ecto.Query
-      import Hello.Gettext
+      import WoqWebapp.Gettext
     end
   end
 

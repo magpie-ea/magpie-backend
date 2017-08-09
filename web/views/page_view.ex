@@ -1,3 +1,3 @@
-defmodule Hello.PageView do
-  use Hello.Web, :view
+defmodule WoqWebapp.PageView do
+  use WoqWebapp.Web, :view
 end

@@ -1,5 +1,5 @@
-defmodule Hello.Router do
-  use Hello.Web, :router
+defmodule WoqWebapp.Router do
+  use WoqWebapp.Web, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,13 +13,13 @@ defmodule Hello.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", Hello do
+  scope "/", WoqWebapp do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
   end
 
-  scope "/api", Hello do
+  scope "/api", WoqWebapp do
     pipe_through :api
 
     post "/1c", Exp1cController, :receive

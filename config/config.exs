@@ -6,15 +6,15 @@
 use Mix.Config
 
 # General application configuration
-config :hello,
-  ecto_repos: [Hello.Repo]
+config :woq_webapp,
+  ecto_repos: [WoqWebapp.Repo]
 
 # Configures the endpoint
-config :hello, Hello.Endpoint,
+config :woq_webapp, WoqWebapp.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
-  render_errors: [view: Hello.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Hello.PubSub,
+  render_errors: [view: WoqWebapp.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: WoqWebapp.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger

@@ -1,5 +1,5 @@
-defmodule Hello.ErrorView do
-  use Hello.Web, :view
+defmodule WoqWebapp.ErrorView do
+  use WoqWebapp.Web, :view
 
   def render("404.html", _assigns) do
     "Page not found"

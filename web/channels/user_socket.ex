@@ -1,8 +1,8 @@
-defmodule Hello.UserSocket do
+defmodule WoqWebapp.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", Hello.RoomChannel
+  # channel "room:*", WoqWebapp.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket,
@@ -31,7 +31,7 @@ defmodule Hello.UserSocket do
   # Would allow you to broadcast a "disconnect" event and terminate
   # all active sockets and channels for a given user:
   #
-  #     Hello.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
+  #     WoqWebapp.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil

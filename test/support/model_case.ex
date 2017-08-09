@@ -1,4 +1,4 @@
-defmodule Hello.ModelCase do
+defmodule WoqWebapp.ModelCase do
   @moduledoc """
   This module defines the test case to be used by
   model tests.
@@ -16,20 +16,20 @@ defmodule Hello.ModelCase do
 
   using do
     quote do
-      alias Hello.Repo
+      alias WoqWebapp.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Hello.ModelCase
+      import WoqWebapp.ModelCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Hello.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(WoqWebapp.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Hello.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(WoqWebapp.Repo, {:shared, self()})
     end
 
     :ok
@@ -59,7 +59,7 @@ defmodule Hello.ModelCase do
   """
   def errors_on(struct, data) do
     struct.__struct__.changeset(struct, data)
-    |> Ecto.Changeset.traverse_errors(&Hello.ErrorHelpers.translate_error/1)
+    |> Ecto.Changeset.traverse_errors(&WoqWebapp.ErrorHelpers.translate_error/1)
     |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
   end
 end

@@ -1,3 +1,3 @@
-defmodule Hello.LayoutViewTest do
-  use Hello.ConnCase, async: true
+defmodule WoqWebapp.LayoutViewTest do
+  use WoqWebapp.ConnCase, async: true
 end

@@ -1,5 +1,5 @@
-defmodule Hello.PageControllerTest do
-  use Hello.ConnCase
+defmodule WoqWebapp.PageControllerTest do
+  use WoqWebapp.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"

@@ -1,3 +1,3 @@
-defmodule Hello.LayoutView do
-  use Hello.Web, :view
+defmodule WoqWebapp.LayoutView do
+  use WoqWebapp.Web, :view
 end

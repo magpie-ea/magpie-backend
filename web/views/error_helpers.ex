@@ -1,4 +1,4 @@
-defmodule Hello.ErrorHelpers do
+defmodule WoqWebapp.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule Hello.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(Hello.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(WoqWebapp.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(Hello.Gettext, "errors", msg, opts)
+      Gettext.dgettext(WoqWebapp.Gettext, "errors", msg, opts)
     end
   end
 end

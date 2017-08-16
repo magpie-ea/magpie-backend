@@ -22,6 +22,6 @@ defmodule WoqWebapp.Router do
   scope "/api", WoqWebapp do
     pipe_through :api
 
-    post "/1c", Exp1cController, :receive
+    post "/submit_experiment", ExperimentController, :create
   end
 end

@@ -21,4 +21,11 @@ defmodule WoqWebapp.Experiment do
     # Validate the required parameters are all there. In our case all parameters are required.
     |> validate_required([:results, :experiment_id, :author, :description])
   end
+
+  def construct_experiment_query(experiment_id, author) do
+    query = from e in "experiments",
+            where: e.experiment_id == ^experiment_id,
+            where: e.author == ^author
+  end
+
 end

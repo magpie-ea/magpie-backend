@@ -60,6 +60,8 @@ defmodule WoqWebapp.ExperimentController do
         file = File.open!("./results/" <> file_name, [:write, :utf8])
         write_experiments(file, experiments)
         File.close(file)
+
+        Logger.info "File should have been written"
         conn
         |> put_flash(:info, "The experiment file is retrieved successfully.")
         |> redirect(to: "/results/" <> file_name)

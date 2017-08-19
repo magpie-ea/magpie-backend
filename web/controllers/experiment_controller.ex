@@ -46,6 +46,12 @@ defmodule WoqWebapp.ExperimentController do
     # This should return a list
     experiments = Repo.all(query)
 
+    # I tried to put this in the startup code but on Heroku this doesn't seem to work
+    unless File.exists?("results/") do
+      Logger.info "The folder doesn't exist"
+      File.mkdir("results/")
+    end
+
     case experiments do
       # In this case this thing is just empty. I'll render error message later.
       [] ->
@@ -57,14 +63,14 @@ defmodule WoqWebapp.ExperimentController do
       # Hopefully this can prevent any race condition/clash.
       _ ->
         file_name = "results_" <> experiment_id <> "_" <> author <> ".csv"
-        file = File.open!("./results/" <> file_name, [:write, :utf8])
+        file = File.open!("results/" <> file_name, [:write, :utf8])
         write_experiments(file, experiments)
         File.close(file)
 
         Logger.info "File should have been written"
         conn
         |> put_flash(:info, "The experiment file is retrieved successfully.")
-        |> redirect(to: "/results/" <> file_name)
+        |> redirect(to: "results/" <> file_name)
         # |> redirect(to: experiment_path(conn, :query))
 #        |> render(conn, "index.html")
     end

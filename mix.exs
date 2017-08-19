@@ -40,6 +40,7 @@ defmodule ProComPrag.Mixfile do
      {:cowboy, "~> 1.0"},
      {:poison, "~> 3.1"},
      {:iteraptor, "~> 0.7.0"},
+     {:cors_plug, "~> 1.2"},
      # Error checking and linting
      {:credo, "~> 0.5", only: [:dev, :test]},
      {:dogma, "~> 0.1", only: [:dev]}

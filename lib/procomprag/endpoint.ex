@@ -1,6 +1,9 @@
 defmodule ProComPrag.Endpoint do
   use Phoenix.Endpoint, otp_app: :procomprag
 
+  # This is needed since the experiments are likely to be hosted on external domains.
+  plug CORSPlug
+
   socket "/socket", ProComPrag.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.

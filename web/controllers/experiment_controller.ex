@@ -63,16 +63,32 @@ defmodule ProComPrag.ExperimentController do
       # Hopefully this can prevent any race condition/clash.
       _ ->
         file_name = "results_" <> experiment_id <> "_" <> author <> ".csv"
-        file = File.open!("results/" <> file_name, [:write, :utf8])
+        if Application.get_env(:my_app, :environment) == :dev do
+          file = File.open!("results/" <> file_name, [:write, :utf8])
+        else
+          # ... Could I even write the file in the app directory? Just makes totally no sense does it.
+          file = File.open!("/app/" <> file_name, [:write, :utf8])
+        end
         write_experiments(file, experiments)
         File.close(file)
 
         Logger.info "File should have been written"
-        conn
-        |> put_flash(:info, "The experiment file is retrieved successfully.")
-        |> redirect(to: "/results/" <> file_name)
-        # |> redirect(to: experiment_path(conn, :query))
-#        |> render(conn, "index.html")
+
+
+        if Application.get_env(:my_app, :environment) == :dev do
+          conn
+          |> put_flash(:info, "The experiment file is retrieved successfully.")
+          |> redirect(to: "/results/" <> file_name)
+          # |> redirect(to: experiment_path(conn, :query))
+          #        |> render(conn, "index.html")
+        else
+          # What the heck is going on there? Can I even write a blank file there?
+          # file = File.open!("~/test.csv", [:write, :utf8])
+          file = File.open!("/app/test.csv", [:write, :utf8])
+          IO.write(file, "123")
+          File.close(file)
+          conn |> redirect(to: experiment_path(conn, :query))
+        end
     end
   end
 

@@ -1,5 +1,5 @@
-defmodule WoqWebapp.Router do
-  use WoqWebapp.Web, :router
+defmodule ProComPrag.Router do
+  use ProComPrag.Web, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,7 +13,7 @@ defmodule WoqWebapp.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", WoqWebapp do
+  scope "/", ProComPrag do
     pipe_through :browser # Use the default browser stack
 
     # ... Should probably just make the default homepage the place to retrieve the results for now actually.
@@ -21,7 +21,7 @@ defmodule WoqWebapp.Router do
     post "/", ExperimentController, :retrieve
   end
 
-  scope "/api", WoqWebapp do
+  scope "/api", ProComPrag do
     pipe_through :api
 
     post "/submit_experiment", ExperimentController, :create

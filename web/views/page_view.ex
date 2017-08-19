@@ -1,3 +1,3 @@
-defmodule WoqWebapp.PageView do
-  use WoqWebapp.Web, :view
+defmodule ProComPrag.PageView do
+  use ProComPrag.Web, :view
 end

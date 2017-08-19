@@ -1,12 +1,12 @@
-defmodule WoqWebapp.Web do
+defmodule ProComPrag.Web do
   @moduledoc """
   A module that keeps using definitions for controllers,
   views and so on.
 
   This can be used in your application as:
 
-      use WoqWebapp.Web, :controller
-      use WoqWebapp.Web, :view
+      use ProComPrag.Web, :controller
+      use ProComPrag.Web, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -30,12 +30,12 @@ defmodule WoqWebapp.Web do
     quote do
       use Phoenix.Controller
 
-      alias WoqWebapp.Repo
+      alias ProComPrag.Repo
       import Ecto
       import Ecto.Query
 
-      import WoqWebapp.Router.Helpers
-      import WoqWebapp.Gettext
+      import ProComPrag.Router.Helpers
+      import ProComPrag.Gettext
     end
   end
 
@@ -49,9 +49,9 @@ defmodule WoqWebapp.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import WoqWebapp.Router.Helpers
-      import WoqWebapp.ErrorHelpers
-      import WoqWebapp.Gettext
+      import ProComPrag.Router.Helpers
+      import ProComPrag.ErrorHelpers
+      import ProComPrag.Gettext
     end
   end
 
@@ -65,10 +65,10 @@ defmodule WoqWebapp.Web do
     quote do
       use Phoenix.Channel
 
-      alias WoqWebapp.Repo
+      alias ProComPrag.Repo
       import Ecto
       import Ecto.Query
-      import WoqWebapp.Gettext
+      import ProComPrag.Gettext
     end
   end
 

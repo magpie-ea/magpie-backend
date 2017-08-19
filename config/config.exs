@@ -6,15 +6,15 @@
 use Mix.Config
 
 # General application configuration
-config :woq_webapp,
-  ecto_repos: [WoqWebapp.Repo]
+config :procomprag,
+  ecto_repos: [ProComPrag.Repo]
 
 # Configures the endpoint
-config :woq_webapp, WoqWebapp.Endpoint,
+config :procomprag, ProComPrag.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
-  render_errors: [view: WoqWebapp.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: WoqWebapp.PubSub,
+  render_errors: [view: ProComPrag.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: ProComPrag.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger

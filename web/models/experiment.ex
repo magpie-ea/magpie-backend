@@ -1,7 +1,7 @@
-defmodule WoqWebapp.Experiment do
+defmodule ProComPrag.Experiment do
   @moduledoc false
 
-  use WoqWebapp.Web, :model
+  use ProComPrag.Web, :model
 
   schema "experiments" do
     field :results, :map

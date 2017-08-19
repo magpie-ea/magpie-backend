@@ -1,4 +1,4 @@
-defmodule WoqWebapp.Repo.Migrations.AddIndexOnExperimentId do
+defmodule ProComPrag.Repo.Migrations.AddIndexOnExperimentId do
   use Ecto.Migration
 
   def change do

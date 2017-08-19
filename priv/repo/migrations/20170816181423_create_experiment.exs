@@ -1,4 +1,4 @@
-defmodule WoqWebapp.Repo.Migrations.CreateExperiment do
+defmodule ProComPrag.Repo.Migrations.CreateExperiment do
   use Ecto.Migration
 
   def change do

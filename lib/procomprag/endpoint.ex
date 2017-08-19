@@ -1,20 +1,20 @@
-defmodule WoqWebapp.Endpoint do
-  use Phoenix.Endpoint, otp_app: :woq_webapp
+defmodule ProComPrag.Endpoint do
+  use Phoenix.Endpoint, otp_app: :procomprag
 
-  socket "/socket", WoqWebapp.UserSocket
+  socket "/socket", ProComPrag.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phoenix.digest
   # when deploying your static files in production.
   plug Plug.Static,
-    at: "/", from: :woq_webapp, gzip: false,
+    at: "/", from: :procomprag, gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
   # The result files to be retrieved.
   plug Plug.Static,
-    at: "/results", from: "/results", gzip: false
-    # at: "/results", from: Path.expand("results/"), gzip: false
+    # at: "/results", from: "/results", gzip: false
+    at: "/results", from: Path.expand("results/"), gzip: false
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -40,8 +40,8 @@ defmodule WoqWebapp.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   plug Plug.Session,
     store: :cookie,
-    key: "_woq_webapp_key",
+    key: "_procomprag_key",
     signing_salt: "MmqUE5bg"
 
-  plug WoqWebapp.Router
+  plug ProComPrag.Router
 end

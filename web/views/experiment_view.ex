@@ -1,3 +1,3 @@
-defmodule WoqWebapp.ExperimentView do
-  use WoqWebapp.Web, :view
+defmodule ProComPrag.ExperimentView do
+  use ProComPrag.Web, :view
 end

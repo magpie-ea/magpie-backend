@@ -1,4 +1,4 @@
-defmodule WoqWebapp.ConnCase do
+defmodule ProComPrag.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -20,23 +20,23 @@ defmodule WoqWebapp.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias WoqWebapp.Repo
+      alias ProComPrag.Repo
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
 
-      import WoqWebapp.Router.Helpers
+      import ProComPrag.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint WoqWebapp.Endpoint
+      @endpoint ProComPrag.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(WoqWebapp.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ProComPrag.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(WoqWebapp.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(ProComPrag.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

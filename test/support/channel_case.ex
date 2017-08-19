@@ -1,4 +1,4 @@
-defmodule WoqWebapp.ChannelCase do
+defmodule ProComPrag.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -20,22 +20,22 @@ defmodule WoqWebapp.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
 
-      alias WoqWebapp.Repo
+      alias ProComPrag.Repo
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
 
 
       # The default endpoint for testing
-      @endpoint WoqWebapp.Endpoint
+      @endpoint ProComPrag.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(WoqWebapp.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ProComPrag.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(WoqWebapp.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(ProComPrag.Repo, {:shared, self()})
     end
 
     :ok

@@ -1,4 +1,4 @@
-# WoqWebapp
+# ProComPrag
 
 To start your Phoenix app:
 

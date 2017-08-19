@@ -1,5 +1,5 @@
-defmodule WoqWebapp.PageControllerTest do
-  use WoqWebapp.ConnCase
+defmodule ProComPrag.PageControllerTest do
+  use ProComPrag.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"

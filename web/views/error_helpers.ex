@@ -1,4 +1,4 @@
-defmodule WoqWebapp.ErrorHelpers do
+defmodule ProComPrag.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule WoqWebapp.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(WoqWebapp.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(ProComPrag.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(WoqWebapp.Gettext, "errors", msg, opts)
+      Gettext.dgettext(ProComPrag.Gettext, "errors", msg, opts)
     end
   end
 end

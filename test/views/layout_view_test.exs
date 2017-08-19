@@ -1,3 +1,3 @@
-defmodule WoqWebapp.LayoutViewTest do
-  use WoqWebapp.ConnCase, async: true
+defmodule ProComPrag.LayoutViewTest do
+  use ProComPrag.ConnCase, async: true
 end

@@ -1,4 +1,4 @@
-defmodule WoqWebapp.ExperimentHelper do
+defmodule ProComPrag.ExperimentHelper do
   @moduledoc """
   Stores the helper functions which help to store and retrieve the experiments.
   """

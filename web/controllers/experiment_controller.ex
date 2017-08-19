@@ -1,12 +1,12 @@
-defmodule WoqWebapp.ExperimentController do
+defmodule ProComPrag.ExperimentController do
   @moduledoc false
-  use WoqWebapp.Web, :controller
+  use ProComPrag.Web, :controller
   require Logger
   require Iteraptor
 
-  alias WoqWebapp.Experiment
+  alias ProComPrag.Experiment
 
-  import WoqWebapp.ExperimentHelper
+  import ProComPrag.ExperimentHelper
 
   def create(conn, raw_params) do
     # I'll just manually modify the params a bit before passing it into the changeset function of the model layer, apparently.
@@ -39,7 +39,7 @@ defmodule WoqWebapp.ExperimentController do
   def retrieve(conn, experiment_params) do
     experiment_id = experiment_params["experiment"]["experiment_id"]
     author = experiment_params["experiment"]["author"]
-    query = from e in WoqWebapp.Experiment,
+    query = from e in ProComPrag.Experiment,
                  where: e.experiment_id == ^experiment_id,
                  where: e.author == ^author
 
@@ -70,7 +70,7 @@ defmodule WoqWebapp.ExperimentController do
         Logger.info "File should have been written"
         conn
         |> put_flash(:info, "The experiment file is retrieved successfully.")
-        |> redirect(to: "results/" <> file_name)
+        |> redirect(to: "/results/" <> file_name)
         # |> redirect(to: experiment_path(conn, :query))
 #        |> render(conn, "index.html")
     end

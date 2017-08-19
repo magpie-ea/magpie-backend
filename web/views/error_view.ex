@@ -1,5 +1,5 @@
-defmodule WoqWebapp.ErrorView do
-  use WoqWebapp.Web, :view
+defmodule ProComPrag.ErrorView do
+  use ProComPrag.Web, :view
 
   def render("404.html", _assigns) do
     "Page not found"

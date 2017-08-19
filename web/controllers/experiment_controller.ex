@@ -47,10 +47,10 @@ defmodule ProComPrag.ExperimentController do
     experiments = Repo.all(query)
 
     # I tried to put this in the startup code but on Heroku this doesn't seem to work
-    unless File.exists?("results/") do
-      Logger.info "The folder doesn't exist"
-      File.mkdir("results/")
-    end
+    # unless File.exists?("results/") do
+    #   Logger.info "The folder doesn't exist"
+    #   File.mkdir("results/")
+    # end
 
     case experiments do
       # In this case this thing is just empty. I'll render error message later.

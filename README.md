@@ -3,7 +3,7 @@ This is a server backend to receive, store and retrieve experiments.
 If you encountered any bugs during your experiments please submit an issue.
 
 # Posting experiments
-When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk, please POST the JSON to the following web address: https://procomprag.heroku.com/api/submit_experiment
+When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk, please POST the JSON to the following web address: https://procomprag.herokuapp.com/api/submit_experiment
 
 A sample experiment is provided under the `doc` folder. The code of particular interest would be those in `norming.js`, in the object `slides.thanks`, starting from line 322.
 
@@ -37,7 +37,7 @@ The reason for error would most likely be missing mandatory fields (i.e. `author
 Note that `crossDomain: true` is needed since the server on Heroku will likely have a different domain than the experiment.
 
 # Retrieving experiment results
-Just visit the website at https://procomprag.heroku.com, enter the `experiment_id` and `author` originally contained within the JSON file, and hit "Submit". Authentication mechanisms might be added later, if necessary.
+Just visit the website at https://procomprag.herokuapp.com, enter the `experiment_id` and `author` originally contained within the JSON file, and hit "Submit". Authentication mechanisms might be added later, if necessary.
 
 # Additional Notes
 - The assumption on the server side when generating the code is that each set of experiment would have the same keys in the JSON file submitted and that each trial of an experiment would have the same keys in an object named `trials`. Violating this assumption might lead to failure in the CSV generation process.

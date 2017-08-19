@@ -13,7 +13,8 @@ defmodule WoqWebapp.Endpoint do
 
   # The result files to be retrieved.
   plug Plug.Static,
-    at: "/results", from: Path.expand("results/"), gzip: false
+    at: "/results", from: "/results", gzip: false
+    # at: "/results", from: Path.expand("results/"), gzip: false
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

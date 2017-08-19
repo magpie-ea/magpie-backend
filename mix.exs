@@ -39,7 +39,11 @@ defmodule WoqWebapp.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:poison, "~> 3.1"},
-      {:iteraptor, "~> 0.7.0"}]
+     {:iteraptor, "~> 0.7.0"},
+     # Error checking and linting
+     {:credo, "~> 0.5", only: [:dev, :test]},
+     {:dogma, "~> 0.1", only: [:dev]}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

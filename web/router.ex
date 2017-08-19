@@ -17,7 +17,8 @@ defmodule WoqWebapp.Router do
     pipe_through :browser # Use the default browser stack
 
     # ... Should probably just make the default homepage the place to retrieve the results for now actually.
-    get "/", ExperimentController, :retrieve
+    get "/", ExperimentController, :query
+    post "/", ExperimentController, :retrieve
   end
 
   scope "/api", WoqWebapp do

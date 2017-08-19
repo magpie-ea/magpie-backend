@@ -14,7 +14,7 @@ defmodule WoqWebapp.Experiment do
   end
 
   # Used for param validation etc. Now let's skip this step first
-  def changeset(model, params) do
+  def changeset(model, params \\ %{}) do
     model
     # `cast/3` ensures that only the allowed parameters are let through, and that the input is safe.
     |> cast(params, [:results, :experiment_id, :author, :description])

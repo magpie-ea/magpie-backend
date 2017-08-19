@@ -11,6 +11,10 @@ defmodule WoqWebapp.Endpoint do
     at: "/", from: :woq_webapp, gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
 
+  # The result files to be retrieved.
+  plug Plug.Static,
+    at: "/results", from: Path.expand("./results"), gzip: false
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do

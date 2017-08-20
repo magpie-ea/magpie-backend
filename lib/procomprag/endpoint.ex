@@ -15,9 +15,15 @@ defmodule ProComPrag.Endpoint do
     only: ~w(css fonts images js favicon.ico robots.txt)
 
   # The result files to be retrieved.
-  plug Plug.Static,
-    # at: "/results", from: "/results", gzip: false
-    at: "/results", from: Path.expand("results/"), gzip: false
+  if Application.get_env(:my_app, :environment) == :prod do
+    plug Plug.Static,
+      # at: "/results", from: "/results", gzip: false
+      at: "/results", from: "/results", gzip: false
+  else
+    plug Plug.Static,
+      # at: "/results", from: "/results", gzip: false
+      at: "/results", from: Path.expand("results/"), gzip: false
+  end
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

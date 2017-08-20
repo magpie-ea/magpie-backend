@@ -69,7 +69,8 @@ defmodule ProComPrag.ExperimentController do
 
 
         conn
-        |> put_flash(:info, "The experiment file is retrieved successfully.")
+        # The flash doesn't work very well since the fresh wasn't refreshed anyways.
+        # |> put_flash(:info, "The experiment file is retrieved successfully.")
         |> redirect(external: "https://procomprag.s3.amazonaws.com/" <> orig_name)
     end
   end

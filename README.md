@@ -1,6 +1,6 @@
 This is a server backend to receive, store and retrieve experiments.
 
-If you encountered any bugs during your experiments please submit an issue.
+If you encountered any bugs during your experiments please [submit an issue](https://github.com/x-ji/ProComPrag/issues).
 
 # Posting experiments
 When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk, please POST the JSON to the following web address: https://procomprag.herokuapp.com/api/submit_experiment

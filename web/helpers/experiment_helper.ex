@@ -14,7 +14,6 @@ defmodule ProComPrag.ExperimentHelper do
     meta_info = Map.drop(experiment, [:results, :__meta__, :id, :__struct__])
 
     %{results_without_trials: results_without_trials, trials: trials, meta_info: meta_info}
-    #    %{results_without_trials: results_without_trials, trials: trials}
   end
 
   # Note that the default way Amazon MTurk writes an experiment is to simply flatten the structure, and then take each key as a column header.
@@ -30,9 +29,9 @@ defmodule ProComPrag.ExperimentHelper do
     # Assumption: Each trial should have the same keys recorded.
     trial = decomposed_experiment[:trials]["0"]
     trial_keys = trial
-                 |> Enum.map(fn({k, v}) -> k end)
                 # Actually I might not even need this prefixing. Could ask Michael for input on this.
                 # |> Enum.map(fn(k) -> "trial." <> k end)
+                 |> Enum.map(fn({k, _v}) -> k end)
 
     # Record the flattened keys, as is done originally by MTurk.
     other_info_keys = decomposed_experiment[:results_without_trials]\
@@ -42,7 +41,7 @@ defmodule ProComPrag.ExperimentHelper do
 
     # I'm not sure if we need the extra metadata outside of the results. Maybe for completeness's sake I'll still write them out first. This may also include information such as participant_id etc.
     meta_info_keys = decomposed_experiment[:meta_info]\
-                     |> Enum.map(fn({k, v}) -> k end)
+                     |> Enum.map(fn({k, _v}) -> k end)
 
     # You cannot pipe something as the second argument... A temporary variable might make it more readable
 
@@ -67,13 +66,13 @@ defmodule ProComPrag.ExperimentHelper do
     # TODO: I can probably refactor the code a bit further (the only difference with the code above is that the values are extracted instead of the keys). But let me do it later then.
     other_info = decomposed_experiment[:results_without_trials]\
            |> Iteraptor.to_flatmap\
-           |> Enum.map(fn({k, v}) -> v end)
+           |> Enum.map(fn({_k, v}) -> v end)
            |> Enum.map(fn(v) ->
       if is_list(v) do Enum.join(v, "|") else v end
     end)
 
     meta_info = decomposed_experiment[:meta_info]\
-                |> Enum.map(fn({k, v}) -> v end)
+                |> Enum.map(fn({_k, v}) -> v end)
                 |> Enum.map(fn(v) ->
       if is_list(v) do Enum.join(v, "|") else v end
     end)
@@ -84,7 +83,7 @@ defmodule ProComPrag.ExperimentHelper do
 
     for {k, trial} <- decomposed_experiment[:trials] do
       trial_info = trial\
-                   |> Enum.map(fn({k, v}) -> v end)\
+                   |> Enum.map(fn({_k, v}) -> v end)\
                    |> Enum.map(fn(v) ->\
                      if is_list(v) do Enum.join(v, "|") else v end\
                     end)

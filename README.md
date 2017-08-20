@@ -48,6 +48,9 @@ Just visit the website at https://procomprag.herokuapp.com, enter the `experimen
 
 - Beware that if there's any field in the results that contains new line characters (for example, the free comments on the experiment from the participant, which might be multiple paragraphs long), the new line characters will be printed literally as `\n` in the final CSV file, since otherwise they would result in actual new lines in the CSV file and thus wreck havoc on the format of the file.
 
+- There is limited guarantee on DB security on Heroku's Hobby grade. Since Heroku's ephemeral file system proved really tricky, the result files are now stored in Amazon S3. Therefore there should be more guarantee for them. However, the experiment authors are still expected to take responsibility of the results and perform backups as soon as possible.
+
+- The result files are now simply public access on Amazon S3. The participant info should all have been anonymized, though an approach with improved access control might be good.
 
 - This app is based on Phoenix Framework and written in Elixir. If you wish to modify the app, please look at the resources available at:
   * Official website: http://www.phoenixframework.org/

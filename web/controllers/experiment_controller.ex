@@ -34,8 +34,6 @@ defmodule ProComPrag.ExperimentController do
     render conn, "query.html", changeset: changeset
   end
 
-  #  write_results = [:experiments_empty, :IO_failure, :success]
-  # def retrieve(conn, %{"experiment" => %{"experiment_id" => experiment_id, "author" => author}}) do
   def retrieve(conn, experiment_params) do
     experiment_id = experiment_params["experiment"]["experiment_id"]
     author = experiment_params["experiment"]["author"]
@@ -46,52 +44,33 @@ defmodule ProComPrag.ExperimentController do
     # This should return a list
     experiments = Repo.all(query)
 
-    # I tried to put this in the startup code but on Heroku this doesn't seem to work
-    # unless File.exists?("results/") do
-    #   Logger.info "The folder doesn't exist"
-    #   File.mkdir("results/")
-    # end
-
     case experiments do
       # In this case this thing is just empty. I'll render error message later.
       [] ->
         conn
         |> put_flash(:error, "The experiment with the given id and author cannot be found!")
-        # I'll render an error message later...
-#        |> render(conn, "index.html")
-       |> redirect(to: experiment_path(conn, :query))
-      # Hopefully this can prevent any race condition/clash.
+        |> redirect(to: experiment_path(conn, :query))
+
+      # Should give each result a different name.
       _ ->
-        file_name = "results_" <> experiment_id <> "_" <> author <> ".csv"
+        orig_name = "results_" <> experiment_id <> "_" <> author <> ".csv"
         if Application.get_env(:my_app, :environment) == :prod do
-          # ... Could I even write the file in the app directory? Just makes totally no sense does it.
-          file = File.open!("/app/results/" <> file_name, [:write, :utf8])
+          file_path = "/app/results/" <> orig_name
+          file = File.open!(file_path, [:write, :utf8])
         else
-          file = File.open!("results/" <> file_name, [:write, :utf8])
+          file_path = "results/" <> orig_name
+          file = File.open!(file_path, [:write, :utf8])
         end
         write_experiments(file, experiments)
         File.close(file)
 
-        Logger.info "File should have been written"
+        ExAws.S3.put_object("procomprag", orig_name, File.read!(file_path), [acl: :public_read])
+        |> ExAws.request!
 
-        # ... Still let me try to write a dummy file first?
-        # dummy = File.open!("/app/results/dummy.csv")
-        # IO.write(dummy, "123")
-        # File.close(dummy)
 
         conn
         |> put_flash(:info, "The experiment file is retrieved successfully.")
-        |> redirect(to: "/results/" <> file_name)
-
-        # if Application.get_env(:my_app, :environment) == :dev do
-        #   conn
-        #   |> put_flash(:info, "The experiment file is retrieved successfully.")
-        #   |> redirect(to: "/results/" <> file_name)
-        #   # |> redirect(to: experiment_path(conn, :query))
-        #   #        |> render(conn, "index.html")
-        # else
-        #   conn |> redirect(to: experiment_path(conn, :query))
-        # end
+        |> redirect(external: "https://procomprag.s3.amazonaws.com/" <> orig_name)
     end
   end
 

@@ -15,11 +15,13 @@ defmodule ProComPrag.Mixfile do
 
   # Configuration for the OTP application.
   #
+
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {ProComPrag, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex]]
+                    :phoenix_ecto, :postgrex,
+                   :ex_aws, :hackney, :poison]]
   end
 
   # Specifies which paths to compile per environment.
@@ -41,6 +43,9 @@ defmodule ProComPrag.Mixfile do
      {:poison, "~> 3.1"},
      {:iteraptor, "~> 0.7.0"},
      {:cors_plug, "~> 1.2"},
+     {:ex_aws, "~> 1.0"},
+     {:hackney, "~> 1.6"},
+     {:sweet_xml, "~> 0.6.5"},
      # Error checking and linting
      {:credo, "~> 0.5", only: [:dev, :test]},
      {:dogma, "~> 0.1", only: [:dev]}

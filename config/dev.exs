@@ -35,11 +35,9 @@ config :phoenix, :stacktrace_depth, 20
 
 config :procomprag, :environment, :dev
 
-# Configure your database
-config :procomprag, ProComPrag.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "woq",
-  password: "test",
-  database: "elixir_hello_dev",
-  hostname: "localhost",
-  pool_size: 10
+config :ex_aws,
+  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
+  secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role],
+  region: "us-west-2"
+
+import_config "dev.secret.exs"

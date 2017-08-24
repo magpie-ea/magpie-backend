@@ -30,11 +30,6 @@ config :logger, level: :info
 
 config :procomprag, :environment, :prod
 
-config :ex_aws,
-  access_key_id: [{:system, "AWS_ACCESS_KEY_ID"}, :instance_role],
-  secret_access_key: [{:system, "AWS_SECRET_ACCESS_KEY"}, :instance_role],
-  region: "us-west-2"
-
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

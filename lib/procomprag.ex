@@ -6,7 +6,7 @@ defmodule ProComPrag do
   def start(_type, _args) do
     import Supervisor.Spec
 
-    # Doesn't work?
+    # Create the directory to store the results
     if Application.get_env(:my_app, :environment) == :prod do
       File.mkdir("/app/results/")
     else

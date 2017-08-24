@@ -54,24 +54,20 @@ defmodule ProComPrag.ExperimentController do
       # Should give each result a different name.
       _ ->
         orig_name = "results_" <> experiment_id <> "_" <> author <> ".csv"
+        file_path =
         if Application.get_env(:my_app, :environment) == :prod do
-          file_path = "/app/results/" <> orig_name
-          file = File.open!(file_path, [:write, :utf8])
+          "/app/results/" <> orig_name
         else
-          file_path = "results/" <> orig_name
-          file = File.open!(file_path, [:write, :utf8])
+          "results/" <> orig_name
         end
+        file = File.open!(file_path, [:write, :utf8])
         write_experiments(file, experiments)
         File.close(file)
-
-        ExAws.S3.put_object("procomprag", orig_name, File.read!(file_path), [acl: :public_read])
-        |> ExAws.request!
-
 
         conn
         # The flash doesn't work very well since the fresh wasn't refreshed anyways.
         # |> put_flash(:info, "The experiment file is retrieved successfully.")
-        |> redirect(external: "https://procomprag.s3.amazonaws.com/" <> orig_name)
+        |> send_download({:file, file_path})
     end
   end
 

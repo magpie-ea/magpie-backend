@@ -23,9 +23,9 @@ defmodule ProComPrag.Experiment do
   end
 
   def construct_experiment_query(experiment_id, author) do
-    query = from e in "experiments",
-            where: e.experiment_id == ^experiment_id,
-            where: e.author == ^author
+    from e in "experiments",
+    where: e.experiment_id == ^experiment_id,
+    where: e.author == ^author
   end
 
 end

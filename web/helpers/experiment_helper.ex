@@ -36,7 +36,7 @@ defmodule ProComPrag.ExperimentHelper do
     # Record the flattened keys, as is done originally by MTurk.
     other_info_keys = decomposed_experiment[:results_without_trials]\
            |> Iteraptor.to_flatmap\
-           |> Enum.map(fn({k, v}) -> k end)
+           |> Enum.map(fn({k, _v}) -> k end)
 
 
     # I'm not sure if we need the extra metadata outside of the results. Maybe for completeness's sake I'll still write them out first. This may also include information such as participant_id etc.
@@ -81,7 +81,7 @@ defmodule ProComPrag.ExperimentHelper do
     o = other_info |> Enum.join(",") |> String.replace("\n", "\\n")
     m = meta_info |> Enum.join(",") |> String.replace("\n", "\\n")
 
-    for {k, trial} <- decomposed_experiment[:trials] do
+    for {_k, trial} <- decomposed_experiment[:trials] do
       trial_info = trial\
                    |> Enum.map(fn({_k, v}) -> v end)\
                    |> Enum.map(fn(v) ->\

@@ -335,7 +335,7 @@ function make_slides(f) {
         "author": "JI Xiang",
         "description": "Collects quantifiers for the woq project."
       };
-      // Set a timeout of 1 second. Presumably to let the participant read the information first before posting the JSON.
+      // Set a timeout of 1 second. Presumably to let the participant read the information first before posting the JSON. I don't think we need such a high timeout in our case though.
       setTimeout(function () {
         // turk.submit(exp.data);
         $.ajax({
@@ -348,7 +348,11 @@ function make_slides(f) {
             console.log(textStatus)
           },
           error: function(responseData,textStatus, errorThrown) {
-            alert('Submission failed.');
+            if (textStatus == "timeout") {
+              alert("The submission timed out.");
+            } else {
+              alert('Submission failed.');
+            }
           }
         })
       }, 1000);

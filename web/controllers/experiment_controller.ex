@@ -53,7 +53,7 @@ defmodule ProComPrag.ExperimentController do
 
       # Should give each result a different name.
       _ ->
-        orig_name = "results_" <> experiment_id <> "_" <> author <> ".csv"
+        orig_name = "results_" <> experiment_id <> "_" <> author <> ".tsv"
         file_path =
         if Application.get_env(:my_app, :environment) == :prod do
           "/app/results/" <> orig_name

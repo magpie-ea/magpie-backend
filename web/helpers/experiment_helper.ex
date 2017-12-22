@@ -45,14 +45,14 @@ defmodule ProComPrag.ExperimentHelper do
 
     # You cannot pipe something as the second argument... A temporary variable might make it more readable
 
-    t = trial_keys |> Enum.join(",")
-    o = other_info_keys |> Enum.join(",")
-    m = meta_info_keys |> Enum.join(",")
+    t = trial_keys |> Enum.join("\t")
+    o = other_info_keys |> Enum.join("\t")
+    m = meta_info_keys |> Enum.join("\t")
 
     IO.write(file, t)
-    IO.write(file, ",")
+    IO.write(file, "\t")
     IO.write(file, o)
-    IO.write(file, ",")
+    IO.write(file, "\t")
     IO.write(file, m)
 
     # Write the individual experiment results
@@ -78,8 +78,8 @@ defmodule ProComPrag.ExperimentHelper do
     end)
 
     # New lines in the user responses are wrecking havoc in the final csv file... I'll replace them with a literal \n. Not sure if other special characters will also need to be taken care of though.
-    o = other_info |> Enum.join(",") |> String.replace("\n", "\\n")
-    m = meta_info |> Enum.join(",") |> String.replace("\n", "\\n")
+    o = other_info |> Enum.join("\t") |> String.replace("\n", "\\n")
+    m = meta_info |> Enum.join("\t") |> String.replace("\n", "\\n")
 
     for {_k, trial} <- decomposed_experiment[:trials] do
       trial_info = trial\
@@ -88,12 +88,12 @@ defmodule ProComPrag.ExperimentHelper do
                      if is_list(v) do Enum.join(v, "|") else v end\
                     end)
 
-      t = trial_info |> Enum.join(",") |> String.replace("\n", "\\n")
+      t = trial_info |> Enum.join("\t") |> String.replace("\n", "\\n")
 
       IO.write(file, t)
-      IO.write(file, ",")
+      IO.write(file, "\t")
       IO.write(file, o)
-      IO.write(file, ",")
+      IO.write(file, "\t")
       IO.write(file, m)
       IO.write(file, "\n")
 

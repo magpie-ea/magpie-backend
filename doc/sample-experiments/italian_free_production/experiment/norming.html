@@ -1,0 +1,208 @@
+<html>
+
+<head>
+    <!-- Why didn't they declare utf-8 charset? -->
+    <meta charset="utf-8"/>
+    <title>Language study</title>
+
+    <!--JS-->
+
+    <!-- external general utilities -->
+    <script src="../../_shared/js/jquery-1.11.1.min.js "></script>
+    <script src="../../_shared/full-projects/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../../_shared/js/underscore-min.js"></script>
+    <!-- if you want to draw stuff: -->
+    <!-- <script src="../_shared/js/raphael-min.js"></script> -->
+
+    <!-- cocolab experiment logic -->
+    <script src="../../_shared/js/exp-V2.js"></script>
+    <script src="../../_shared/js/stream-V2.js"></script>
+
+    <!-- cocolab general utilities -->
+    <script src="../../_shared/js/mmturkey.js "></script>
+    <script src="../../_shared/js/browserCheck.js"></script>
+    <!-- if you want to draw cute creatures (depends on raphael): -->
+    <!-- <script src="../_shared/js/ecosystem.js"></script> -->
+
+    <!-- experiment specific helper functions -->
+    <script src="../../_shared/js/utils.js"></script>
+    <script src="../../_shared/preload.js"></script>
+
+    <!--CSS-->
+    <link href="../../_shared/full-projects/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../../_shared/css/cocolab-style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/local-style.css" rel="stylesheet" type="text/css"/>
+
+    <!-- experiment file -->
+    <script src="js/norming.js"></script>
+
+</head>
+
+<body onload="init();">
+  <noscript>This task requires JavaScript.</noscript>
+
+  <div class="slide" id="i0" >
+  <br>
+  <br>
+    <!--<img src="../../_shared/images/cocologo.png" alt="Stanford CoCoLab" id="cocologo"></img> -->
+    <!--<p id="cocolab">Stanford CoCoLab</p>-->
+    <p id="instruct-text">
+      Thank you for participating in our study. In this study, you will see images of different situations and will be asked for brief descriptions of those situations in <b>Italian</b>. The whole experiment should take no longer than 15 minutes.
+      <br/>
+      <br/>
+      Important: Please only participate in this study if you are a <b>native Italian speaker</b>.
+    </p>
+    <button id="start_button" type="button">I Understand. Start Experiment</button>
+    <p id="legal">Legal information: By answering the following
+    questions, you are participating in a study being performed by
+    cognitive scientists in the Department of Linguistics at the University of Tuebingen. If
+    you have questions about this research, please contact Judith
+    Degen at <a
+    href="mailto://jdegen@stanford.edu">jdegen@stanford.edu</a> or
+    Michael Franke at mchfranke@gmail.com. You must be  at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
+  </div>
+
+  <div class="slide" id="prolificID">
+    <p>Please input your Prolific ID here:</p>
+
+    <p><input class="prolificIDInput" type="text"></input></p>
+
+    <button onclick="_s.button()">Continue</button>
+    <div class="errProlificID">Please fill in your Prolific ID.</div>
+  </div>
+
+  <div class="slide" id="objecttrial">
+  <!--	<p id="contextsentence"></p> -->
+
+	<!-- replace previous div with the canvas -->
+  <br><br>
+	 	<canvas id="situation" style="width:600px;height:400px"></canvas>
+
+	 <!--
+    <table id="slider_table" class="slider_table">
+      <tr><td class="left"><h3>very atypical</h3></td><td class="right" id="numObjects"><h3>very typical</h3></td></tr>
+      <tr><td colspan="2"><div id="single_slider" class="slider"></div></td></tr>
+    </table>
+    -->
+
+    <!-- This is the placeholder for question description sentences. -->
+	<p class="blanksentence"></p>
+    <p>Please provide at least one description. Please avoid the use of number expressions. Please write your replies in the <b>Italian</b> language, not English nor number term.</p>
+    <p>(Shortcuts: Press "Tab" to switch to the next blank. Press "Enter" to continue.)</p>
+    <p><input class="word1" type="text"></input> _ (de)i punti sono <b><span class="color-word"></span></b></p>
+    <p><input class="word2" type="text"></input> _ (de)i punti sono <b><span class="color-word"></span></b></p>
+    <p><input class="word3" type="text"></input> _ (de)i punti sono <b><span class="color-word"></span></b></p>
+
+	<button onclick="_s.button()">Continue</button>
+    <div class="err">Please fill in at least one blank.</div>
+     <!-- <br>
+	      <textarea id="objectlabel" rows="2" cols="50"></textarea>
+     <br>  -->
+
+    <!-- <button class="contbutton">Next</button>
+
+        <div class="err">Please say what kind of object you think this is. If you don't know, write "don't know".</div> -->
+
+  </div>
+
+
+  <div class="slide" id="language_info">
+    <br><br>
+    <div class="long_form">
+      <!--Here to borrow the CSS style for subj_info_title-->
+      <div class="subj_info_title">Information about your native language</div>
+      <p class="info">Please answer the following questions.</p>
+      <p>What is your country of birth?</p>
+      <input type="text" class="country-of-birth-response language-info-response"/>
+      <p>What is your country of residence?</p>
+      <input type="text" class="country-of-residence-response language-info-response"/>
+      <p>What is your father's country of birth?</p>
+      <input type="text" class="father-cob-response language-info-response"/>
+      <p>What is your mother's country of birth?</p>
+      <input type="text" class="mother-cob-response language-info-response"/>
+      <p>Which language(s) did you speak at home between 0-5 years?</p>
+      <input type="text" class="childhood-language-response language-info-response"/>
+      <p>Which language do you generally prefer?</p>
+      <input type="text" class="preferred-language-response language-info-response"/>
+
+      <p class="language-info-error" hidden>Please fill in the blanks.</p>
+
+      <br/>
+      <button onclick="_s.button()">Submit</button>
+    </div>
+  </div>
+
+  <div class="slide"  id="subj_info">
+    <div class="long_form">
+      <div class="subj_info_title">Additional information</div>
+      <p class="info">Answering these questions is optional, but will help us understand your answers.</p>
+      <p>Did you read the instructions and do you think you did the experiment correctly?</p>
+      <label><input type="radio"  name="assess" value="No"/>No</label>
+      <label><input type="radio"  name="assess" value="Yes"/>Yes</label>
+      <label><input type="radio"  name="assess" value="Confused"/>I was confused</label>
+
+      <p>Gender:
+        <select id="gender">
+          <label><option value=""/></label>
+          <label><option value="Male"/>Male</label>
+          <label><option value="Female"/>Female</label>
+          <label><option value="Other"/>Other</label>
+        </select>
+      </p>
+
+      <p>Age: <input type="text" id="age"/></p>
+
+      <p>Level Of Education:
+        <select id="education">
+          <label><option value="-1"/></label>
+          <label><option value="0"/>Some High School</label>
+          <label><option value="1"/>Graduated High School</label>
+          <label><option value="2"/>Some College</label>
+          <label><option value="3"/>Graduated College</label>
+          <label><option value="4"/>Hold a higher degree</label>
+        </select>
+      </p>
+
+      <p>Which other languages do you speak, if any? <input type="text" id="languages"/></p>
+
+      <p>Did you enjoy the experiment?</p>
+      <select id="enjoyment">
+        <label><option value="-1"></option></label>
+        <label><option value="0">Worse than the Average experiment</option></label>
+        <label><option value="1" >An Average experiment</option></label>
+        <label><option value="2">Better than average experiment</option></label>
+      </select>
+
+      <p>Are you color-blind? If you click 'yes', please comment on the specific type of color-blindness in the comment box below.</p>
+      <select id="colorblind">
+        <label><option value="-1"></option></label>
+        <label><option value="no">No</option></label>
+        <label><option value="yes" >Yes</option></label>
+        <label><option value="dunno">I don't know</option></label>
+      </select>
+
+      <p>We would be interested in any comments you have about this experiment. Please type them here:</p>
+      <textarea id="comments" rows="3" cols="50"></textarea>
+      <br/>
+      <button onclick="_s.submit()">Submit</button>
+      <br/>
+      <p class="submissionPrompt" hidden>Thank you for the submission. Please wait for up to 30 seconds for the submission to complete. Please do not click on the "Submit" button again in the meantime.</p>
+    </div>
+  </div>
+
+  <div id="thanks" class="slide js" >
+    <p  class="big">Thanks for your Time!</p>
+
+    <p class="completionPrompt"></p>
+  </div>
+
+  <div class="progress">
+    <span>Progress:</span>
+    <div class="bar-wrapper">
+      <div class="bar" width="0%">
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,25 +1,36 @@
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [Server Documentation](#server-documentation)
+    - [Required values from experiment submissions](#required-values-from-experiment-submissions)
+    - [Retrieving experiment results](#retrieving-experiment-results)
+- [Experiment Documentation](#experiment-documentation)
+    - [Deploying experiments](#deploying-experiments)
+    - [Posting/Publishing experiments](#postingpublishing-experiments)
+- [Additional Notes](#additional-notes)
+
+<!-- markdown-toc end -->
+
 This is a server backend to receive, store and retrieve online linguistics (pragmatics) experiments. This program was written for the research program [XPRAG.de](http://www.xprag.de/)
 
 If you encountered any bugs during your experiments please [submit an issue](https://github.com/x-ji/ProComPrag/issues).
 
 A live version of the server is deployed at https://procomprag.herokuapp.com
 
-# Deploying experiments
-This program is intended to serve as the backend. An experiment is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Gitlab Pages](https://about.gitlab.com/features/pages/)) and loaded in the participant's browser (e.g. when they start the experiment via a crowdsourcing website such as Amazon MTurk or Prolific.ac). The experiments should be able to be shown regardless of the backend used.
+# Server Documentation
+This section documents the server program.
 
-Sample experiments for MTurk and Prolific.ac are provided under `doc/sample-experiments`. Open `norming.html` files to show the experiments. The `deploy.sh` file prepares an experiment to be deployed to Gitlab Pages. You would still need to create a repository on Gitlab, init a git repo and push.
+## Required values from experiment submissions
+The server expects to receive results from experiments which are structured similarly to the sample experiments provided under `doc/sample-experiments`, via HTTP POST. The experiment framework was developed by [Stanford CoCoLab](https://cocolab.stanford.edu/).
 
-# Required values from experiment submissions
-In the `exp.data` object to be submitted, **three extra values are needed**, as shown on lines 386 to 388 in `/doc/sample_experiments/italian_free_production/experiment/js/norming.js`:
+In addition to the original structure, **three extra values are needed** in the `exp.data` object to be submitted, as shown on lines 386 to 388 in `/doc/sample_experiments/italian_free_production/experiment/js/norming.js`:
 - `author`: The author of this experiment
 - `experiment_id`: The identifier (can be a string) that the author uses to name this experiment
 - `description`: A brief description of this experiment
 
-Just as in the original experiments with MTurk, the trials are expected to be stored under the `trials` key in the JSON file. Otherwise there could be problems with CSV generation later on.
-
 When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk/using the original `turk.submit(exp.data)`, please POST the JSON to the following web address: `{SERVER_ADDRESS}/api/submit_experiment`, e.g. https://procomprag.herokuapp.com/api/submit_experiment
 
-The following is a code example for the `POST` call.
+The following is an example for the `POST` call.
 
 ```javascript
 $.ajax({
@@ -41,13 +52,32 @@ The reason for error would most likely be missing mandatory fields (i.e. `author
 
 Note that `crossDomain: true` is needed since the server domain will likely be different the domain where the experiment is presented to the participant.
 
-# Retrieving experiment results
+## Retrieving experiment results
 Just visit the server (e.g. at https://procomprag.herokuapp.com), enter the `experiment_id` and `author` originally contained within the JSON file, and hit "Submit". Authentication mechanisms might be added later, if necessary.
 
-# Additional Notes
-- The assumption on the server side when receiving the experiments is that each set of experiment would have the same keys in the JSON file submitted and that each trial of an experiment would have the same keys in an object named `trials`. Violating this assumption might lead to failure in the CSV generation process. Look at `norming.js` files in the sample experiments for details.
+# Experiment Documentation
+This section documents the experiments themselves, which should work independent of the backend (e.g. this program or the default backend provided by Amazon MTurk) used to receive their results.
 
-- Please avoid using arrays to store the experiment results as much as possible. For example, if the participant is allowed to enter three answers on one trial, it would be better to store the three answers in three k-v pairs, instead of one array.
+## Deploying experiments
+This program is intended to serve as the backend. An experiment is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Gitlab Pages](https://about.gitlab.com/features/pages/)) and loaded in the participant's browser. Currently, most experiments collected by this backend are conducted on the crowdsourcing platform [Prolific](https://www.prolific.ac/). However, there should be no restrictions on the way the experiment is run (via e.g. another crowdsourcing platform such as Amazon MTurk, or without any third-party platform at all).
+
+Sample experiments based on the framework originally developed by [Stanford CoCoLab](https://cocolab.stanford.edu/) are provided under `doc/sample-experiments`. The experiment `1c` is for Amazon MTurk and the experiment `italian_free_production` is for Prolific.ac. The entry point for the experiments is the file `norming.html`.
+
+The `deploy.sh` file prepares an experiment to be deployed to Gitlab Pages. You would still need to create a repository on Gitlab, init a git repo and push. An example of deployed experiment may be found at http://exprag-lab.gitlab.io/experiment-1c/ (Pushed to the repository "experiment-1c" under the user "exprag-lab").
+
+To write a new experiment, you may modify the files `norming.js` and `norming.html`. You may also include additional resources in the `experiment` folder, e.g. images to be used in the experiment. The file `css/local-style.css` can be used to define experiment-specific layouts.
+
+## Posting/Publishing experiments
+After having successfully deployed an experiment to Gitlab Pages and tested it, you may want to post it on crowdsourcing platforms. To post an experiment on MTurk, you may use the script [Submiterator](https://github.com/feste/Submiterator) together with [MTurk command line tools](https://requester.mturk.com/developer/tools/clt), or you may do so manually.
+
+To post an experiment on Prolific.ac, just follow the instructions given on their user interface and link to the experiment deployed on Gitlab Pages. Please remember to change the variable `exp.completionURL` in the file `norming.js` to match the Prolific completion URL for that particular experiment.
+
+# Additional Notes
+- The assumption on the server side when receiving the experiments is that each set of experiment results would have the same keys in the JSON file submitted and that each trial n an experiment would have the same keys in an object named `trials`. Violating this assumption might lead to failure in the CSV generation process. Look at `norming.js` files in the sample experiments for details.
+
+  If new experiments are created by modifying the existing experiment examples, they should work fine.
+
+- Please avoid using arrays to store the experiment results as much as possible. For example, if the participant is allowed to enter three answers on one trial, it would be better to store the three answers under three separate keys, instead of an array under one key.
 
   However, if an array is used regardless, its items will be separated by a `|` (pipe) in the retrieved CSV file.
 

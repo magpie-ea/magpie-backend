@@ -224,10 +224,10 @@ function draw(id, n_total, n_target, tcolor, ocolor) {
 
 function make_slides(f) {
   var slides = {};
-// 	preload(
+//   preload(
 // ["images/bathrobe.png","images/belt.jpg"],
 // {after: function() { console.log("everything's loaded now") }}
-// )  
+// )
 
   slides.i0 = slide({
     name: "i0",
@@ -308,7 +308,7 @@ function make_slides(f) {
         languages: $("#languages").val(),
         count: $("#count").val(),
         enjoyment: $("#enjoyment").val(),
-        asses: $('input[name="assess"]:checked').val(),
+        assess: $('input[name="assess"]:checked').length > 0 ? $('input[name="assess"]:checked').val() : "",
         age: $("#age").val(),
         gender: $("#gender").val(),
         education: $("#education").val(),
@@ -328,10 +328,33 @@ function make_slides(f) {
         "system": exp.system,
         "condition": exp.condition,
         "subject_information": exp.subj_data,
-        "time_in_minutes": (Date.now() - exp.startT) / 60000
+        "time_in_minutes": (Date.now() - exp.startT) / 60000,
+
+        // These three entries are needed for the custom backend.
+        "experiment_id": "1c-test",
+        "author": "JI Xiang",
+        "description": "Collects quantifiers for the woq project."
       };
+      // Set a timeout of 1 second. Presumably to let the participant read the information first before posting the JSON. I don't think we need such a high timeout in our case though.
       setTimeout(function () {
-        turk.submit(exp.data);
+        // turk.submit(exp.data);
+        $.ajax({
+          type: 'POST',
+          url: 'https://procomprag.herokuapp.com/api/submit_experiment',
+          // url: 'http://localhost:4000/api/submit_experiment',
+          crossDomain: true,
+          data: exp.data,
+          success: function(responseData, textStatus, jqXHR) {
+            console.log(textStatus)
+          },
+          error: function(responseData,textStatus, errorThrown) {
+            if (textStatus == "timeout") {
+              alert("The submission timed out.");
+            } else {
+              alert('Submission failed.');
+            }
+          }
+        })
       }, 1000);
     }
   });
@@ -380,7 +403,10 @@ function init() {
   }
 
   exp.all_stims = [];
+  // Make stims for all four numbers of total dots.
   var n_totals = [5, 10, 25, 100];
+  // For demonstration purpose I'll just make it faster.
+  // var n_totals = [5];
   for (var n = 0; n < n_totals.length; n++) {
     console.log(n_totals[n]);
     var intervals = getIntervals(n_totals[n]);
@@ -430,3 +456,4 @@ function init() {
 
   exp.go(); //show first slide
 }
+

@@ -6,6 +6,7 @@
     - [Retrieving experiment results](#retrieving-experiment-results)
 - [Experiment Documentation](#experiment-documentation)
     - [Deploying experiments](#deploying-experiments)
+    - [Deploying an experiment to Gitlab Pages](#deploying-an-experiment-to-gitlab-pages)
     - [Posting/Publishing experiments](#postingpublishing-experiments)
 - [Additional Notes](#additional-notes)
 
@@ -63,9 +64,28 @@ This program is intended to serve as the backend. An experiment is normally writ
 
 Sample experiments based on the framework originally developed by [Stanford CoCoLab](https://cocolab.stanford.edu/) are provided under `doc/sample-experiments`. The experiment `1c` is for Amazon MTurk and the experiment `italian_free_production` is for Prolific.ac. The entry point for the experiments is the file `norming.html`.
 
-The `deploy.sh` file prepares an experiment to be deployed to Gitlab Pages. You would still need to create a repository on Gitlab, init a git repo and push. An example of deployed experiment may be found at http://exprag-lab.gitlab.io/experiment-1c/ (Pushed to the repository "experiment-1c" under the user "exprag-lab").
+## Deploying an experiment to Gitlab Pages
+Currently all the experiments are deployed with Gitlab Pages, though other solutions might also be used, e.g. [Bitballon](https://www.bitballoon.com/).
 
-To write a new experiment, you may modify the files `norming.js` and `norming.html`. You may also include additional resources in the `experiment` folder, e.g. images to be used in the experiment. The file `css/local-style.css` can be used to define experiment-specific layouts.
+The script `deploy.sh` prepares an experiment to be deployed to Gitlab Pages. You would still need to create a repository on Gitlab, init a git repo and push.
+
+The following is a short description of the deployment process on Gitlab Pages:
+
+1. Run the `deploy.sh` file, e.g. `bash deploy.sh italian_free_production ~/experiments`. Please ensure that the file `gitlab-ci-template.yml` also exists in the same folder.
+2. Go to the folder containing the processed experiment: `cd ~/experiments/italian_free_production`
+3. In your browser, create a gitlab repository, e.g. `test`
+4. Initialize git repo: `git init`
+5. Add the repository as a remote: `git remote add origin git@gitlab.com:exprag-lab/test.git`
+6. Add all the files in the folder: `git add .`
+7. Commit: `git commit -m "Initial commit"`
+8. Push: `git push -u origin master`
+9. Check whether the deployment task was successfully run on Gitlab:
+    ![Pipeline](doc/Pipeline.png)
+10. The experiment should be available at user-name.gitlab.io/repo-name, e.g. https://exprag-lab.gitlab.io/test/
+
+An example of deployed experiment may be found at https://exprag-lab.gitlab.io/experiment-1c/ (Pushed to the repository "experiment-1c" under the user "exprag-lab").
+
+To write a new experiment, you may modify the files `norming.js` and `norming.html`. You may also include additional resources in the `experiment` folder, e.g. images to be used in the experiment. The file `css/local-style.css` can be used to define experiment-specific layouts. Due to differences in folder structures, the easiest way to update an experiment is to modify just the source files, and use the `deploy.sh` script to deploy the generated folder into actual Gitlab repos.
 
 ## Posting/Publishing experiments
 After having successfully deployed an experiment to Gitlab Pages and tested it, you may want to post it on crowdsourcing platforms. To post an experiment on MTurk, you may use the script [Submiterator](https://github.com/feste/Submiterator) together with [MTurk command line tools](https://requester.mturk.com/developer/tools/clt), or you may do so manually.

@@ -337,7 +337,6 @@ function make_slides(f) {
       };
       // Set a timeout of 1 second. Presumably to let the participant read the information first before posting the JSON. I don't think we need such a high timeout in our case though.
       setTimeout(function () {
-        // turk.submit(exp.data);
         $.ajax({
           type: 'POST',
           url: 'https://procomprag.herokuapp.com/api/submit_experiment',
@@ -346,13 +345,19 @@ function make_slides(f) {
           data: exp.data,
           success: function(responseData, textStatus, jqXHR) {
             console.log(textStatus)
+            // For now we still use the original turk.submit to inform MTurk that the experiment has finished.
+            turk.submit(exp.data);
           },
           error: function(responseData,textStatus, errorThrown) {
+            // There is this consideration about whether we should still allow such a submission that failed on our side to proceed on submitting to MTurk. Maybe we should after all.
             if (textStatus == "timeout") {
-              alert("The submission timed out.");
+              console.log("The submission timed out.");
             } else {
-              alert('Submission failed.');
+              console.log('Submission failed.');
             }
+            // For now we still use the original turk.submit to inform MTurk that the experiment has finished.
+            // Not notifying the user yet since it might cause confusion. The webapp should report errors.
+            turk.submit(exp.data);
           }
         })
       }, 1000);

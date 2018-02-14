@@ -1,0 +1,87 @@
+FORMAT: 1A 
+ 
+# woq 
+ 
+This is the API documentation for the server side web app. 
+ 
+For explanations about the format of `.apib` files please refer to the [tutorial](https://apiblueprint.org/documentation/tutorial.html). 
+ 
+ 
+## Results collection for one experiment [POST /api/submit_experiments] 
+
+To collect the results from one participant, the server expects a `POST` request to the endpoint `/api/submit_experiments`, e.g. `https://procomprag.herokuapp.com/api/submit_experiment` for the current deployment on Heroku.
+
+### The JSON object to be received
+
+Four keys are mandatory in the JSON object to be received:
++ trials (array[object]) - A collection of trial results. 
+  + trial (object) - The results from one trial. This object can contain arbitrary key-value pairs. But the keys should be consistent across all trials of the same experiment.
++ author (string): The author of the experiment
++ experiment_id (string): The identifier for the experiment.
++ description (string): The description of the experiment.
+
+There can be an arbitrary number of additional keys, e.g. `system`, `subject_information`, which the server will reproduce in each row of the output CSV file.
+
++ Request (application/json) 
+ 
+        { 
+        
+            "experiment_id": "italian-free-production-pilot",
+            "author": "JI Xiang",
+            "description": "Pilot experiment on Prolific collecting the most common Italian quantifiers",
+            
+            "trials": [{ 
+            "slide_number_in_experiment": 2, 
+            "rt": 4089, 
+            "response": ["test","test",""], 
+            "color_target": "black", 
+            "color_other": "white", 
+            "n_total": 10, 
+            "n_target": 7 
+            }, 
+ 
+            // Trials 2 to 25..., 
+ 
+            { 
+            "slide_number_in_experiment": 27, 
+            "rt": 1345, 
+            "response": ["asdf","",""], 
+            "color_target": "black", 
+            "color_other": "white", 
+            "n_total": 100, 
+            "n_target": 43 
+            }], 
+ 
+            "system": { 
+                "Browser": "Chrome", 
+                "OS": "Mac", 
+                "screenH": 800, 
+                "screenUH": [undefined], 
+                "screenW": 1280, 
+                "screenUW": [undefined] 
+            }, 
+ 
+            "subject_information": { 
+                "language": "English", 
+                "languages": "Chinese, Spanish", 
+                "count": "English", 
+                "enjoyment": "1", 
+                "asses": "No", 
+                "age": "24", 
+                "gender": "Male", 
+                "education": "3", 
+                "colorblind": "no", 
+                "comments": "Nice experiment" 
+            }, 
+ 
+            "time_in_minutes": 1.04165 
+        } 
+ 
+### Server response
+If the submission is successful and the experiment results are saved in the database: 
+ 
++ Response 201 (Created)
+
+If the submitted JSON lacks the required keys:
+
++ Response 422 (Unprocessable Entity)

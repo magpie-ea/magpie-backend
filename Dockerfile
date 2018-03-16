@@ -21,9 +21,10 @@ WORKDIR /app
 
 EXPOSE 4000
 
-# Do we really need to do this? Doesn't phx.server already do it anyways?
-RUN mix deps.get \
-&& npm install \
-&& node node_modules/brunch/bin/brunch build
+# This thing apparently isn't working. No idea why.
+#RUN mix deps.get \
+#&& mix deps.compile \
+#&& npm install \
+#&& node node_modules/brunch/bin/brunch build
 
 CMD ["mix", "phx.server"]

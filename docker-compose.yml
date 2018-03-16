@@ -19,8 +19,12 @@ services:
     image: postgres:10
     volumes:
       # Just preserve the postgresql data in the local folder.
-      - ./data:/var/lib/postgresql/data
+      - procomprag-volume:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: procomprag
       POSTGRES_USER: procomprag_dev
       POSTGRES_DB: procomprag_dev
+
+volumes:
+  procomprag-volume:
+    external: true

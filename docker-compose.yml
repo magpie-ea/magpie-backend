@@ -1,0 +1,26 @@
+# Note that this Docker configuration is exclusively for starting up the server on a local machine so that experiments can be run by researchers even without any internet connection. The production web app is NOT deployed via Docker for now.
+version: '3'
+services:
+  web:
+    # The path that contains Dockerfile
+    build: .
+    # Map the 4000 of localhost to the 4000 of the container
+    ports:
+      - "4000:4000"
+    environment:
+      - MIX_ENV=dev
+      - PORT=4000
+    volumes:
+      - .:/app
+    # Ensures that the postgres service is started first.
+    depends_on:
+      - db
+  db:
+    image: postgres:10
+    volumes:
+      # Just preserve the postgresql data in the local folder.
+      - ./data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: procomprag
+      POSTGRES_USER: procomprag_dev
+      POSTGRES_DB: procomprag_dev

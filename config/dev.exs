@@ -33,6 +33,17 @@ config :logger, :console, format: "[$level] $message\n"
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
 
+# These are only the default values for use with the local, offline deployment with Docker.
+config :procomprag, ProComPrag.Repo,
+       adapter: Ecto.Adapters.Postgres,
+       username: "procomprag_dev",
+       password: "procomprag",
+       hostname: "db",
+       database: "procomprag_dev",
+       pool_size: 10
+
 config :procomprag, :environment, :dev
 
-import_config "dev.secret.exs"
+# See https://github.com/phoenixframework/phoenix/issues/1199. Seems that it suffices in most cases to keep the passwords in this file.
+# import_config "dev.secret.exs"
+

@@ -23,7 +23,6 @@ EXPOSE 4000
 
 # Do we really need to do this? Doesn't phx.server already do it anyways?
 RUN mix deps.get \
-&& mix deps.update --all \
 && npm install \
 && node node_modules/brunch/bin/brunch build
 

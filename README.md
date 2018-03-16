@@ -108,3 +108,23 @@ To post an experiment on Prolific.ac, just follow the instructions given on thei
   - Docs: https://hexdocs.pm/phoenix
   - Mailing list: http://groups.google.com/group/phoenix-talk
   - Source: https://github.com/phoenixframework/phoenix
+  
+# Running the server locally
+Normally, running the server in a local development environment would involve installing and configuring Elixir and PostgreSQL. To simplify the development flow, Docker is used instead.
+
+1. Install Docker from https://docs.docker.com/install/. Ensure that it's running already.
+  Note: Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone git@github.com:ProComPrag/ProComPrag.git` or `git clone https://github.com/ProComPrag/ProComPrag.git`.
+3. Open the Terminal (or cmd.exe on Windows), cd into the git directory just cloned.
+4. For the first-time setup, run 
+  ```
+  docker-compose run --rm web mix deps.get \   
+   && npm install \
+   && node node_modules/brunch/bin/brunch build \
+   && mix ecto.migrate
+  ```
+  
+  Note: Linux users might need to manually change the permission of folders with `sudo chown -R $USER:$USER .`. See https://docs.docker.com/compose/rails/#more-compose-documentation.
+5. Run `docker-compose up` to launch the application every time you want to run the server.
+6. Visit localhost:4000 in your browser. You should see the server up and running.
+  Note: Windows 7 users who installed *Docker Machine* might need to find out the IP address used by `docker-machine` instead of `localhost`. See https://docs.docker.com/get-started/part2/#build-the-app for details.

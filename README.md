@@ -112,6 +112,8 @@ To post an experiment on Prolific.ac, just follow the instructions given on thei
 # Running the server locally
 Normally, running the server in a local development environment would involve installing and configuring Elixir and PostgreSQL. To simplify the development flow, [Docker](https://www.docker.com/) is used instead.
 
+Steps 1-4 require an internet connection. After they are finished, the server can be launched offline.
+
 1. Install Docker from https://docs.docker.com/install/. Ensure that it's running normally.
 
   Note: Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
@@ -127,6 +129,7 @@ Normally, running the server in a local development environment would involve in
   ```
 
   Note: Linux users might need to manually change the permission of folders with `sudo chown -R $USER:$USER .`. See https://docs.docker.com/compose/rails/#more-compose-documentation.
+
 5. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
 6. Visit localhost:4000 in your browser. You should see the server up and running.
   

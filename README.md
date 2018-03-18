@@ -56,6 +56,83 @@ Note that `crossDomain: true` is needed since the server domain will likely be d
 ## Retrieving experiment results
 Just visit the server (e.g. at https://procomprag.herokuapp.com), enter the `experiment_id` and `author` originally contained within the JSON file, and hit "Submit". Authentication mechanisms might be added later, if necessary.
 
+## Deploying the Server
+This section documents some methods one can use to deploy the server, for both online and offline usages.
+
+### Deployment with Heroku
+[Heroku](https://www.heroku.com/) makes it easy to deploy an web app without having to manually manage the infrastructure. It has a free starter tier, which should be sufficient for the purpose of running experiments.
+
+There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoenix framework on deploying on Heroku. The deployment procedure is based on this guide, but differs in some places.
+
+0. Ensure that you have [the Phoenix Framework installed](https://hexdocs.pm/phoenix/installation.html) and working. However, if you just want to deploy this server and do no development work/change on it at all, you may skip this step.
+
+1. Ensure that you have a [Heroku account](https://signup.heroku.com/) already, and have the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed and working on your computer.
+
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/ProComPrag/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
+
+3. `cd` into the project directory just cloned from your Terminal (or cmd.exe on Windows).
+
+4. Run `heroku create --buildpack "https://github.com/HashNuke/heroku-buildpack-elixir.git"`
+
+5. Run `heroku buildpacks:add https://github.com/gjaldon/heroku-buildpack-phoenix-static.git`
+
+  (N.B.: Although the command line output tells you to run `git push heroku master`, don't do it yet.)
+
+6. You may want to change the application name instead of using the default name. In that case, go to the Heroku Dashboard, find the newly created app, and edit the name in `Settings` panel.
+
+7. Edit line 17 of the file `config/prod.exs`. Replace the part `procomprag.herokuapp.com` after `host` with the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277.herokuapp.com`, or the app name that you set at step 6, e.g.  `appname.herokuapp.com`). You shouldn't need to modify anything else.
+
+8. Ensure that you're at the top-level project directory. Run
+```
+heroku addons:create heroku-postgresql:hobby-dev
+heroku config:set POOL_SIZE=18
+```
+
+9. Run `mix phx.gen.secret`. Then run `heroku config:set SECRET_KEY_BASE="OUTPUT"`, where `OUTPUT` should be the output of the `mix phx.gen.secret` step.
+
+  Note: If you don't have Phoenix framework installed on your computer, you may choose to use some other random generator for this task, which essentially asks for a random 64-character secret. On Mac and Linux, you may run `openssl rand -base64 64`. Or you may use an online password generator [such as the one offered by LastPass](https://lastpass.com/generatepassword.php).
+
+10. Run `git add config/prod.exs`, then `git commit -m "Set app URL"`.
+
+11. Run `git push heroku master`. This will push the repo to the git remote at Heroku (instead of the original remote at Github), and deploy the app.
+
+12. Run `heroku run "POOL_SIZE=2 mix ecto.migrate"`
+
+13. Now, `heroku open` should open the frontpage of the app.
+
+### Local (Offline) Deployment
+Normally, running the server in a local development environment would involve installing and configuring Elixir and PostgreSQL. To simplify the development flow, [Docker](https://www.docker.com/) is used instead.
+
+Steps 1-4 require an internet connection. After they are finished, the server can be launched offline.
+
+1. Install Docker from https://docs.docker.com/install/. Ensure that it's running normally.
+
+  Note: Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
+
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/ProComPrag/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
+
+3. Open the Terminal (or cmd.exe on Windows), `cd` into the project directory just cloned via git.
+
+4. For the first-time setup, run in the terminal
+  ```
+  docker volume create --name procomprag-volume -d local
+  docker-compose run --rm web mix deps.get
+  docker-compose run --rm web npm install
+  docker-compose run --rm web node node_modules/brunch/bin/brunch build
+  docker-compose run --rm web mix ecto.migrate
+  ```
+
+  Note: Linux users might need to manually change the permission of folders with `sudo chown -R $USER:$USER .`. See https://docs.docker.com/compose/rails/#more-compose-documentation.
+
+5. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
+
+6. Visit localhost:4000 in your browser. You should see the server up and running.
+
+  Note: Windows 7 users who installed *Docker Machine* might need to find out the IP address used by `docker-machine` instead of `localhost`. See https://docs.docker.com/get-started/part2/#build-the-app for details.
+
+Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/procomprag-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
+
+
 # Experiment Documentation
 This section documents the experiments themselves, which should work independent of the backend (e.g. this program or the default backend provided by Amazon MTurk) used to receive their results.
 
@@ -108,36 +185,3 @@ To post an experiment on Prolific.ac, just follow the instructions given on thei
   - Docs: https://hexdocs.pm/phoenix
   - Mailing list: http://groups.google.com/group/phoenix-talk
   - Source: https://github.com/phoenixframework/phoenix
-
-# Running the server locally
-Normally, running the server in a local development environment would involve installing and configuring Elixir and PostgreSQL. To simplify the development flow, [Docker](https://www.docker.com/) is used instead.
-
-Steps 1-4 require an internet connection. After they are finished, the server can be launched offline.
-
-1. Install Docker from https://docs.docker.com/install/. Ensure that it's running normally.
-
-  Note: Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
-
-2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/ProComPrag/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
-
-3. Open the Terminal (or cmd.exe on Windows), cd into the git directory just cloned.
-
-4. For the first-time setup, run in the terminal
-  ```
-  docker volume create --name procomprag-volume -d local
-  docker-compose run --rm web mix deps.get
-  docker-compose run --rm web npm install
-  docker-compose run --rm web node node_modules/brunch/bin/brunch build
-  docker-compose run --rm web mix ecto.migrate
-  ```
-
-  Note: Linux users might need to manually change the permission of folders with `sudo chown -R $USER:$USER .`. See https://docs.docker.com/compose/rails/#more-compose-documentation.
-
-5. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
-
-6. Visit localhost:4000 in your browser. You should see the server up and running.
-  
-  Note: Windows 7 users who installed *Docker Machine* might need to find out the IP address used by `docker-machine` instead of `localhost`. See https://docs.docker.com/get-started/part2/#build-the-app for details.
-
-Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/procomprag-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
-

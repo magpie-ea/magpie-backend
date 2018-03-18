@@ -13,14 +13,17 @@ use Mix.Config
 # which you typically run after static files are built.
 config :procomprag, ProComPrag.Endpoint,
   http: [port: {:system, "PORT"}],
+  # Replace the host with your own application URL!
   url: [scheme: "https", host: "procomprag.herokuapp.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json",
+  # Configuration for Heroku
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
 
 # Configure the database
 config :procomprag, ProComPrag.Repo,
   adapter: Ecto.Adapters.Postgres,
+  # These are configurations for Heroku.
   url: System.get_env("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
   ssl: true

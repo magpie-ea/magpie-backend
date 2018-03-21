@@ -12,19 +12,27 @@
 
 <!-- markdown-toc end -->
 
-This is a server backend to receive, store and retrieve online linguistics (pragmatics) experiments. This program was written for the research program [XPRAG.de](http://www.xprag.de/)
+This is a server backend to run simple psychological experiments in the browser and online. It
+helps receive, store and retrieve data. Work on this project was funded via the project
+[Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research
+Foundation (DFG Schwerpunktprogramm 1727).
 
-If you encountered any bugs during your experiments please [submit an issue](https://github.com/x-ji/ProComPrag/issues).
+If you encounter any bugs during your experiments please [submit an issue](https://github.com/x-ji/ProComPrag/issues).
 
-A live version of the server is deployed at https://procomprag.herokuapp.com
+A live version of the server is currently deployed at https://procomprag.herokuapp.com
 
 # Server Documentation
 This section documents the server program.
 
 ## Required values from experiment submissions
-The server expects to receive results from experiments which are structured similarly to the sample experiments provided under `doc/sample-experiments`, via HTTP POST. The experiment framework was developed by [Stanford CoCoLab](https://cocolab.stanford.edu/).
 
-In addition to the original structure, **three extra values are needed** in the `exp.data` object to be submitted, as shown on lines 386 to 388 in `/doc/sample_experiments/italian_free_production/experiment/js/norming.js`:
+The server expects to receive results from experiments which are structured in a particular
+way, usually stored in variable `exp.data`. For a minimal example, look at the
+[Minimal Template](https://github.com/ProComPrag/MinimalTemplate), together with the
+documentation of the front end. Data is submitted to the server via HTTP POST.
+
+Data in `exp.data` requires **three crucial values** for the data to be processable by the
+server:
 - `author`: The author of this experiment
 - `experiment_id`: The identifier (can be a string) that the author uses to name this experiment
 - `description`: A brief description of this experiment

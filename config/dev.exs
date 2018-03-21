@@ -38,7 +38,11 @@ config :procomprag, ProComPrag.Repo,
        adapter: Ecto.Adapters.Postgres,
        username: "procomprag_dev",
        password: "procomprag",
+       # Used for Docker deployment
        hostname: "db",
+       # Used for running it directly in command line with native Elixir installation.
+       # I should probably create a Docker-only environment name. Let me do it later then.
+       # hostname: "localhost",
        database: "procomprag_dev",
        pool_size: 10
 

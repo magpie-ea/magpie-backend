@@ -3,15 +3,17 @@ defmodule ProComPrag.ExperimentHelper do
   Stores the helper functions which help to store and retrieve the experiments.
   """
   def decompose_experiment(experiment) do
+    # `experiment` is a map, representing a row from the database.
+    # `results` is also a map, representing the JSON object received when the experiment was first submitted.
     results = experiment.results
     results_without_trials = Map.delete(results, "trials")
 
-    # The point is just to get rid of the intermediate numberings added when the data was saved to the DB.
+    # The purpose is just to get rid of the intermediate numberings added to the trials when the data was saved to the DB.
     trials = results["trials"]
 
     # I'm not sure if we need the extra metadata outside of the results. But I guess we can include it at the end of each row anyways. The `time_created` column could be useful.
     # The __meta__ I'm removing here is the "true" meta info from Elixir... So it's not needed in the final output.
-    meta_info = Map.drop(experiment, [:results, :__meta__, :id, :__struct__])
+    meta_info = Map.drop(experiment, [:results, :__meta__, :__struct__])
                 # Had to perform Enum.map step since there are two fields which are ~N sigils. These two are not really necessary. May well just drop them as well in the future?
                 |> Enum.map(fn({k, v}) -> {k, to_string(v)} end)
 
@@ -26,9 +28,10 @@ defmodule ProComPrag.ExperimentHelper do
     # Here the headers for the csv file will be recorded
     [experiment | _] = experiments
     keys = get_keys(experiment)
+    # The first element in the `outputs` list will be the keys, i.e. headers
     outputs = [keys]
 
-    # For each experiment, get the results and concatenate it to the list of outputs
+    # For each experiment, get the results and concatenate it to the `outputs` list.
     outputs = outputs ++ List.foldl(experiments, [], fn(exp, acc) -> acc ++ return_results_from_experiment(exp) end)
     outputs |> CSV.encode |> Enum.each(&IO.write(file, &1))
   end

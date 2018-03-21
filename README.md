@@ -111,15 +111,19 @@ heroku config:set POOL_SIZE=18
 ### Local (Offline) Deployment
 Normally, running the server in a local development environment would involve installing and configuring Elixir and PostgreSQL. To simplify the development flow, [Docker](https://www.docker.com/) is used instead.
 
-Steps 1-4 require an internet connection. After they are finished, the server can be launched offline.
+#### First-time installation
 
-1. Install Docker from https://docs.docker.com/install/. Ensure that it's running normally.
+The following steps require an internet connection. After they are finished, the server can be launched offline.
+
+1. Install Docker from https://docs.docker.com/install/. You may have to open the application
+   in order to let it install its command line tools. Ensure that it's running by typing
+   `docker version` in a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows).
 
   Note: Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
 
 2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/ProComPrag/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
 
-3. Open the Terminal (or cmd.exe on Windows), `cd` into the project directory just cloned via git.
+3. Open a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows), `cd` into the project directory just cloned via git.
 
 4. For the first-time setup, run in the terminal
   ```
@@ -132,9 +136,13 @@ Steps 1-4 require an internet connection. After they are finished, the server ca
 
   Note: Linux users might need to manually change the permission of folders with `sudo chown -R $USER:$USER .`. See https://docs.docker.com/compose/rails/#more-compose-documentation.
 
-5. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
+#### Actual deployment
 
-6. Visit localhost:4000 in your browser. You should see the server up and running.
+After installation, you can launch a local server instance which sets up the experiment in your browser and stores the results.
+
+1. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
+
+2. Visit localhost:4000 in your browser. You should see the server up and running.
 
   Note: Windows 7 users who installed *Docker Machine* might need to find out the IP address used by `docker-machine` instead of `localhost`. See https://docs.docker.com/get-started/part2/#build-the-app for details.
 

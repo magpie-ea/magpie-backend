@@ -119,7 +119,9 @@ The following steps require an internet connection. After they are finished, the
    in order to let it install its command line tools. Ensure that it's running by typing
    `docker version` in a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows).
 
-  Note: Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
+  Note: 
+  - Although the Docker app on Windows and Mac asks for login credentials to Docker Hub, they are not needed for local deployment . You can proceed without creating any Docker account/logging in.
+  - Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
 
 2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/ProComPrag/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
 
@@ -127,15 +129,10 @@ The following steps require an internet connection. After they are finished, the
 
 4. For the first-time setup, run in the terminal
   ```
-  docker volume create --name procomprag-volume -d local
-  docker-compose run --rm web mix deps.get
-  docker-compose run --rm web npm install
-  docker-compose run --rm web node node_modules/brunch/bin/brunch build
-  docker-compose run --rm web mix ecto.migrate
+  docker volume create --name procomprag-app-volume -d local
+  docker volume create --name procomprag-db-volume -d local
+  docker-compose run --rm web bash -c "mix deps.get && npm install && node node_modules/brunch/bin/brunch build && mix ecto.migrate"
   ```
-
-  Note: Linux users might need to manually change the permission of folders with `sudo chown -R $USER:$USER .`. See https://docs.docker.com/compose/rails/#more-compose-documentation.
-
 #### Actual deployment
 
 After installation, you can launch a local server instance which sets up the experiment in your browser and stores the results.

@@ -4,7 +4,6 @@ defmodule ProComPrag.ExperimentHelper do
   """
   def decompose_experiment(experiment) do
     # `experiment` is a map, representing a row from the database.
-    # `results` is also a map, representing the JSON object received when the experiment was first submitted.
     results = experiment.results
     results_without_trials = Map.delete(results, "trials")
 
@@ -14,7 +13,7 @@ defmodule ProComPrag.ExperimentHelper do
     # I'm not sure if we need the extra metadata outside of the results. But I guess we can include it at the end of each row anyways. The `time_created` column could be useful.
     # The __meta__ I'm removing here is the "true" meta info from Elixir... So it's not needed in the final output.
     meta_info = Map.drop(experiment, [:results, :__meta__, :__struct__])
-                # Had to perform Enum.map step since there are two fields which are ~N sigils. These two are not really necessary. May well just drop them as well in the future?
+                # Had to perform Enum.map step since there are two fields (insertion time and update time) which are ~N sigils. These two are not really necessary. May well just drop them as well in the future?
                 |> Enum.map(fn({k, v}) -> {k, to_string(v)} end)
 
     %{results_without_trials: results_without_trials, trials: trials, meta_info: meta_info}
@@ -57,7 +56,7 @@ defmodule ProComPrag.ExperimentHelper do
                      |> Enum.map(fn({k, _v}) -> k end)
 
     # OK, now I have all the keys. Let me just put them into one list as the first entry.
-    keys = trial_keys ++ other_info_keys ++ meta_info_keys
+    keys = meta_info_keys ++ trial_keys ++ other_info_keys
     keys
   end
 
@@ -85,7 +84,9 @@ defmodule ProComPrag.ExperimentHelper do
                    |> Enum.map(fn(v) ->
         if is_list(v) do Enum.join(v, "|") else v end
       end)
-      trial = trial_info ++ other_info ++ meta_info
+
+      # Here we combine every information into one row.
+      trial = meta_info ++ trial_info ++ other_info
       trial
     end)
 

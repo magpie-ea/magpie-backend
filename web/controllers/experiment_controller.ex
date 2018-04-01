@@ -9,9 +9,10 @@ defmodule ProComPrag.ExperimentController do
   import ProComPrag.ExperimentHelper
 
   def create(conn, raw_params) do
-    # I'll just manually modify the params a bit before passing it into the changeset function of the model layer, apparently.
+    # First modify the params a bit before passing it into the changeset function of the model layer.
 
-    # I can get rid of the meta information here actually. Why keep them in the final JSON anyways?
+    # The meta information is to be inserted into the DB as standalone keys.
+    # Therefore they are excluded from the JSON file here.
     params_without_meta = Map.drop(raw_params, ["author", "experiment_id", "description"])
 
     # No need to worry about error handling here since if any of the fields is missing, it will become `nil` only. The validation defined in the model layer will notice the error, and later :unprocessable_entity will be sent.
@@ -35,37 +36,41 @@ defmodule ProComPrag.ExperimentController do
   end
 
   def retrieve(conn, experiment_params) do
+    # These two are used as keys to query the DB.
     experiment_id = experiment_params["experiment"]["experiment_id"]
     author = experiment_params["experiment"]["author"]
     query = from e in ProComPrag.Experiment,
                  where: e.experiment_id == ^experiment_id,
                  where: e.author == ^author
 
-    # This should return a list
+    # This should return a list of submissions (results)
     experiments = Repo.all(query)
 
     case experiments do
-      # In this case this thing is just empty. I'll render error message later.
+      # In this case nothing could be found in the DB.
       [] ->
         conn
+        # Render the error message.
         |> put_flash(:error, "The experiment with the given id and author cannot be found!")
         |> redirect(to: experiment_path(conn, :query))
 
-      # Should give each result a different name.
       _ ->
+        # Name the CSV file to be returned.
         orig_name = "results_" <> experiment_id <> "_" <> author <> ".csv"
         file_path =
+        # On Heroku the app is in the /app/ folder.
         if Application.get_env(:my_app, :environment) == :prod do
           "/app/results/" <> orig_name
         else
           "results/" <> orig_name
         end
         file = File.open!(file_path, [:write, :utf8])
+        # This method actually processes the results retrieved and write them to the CSV file.
         write_experiments(file, experiments)
         File.close(file)
 
         conn
-        # The flash doesn't work very well since the fresh wasn't refreshed anyways.
+        # The flash doesn't work very well since the page wasn't refreshed anyways.
         # |> put_flash(:info, "The experiment file is retrieved successfully.")
         |> send_download({:file, file_path})
     end

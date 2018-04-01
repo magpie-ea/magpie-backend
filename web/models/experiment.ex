@@ -4,6 +4,9 @@ defmodule ProComPrag.Experiment do
   use ProComPrag.Web, :model
 
   schema "experiments" do
+    # This is a map, representing the whole JSON object received when the experiment was first submitted.
+    # Maybe the name `data` would be more appropriate. But anyways. Don't want to have troubles with migrations so let's just keep it for now
+    # The map type will already be JSONB in Postgres by default. It will be simply TEXT in other DBs.
     field :results, :map
     # Not to be confused with the `id` used by the DB to index entries, thus the prefix.
     field :experiment_id, :string

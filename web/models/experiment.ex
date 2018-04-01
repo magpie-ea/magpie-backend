@@ -16,13 +16,13 @@ defmodule ProComPrag.Experiment do
     timestamps()
   end
 
-  # Used for param validation etc. Now let's skip this step first
   def changeset(model, params \\ %{}) do
     model
     # `cast/3` ensures that only the allowed parameters are let through, and that the input is safe.
     |> cast(params, [:results, :experiment_id, :author, :description])
     # Validate the required parameters are all there. In our case all parameters are required.
     |> validate_required([:results, :experiment_id, :author, :description])
+    |> validate_trials_exists()
   end
 
   def construct_experiment_query(experiment_id, author) do
@@ -31,4 +31,16 @@ defmodule ProComPrag.Experiment do
     where: e.author == ^author
   end
 
+  # Verify that the trials key exists in the submitted JSON.
+  # I should have made it a DB field from the very beginning... Now that the system is already deployed, it would be
+  # too much of a hassle to migrate the existing data. So let's just do this instead to ensure backwards
+  # compatability. Fundamentally there isn't that much of a difference.
+  defp validate_trials_exists(changeset) do
+    results = get_field(changeset, :results)
+    if Map.has_key?(results, "trials") do
+      changeset
+    else
+      add_error(changeset, :map_field, "Missing trials key")
+    end
+  end
 end

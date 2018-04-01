@@ -9,8 +9,6 @@ defmodule ProComPrag.ExperimentController do
   import ProComPrag.ExperimentHelper
 
   def create(conn, raw_params) do
-    # First modify the params a bit before passing it into the changeset function of the model layer.
-
     # The meta information is to be inserted into the DB as standalone keys.
     # Therefore they are excluded from the JSON file here.
     params_without_meta = Map.drop(raw_params, ["author", "experiment_id", "description"])
@@ -19,16 +17,6 @@ defmodule ProComPrag.ExperimentController do
     params = %{author: raw_params["author"], experiment_id: raw_params["experiment_id"], description: raw_params["description"], results: params_without_meta}
 
     changeset = Experiment.changeset(%Experiment{}, params)
-
-    # Well let me just manually add error I guess. I haven't figured out how to perform Ecto validation within the model.
-    changeset = if Map.has_key?(raw_params, "trials") do
-      changeset
-      else
-      changeset
-      |> Ecto.Changeset.add_error(changeset, :base, "no trials key")
-      # Isn't there a method to do this? Anyways.
-      |> Map.put(:valid?, false)
-    end
 
     case Repo.insert(changeset) do
       {:ok, _} ->

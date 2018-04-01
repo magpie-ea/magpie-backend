@@ -11,7 +11,7 @@ services:
       - MIX_ENV=dev
       - PORT=4000
     volumes:
-      - .:/app
+      - procomprag-app-volume:/app
     # Ensures that the postgres service is started first.
     depends_on:
       - db
@@ -19,12 +19,14 @@ services:
     image: postgres:10
     volumes:
       # Just preserve the postgresql data in the local folder.
-      - procomprag-volume:/var/lib/postgresql/data
+      - procomprag-db-volume:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: procomprag
       POSTGRES_USER: procomprag_dev
       POSTGRES_DB: procomprag_dev
 
 volumes:
-  procomprag-volume:
+  procomprag-app-volume:
+    external: true
+  procomprag-db-volume:
     external: true

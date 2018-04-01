@@ -31,11 +31,100 @@ way, usually stored in variable `exp.data`. For a minimal example, look at the
 [Minimal Template](https://github.com/ProComPrag/MinimalTemplate), together with the
 documentation of the front end. Data is submitted to the server via HTTP POST.
 
-Data in `exp.data` requires **three crucial values** for the data to be processable by the
+Data in `exp.data` requires **four crucial values** for the data to be processable by the
 server:
 - `author`: The author of this experiment
 - `experiment_id`: The identifier (can be a string) that the author uses to name this experiment
 - `description`: A brief description of this experiment
+- `trials`: A JSON array containing trial objects. The keys contained in each trial object should be the same.
+
+Additionally, an optional array named `trial_keys_order`, which specifies the order in which the trial data should be
+ printed in the CSV output, can be included. If this array is not included, the trial data will be printed in alphabetical order, which might not be ideal.
+
+Any additional keys in the `exp.data` object will be printed in the CSV file output as well. However, note that the 
+basis for CSV generation will be the `trials` array, i.e. each trial within the `trials` array will result in one row in the final CSV file.
+
+An example object from the [Minimal Template](https://github.com/ProComPrag/MinimalTemplate) is shown below:
+```json
+{
+   "author":"Random Jane",
+   "experiment_id":"MinimalTemplate",
+   "description":"A minimal template for a browser-based experiment which can be deployed in several ways",
+   "startDateTime":"Sun Apr 01 2018 21:31:56 GMT+0200 (CEST)",
+   "total_exp_time_minutes":0.1122,
+   "trial_keys_order": [
+     "trial_type",
+     "trial_number",
+     "RT",
+     "age",
+     "option1",
+     "option2",
+     "response",
+     "languages",
+     "education",
+     "gender",
+     "comments"
+   ],
+   "trial_data":[
+      {
+         "trial_type":"practice",
+         "trial_number":1,
+         "question":"Where is your head?",
+         "option1":"here",
+         "option2":"there",
+         "response":"here",
+         "RT":898,
+         "age":"",
+         "gender":"",
+         "education":"",
+         "languages":"",
+         "comments":""
+      },
+      {
+         "trial_type":"practice",
+         "trial_number":2,
+         "question":"What's on the bread?",
+         "option1":"jam",
+         "option2":"ham",
+         "response":"jam",
+         "RT":1048,
+         "age":"",
+         "gender":"",
+         "education":"",
+         "languages":"",
+         "comments":""
+      },
+      {
+         "trial_type":"main",
+         "trial_number":1,
+         "question":"How are you today?",
+         "option1":"fine",
+         "option2":"great",
+         "response":"fine",
+         "RT":724,
+         "age":"",
+         "gender":"",
+         "education":"",
+         "languages":"",
+         "comments":""
+      },
+      {
+         "trial_type":"main",
+         "trial_number":2,
+         "question":"What is the weather like?",
+         "option1":"shiny",
+         "option2":"rainbow",
+         "response":"shiny",
+         "RT":384,
+         "age":"",
+         "gender":"",
+         "education":"",
+         "languages":"",
+         "comments":""
+      }
+   ]
+}
+```
 
 When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk/using the original `turk.submit(exp.data)`, please POST the JSON to the following web address: `{SERVER_ADDRESS}/api/submit_experiment`, e.g. https://procomprag.herokuapp.com/api/submit_experiment
 
@@ -57,7 +146,7 @@ $.ajax({
 })
 ```
 
-The reason for error would most likely be missing mandatory fields (i.e. `author`, `experiment_id`, `description`) in the JSON file.
+The reason for error would most likely be missing mandatory fields (i.e. `author`, `experiment_id`, `description`, `trials`) in the JSON file.
 
 Note that `crossDomain: true` is needed since the server domain will likely be different the domain where the experiment is presented to the participant.
 

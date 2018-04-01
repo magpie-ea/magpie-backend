@@ -4,19 +4,35 @@ defmodule ProComPrag.ExperimentHelper do
   """
   def decompose_experiment(experiment) do
     # `experiment` is a map, representing a row from the database.
+    # `results` is the entire JSON data submitted by the frontend.
     results = experiment.results
-    results_without_trials = Map.delete(results, "trials")
+    results_without_trials = results
+                             # Also need to drop trial_keys_order, since we obviously don't need to print it out.
+                             |> Map.drop(["trials", "trial_keys_order"])
+                              # Record the flattened keys, as is done originally by MTurk.
+                             |> Iteraptor.to_flatmap
 
-    # The purpose is just to get rid of the intermediate numberings added to the trials when the data was saved to the DB.
+    # This is actually a map with numbers as keys. I think the reason is that each trial is an object in itself,
+    # instead of being a simple value. Therefore it cannot be converted to a list in Elixir.
+    # However this does seem to lead to some problems in the ordering of the trials for some reason. Let me explore this.
     trials = results["trials"]
+
+    trial_keys_order =
+    if Map.has_key?(results, "trial_keys_order") do
+      results["trial_keys_order"]
+    else
+      nil
+    end
 
     # I'm not sure if we need the extra metadata outside of the results. But I guess we can include it at the end of each row anyways. The `time_created` column could be useful.
     # The __meta__ I'm removing here is the "true" meta info from Elixir... So it's not needed in the final output.
-    meta_info = Map.drop(experiment, [:results, :__meta__, :__struct__])
+    meta_info = experiment
+                |> Map.drop([:results, :__meta__, :__struct__])
                 # Had to perform Enum.map step since there are two fields (insertion time and update time) which are ~N sigils. These two are not really necessary. May well just drop them as well in the future?
                 |> Enum.map(fn({k, v}) -> {k, to_string(v)} end)
 
-    %{results_without_trials: results_without_trials, trials: trials, meta_info: meta_info}
+    # These keys are atoms by default, not strings
+    %{results_without_trials: results_without_trials, trials: trials, meta_info: meta_info, trial_keys_order: trial_keys_order}
   end
 
   # Note that the default way Amazon MTurk writes an experiment is to simply flatten the structure, and then take each key as a column header.
@@ -28,10 +44,10 @@ defmodule ProComPrag.ExperimentHelper do
     [experiment | _] = experiments
     keys = get_keys(experiment)
     # The first element in the `outputs` list will be the keys, i.e. headers
-    outputs = [keys]
+    outputs = [keys[:meta_info_keys] ++ keys[:trial_keys] ++ keys[:other_info_keys]]
 
     # For each experiment, get the results and concatenate it to the `outputs` list.
-    outputs = outputs ++ List.foldl(experiments, [], fn(exp, acc) -> acc ++ return_results_from_experiment(exp) end)
+    outputs = outputs ++ List.foldl(experiments, [], fn(exp, acc) -> acc ++ return_results_from_experiment(exp, keys) end)
     outputs |> CSV.encode |> Enum.each(&IO.write(file, &1))
   end
 
@@ -41,55 +57,61 @@ defmodule ProComPrag.ExperimentHelper do
     # The point of processing trials separately is to get rid of the intermediate numberings added when the data was saved to the DB, since we want each trial to be presented as an individual row eventually.
     # Assumption: Each trial should have the same keys recorded.
     trial = decomposed_experiment[:trials]["0"]
-    trial_keys = trial
-                 # Actually I might not even need this prefixing. Could ask Michael for input on this.
-                 # |> Enum.map(fn(k) -> "trial." <> k end)
-                 |> Enum.map(fn({k, _v}) -> k end)
 
-    # Record the flattened keys, as is done originally by MTurk.
+    # If the user didn't supply the desired order then just proceed like the other two set of keys. Otherwise use the supplied order instead.
+    trial_keys = case decomposed_experiment[:trial_keys_order] do
+      nil ->
+        # Actually I might not even need this prefixing. Could ask Michael for input on this.
+        # |> Enum.map(fn({k, _v}) -> "trial." <> k end)
+        trial
+        |> Enum.map(fn({k, _v}) -> k end)
+      # This was originally a JS array. So it corresponds to an Elixir list... Good to know.
+      order -> order
+    end
+
     other_info_keys = decomposed_experiment[:results_without_trials]
-                      |> Iteraptor.to_flatmap
                       |> Enum.map(fn({k, _v}) -> k end)
 
-    # I'm not sure if we need the extra metadata outside of the results. Maybe for completeness's sake I'll still write them out first. This may also include information such as participant_id etc.
     meta_info_keys = decomposed_experiment[:meta_info]
                      |> Enum.map(fn({k, _v}) -> k end)
 
-    # OK, now I have all the keys. Let me just put them into one list as the first entry.
-    keys = meta_info_keys ++ trial_keys ++ other_info_keys
+    # Now the keys are returned as a map to be used for return_results_from_experiment.
+    # They themselves are ordered lists.
+    keys = %{meta_info_keys: meta_info_keys, trial_keys: trial_keys, other_info_keys: other_info_keys}
     keys
   end
 
   # I'm not sure if I'll manually convert the list or whether the library already handles it. In any case this will be a bad habit?
-  def return_results_from_experiment(experiment) do
+  def return_results_from_experiment(experiment, keys) do
     decomposed_experiment = decompose_experiment(experiment)
 
-    # TODO: I can probably refactor the code a bit further (the only difference with the get_keys function is that the values are extracted instead of the keys). But let me do it later then.
-    other_info = decomposed_experiment[:results_without_trials]
-                 |> Iteraptor.to_flatmap
-                 |> Enum.map(fn({_k, v}) -> v end)
+    other_info = keys[:other_info_keys]
+                 |> Enum.map(fn(k) -> decomposed_experiment[:results_without_trials][k] end)
                  |> Enum.map(fn(v) ->
-      if is_list(v) do Enum.join(v, "|") else v end
-    end)
+                                   if is_list(v) do Enum.join(v, "|") else v end
+                    end)
 
-    meta_info = decomposed_experiment[:meta_info]
-                |> Enum.map(fn({_k, v}) -> v end)
-                |> Enum.map(fn(v) ->
-      if is_list(v) do Enum.join(v, "|") else v end
-    end)
+    meta_info = keys[:meta_info_keys]
+                 |> Enum.map(fn(k) -> decomposed_experiment[:meta_info][k] end)
+                 |> Enum.map(fn(v) ->
+                                    if is_list(v) do Enum.join(v, "|") else v end
+                    end)
 
+    # Go through all the trials
     trials = Enum.map(decomposed_experiment[:trials], fn({_k, trial}) ->
-      trial_info = trial
-                   |> Enum.map(fn({_k, v}) -> v end)
+      # For each trial, use the order specified by trial_keys
+      trial_info = keys[:trial_keys]
+                   |> Enum.map(fn(k) -> trial[k] end)
                    |> Enum.map(fn(v) ->
-        if is_list(v) do Enum.join(v, "|") else v end
-      end)
+                                      if is_list(v) do Enum.join(v, "|") else v end
+                      end)
 
       # Here we combine every information into one row.
       trial = meta_info ++ trial_info ++ other_info
       trial
     end)
 
+    # Here we fold every row together into a huge list.
     results = List.foldl(trials, [], fn(trial, results) -> results ++ [trial] end)
     results
   end

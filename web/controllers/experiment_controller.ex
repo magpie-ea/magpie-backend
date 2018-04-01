@@ -19,6 +19,17 @@ defmodule ProComPrag.ExperimentController do
     params = %{author: raw_params["author"], experiment_id: raw_params["experiment_id"], description: raw_params["description"], results: params_without_meta}
 
     changeset = Experiment.changeset(%Experiment{}, params)
+
+    # Well let me just manually add error I guess. I haven't figured out how to perform Ecto validation within the model.
+    changeset = if Map.has_key?(raw_params, "trials") do
+      changeset
+      else
+      changeset
+      |> Ecto.Changeset.add_error(changeset, :base, "no trials key")
+      # Isn't there a method to do this? Anyways.
+      |> Map.put(:valid?, false)
+    end
+
     case Repo.insert(changeset) do
       {:ok, _} ->
         # Currently I don't think there's a need to send the created resource back. Just acknowledge that the information is received.

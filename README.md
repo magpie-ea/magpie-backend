@@ -126,9 +126,13 @@ An example object from the [Minimal Template](https://github.com/ProComPrag/Mini
 }
 ```
 
-When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk/using the original `turk.submit(exp.data)`, please POST the JSON to the following web address: `{SERVER_ADDRESS}/api/submit_experiment`, e.g. https://procomprag.herokuapp.com/api/submit_experiment
+When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk/using the 
+original `turk.submit(exp.data)`, please POST the JSON to the following web address: `{SERVER_ADDRESS}/api/submit_experiment`, e.g. https://procomprag.herokuapp.com/api/submit_experiment.
 
-The following is an example for the `POST` call.
+Note that to [POST a JSON object correctly](https://stackoverflow.com/questions/12693947/jquery-ajax-how-to-send-json-instead-of-querystring),
+ one needs to specify the `Content-Type` header as `application/json`, and use `JSON.stringify` to encode the data first.
+
+The following is an example for the `POST` call using jQuery.
 
 ```javascript
 $.ajax({
@@ -136,7 +140,8 @@ $.ajax({
   url: 'https://procomprag.herokuapp.com/api/submit_experiment',
   // url: 'http://localhost:4000/api/submit_experiment',
   crossDomain: true,
-  data: exp.data,
+	contentType: 'application/json',
+	data: JSON.stringify(exp.data),
   success: function(responseData, textStatus, jqXHR) {
     console.log(textStatus)
   },

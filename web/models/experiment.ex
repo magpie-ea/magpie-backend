@@ -55,9 +55,15 @@ defmodule ProComPrag.Experiment do
     case results["trials"] do
       nil -> changeset
       trials ->
-        new_trials = ProComPrag.ExperimentHelper.convert_trials(trials)
-        new_results = Map.put(results, "trials", new_trials)
-        put_change(changeset, :results, new_results)
+        # This only happens when the data is submitted incorrectly, i.e. without specifying application/json as the
+        # Content-Type in the request header.
+        if is_map(trials) do
+          new_trials = ProComPrag.ExperimentHelper.convert_trials(trials)
+          new_results = Map.put(results, "trials", new_trials)
+          put_change(changeset, :results, new_results)
+        else
+          changeset
+        end
     end
   end
 end

@@ -16,7 +16,7 @@ defmodule ProComPrag.ExperimentController do
     # No need to worry about error handling here since if any of the fields is missing, it will become `nil` only. The validation defined in the model layer will notice the error, and later :unprocessable_entity will be sent.
     params = %{author: raw_params["author"], experiment_id: raw_params["experiment_id"], description: raw_params["description"], results: params_without_meta}
 
-    changeset = Experiment.changeset(%Experiment{}, params)
+    changeset = Experiment.construct_changeset(%Experiment{}, params) |> Experiment.transform_changeset
 
     case Repo.insert(changeset) do
       {:ok, _} ->
@@ -30,7 +30,7 @@ defmodule ProComPrag.ExperimentController do
   end
 
   def query(conn, _params) do
-    changeset = Experiment.changeset(%Experiment{})
+    changeset = Experiment.construct_changeset(%Experiment{})
     render conn, "query.html", changeset: changeset
   end
 

@@ -2,7 +2,23 @@ defmodule ProComPrag.ExperimentHelper do
   @moduledoc """
   Stores the helper functions which help to store and retrieve the experiments.
   """
-  def decompose_experiment(experiment) do
+  # Note that the default way Amazon MTurk writes an experiment is to simply flatten the structure, and then take each key as a column header.
+  # We might be able to do something similar here.
+  # But then, of course, the caveat is that for each set of *experiments*, we should only write the column headers once.
+  # !!Assumption!!: The content structure of the JSONs for each *set of experiments* should be exactly the same, of course.
+  def write_experiments(file, experiments) do
+    # Here the headers for the csv file will be recorded
+    [experiment | _] = experiments
+    keys = get_keys(experiment)
+    # The first element in the `outputs` list will be the keys, i.e. headers
+    outputs = [keys[:meta_info_keys] ++ keys[:trial_keys] ++ keys[:other_info_keys]]
+
+    # For each experiment, get the results and concatenate it to the `outputs` list.
+    outputs = outputs ++ List.foldl(experiments, [], fn(exp, acc) -> acc ++ return_results_from_experiment(exp, keys) end)
+    outputs |> CSV.encode |> Enum.each(&IO.write(file, &1))
+  end
+
+  defp decompose_experiment(experiment) do
     # `experiment` is a map, representing a row from the database.
     # `results` is the entire JSON data submitted by the frontend.
     results = experiment.results
@@ -12,10 +28,13 @@ defmodule ProComPrag.ExperimentHelper do
                               # Record the flattened keys, as is done originally by MTurk.
                              |> Iteraptor.to_flatmap
 
-    # This is actually a map with numbers as keys. I think the reason is that each trial is an object in itself,
-    # instead of being a simple value. Therefore it cannot be converted to a list in Elixir.
-    # However this does seem to lead to some problems in the ordering of the trials for some reason. Let me explore this.
-    trials = results["trials"]
+    # If it's old data, we want to convert them first. If it's new data, it should have already been converted when
+    # being inserted, meaning we can use it as it is.
+    trials = if (is_list(results["trials"])) do
+      results["trials"]
+    else
+      convert_trials(results["trials"])
+    end
 
     trial_keys_order =
     if Map.has_key?(results, "trial_keys_order") do
@@ -35,28 +54,12 @@ defmodule ProComPrag.ExperimentHelper do
     %{results_without_trials: results_without_trials, trials: trials, meta_info: meta_info, trial_keys_order: trial_keys_order}
   end
 
-  # Note that the default way Amazon MTurk writes an experiment is to simply flatten the structure, and then take each key as a column header.
-  # We might be able to do something similar here.
-  # But then, of course, the caveat is that for each set of *experiments*, we should only write the column headers once.
-  # !!Assumption!!: The content structure of the JSONs for each *set of experiments* should be exactly the same, of course.
-  def write_experiments(file, experiments) do
-    # Here the headers for the csv file will be recorded
-    [experiment | _] = experiments
-    keys = get_keys(experiment)
-    # The first element in the `outputs` list will be the keys, i.e. headers
-    outputs = [keys[:meta_info_keys] ++ keys[:trial_keys] ++ keys[:other_info_keys]]
-
-    # For each experiment, get the results and concatenate it to the `outputs` list.
-    outputs = outputs ++ List.foldl(experiments, [], fn(exp, acc) -> acc ++ return_results_from_experiment(exp, keys) end)
-    outputs |> CSV.encode |> Enum.each(&IO.write(file, &1))
-  end
-
-  def get_keys(experiment) do
+  defp get_keys(experiment) do
     decomposed_experiment = decompose_experiment(experiment)
 
     # The point of processing trials separately is to get rid of the intermediate numberings added when the data was saved to the DB, since we want each trial to be presented as an individual row eventually.
     # Assumption: Each trial should have the same keys recorded.
-    trial = decomposed_experiment[:trials]["0"]
+    trial = Kernel.hd decomposed_experiment[:trials]
 
     # If the user didn't supply the desired order then just proceed like the other two set of keys. Otherwise use the supplied order instead.
     trial_keys = case decomposed_experiment[:trial_keys_order] do
@@ -82,7 +85,7 @@ defmodule ProComPrag.ExperimentHelper do
   end
 
   # I'm not sure if I'll manually convert the list or whether the library already handles it. In any case this will be a bad habit?
-  def return_results_from_experiment(experiment, keys) do
+  defp return_results_from_experiment(experiment, keys) do
     decomposed_experiment = decompose_experiment(experiment)
 
     other_info = keys[:other_info_keys]
@@ -98,7 +101,7 @@ defmodule ProComPrag.ExperimentHelper do
                     end)
 
     # Go through all the trials
-    trials = Enum.map(decomposed_experiment[:trials], fn({_k, trial}) ->
+    trials = Enum.map(decomposed_experiment[:trials], fn(trial) ->
       # For each trial, use the order specified by trial_keys
       trial_info = keys[:trial_keys]
                    |> Enum.map(fn(k) -> trial[k] end)
@@ -115,4 +118,17 @@ defmodule ProComPrag.ExperimentHelper do
     results = List.foldl(trials, [], fn(trial, results) -> results ++ [trial] end)
     results
   end
+
+  # The trials (JSON array of objects) by default are somehow converted to maps. I need to get them back to lists with correct orders.
+  def convert_trials(trials) do
+    case trials do
+      trials -> trials
+                |> Enum.map(fn ({k, v}) -> {Integer.parse(k), v} end)
+                |> Enum.to_list
+                |> Enum.sort(fn ({key1, value1}, {key2, value2}) -> key1 < key2 end)
+                |> Enum.map(fn ({k, v}) -> v end)
+    end
+  end
+
+
 end

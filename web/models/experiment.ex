@@ -5,7 +5,8 @@ defmodule ProComPrag.Experiment do
 
   schema "experiments" do
     # This is a map, representing the whole JSON object received when the experiment was first submitted.
-    # Maybe the name `data` would be more appropriate. But anyways. Don't want to have troubles with migrations so let's just keep it for now
+    # Maybe the name `data` would be more appropriate. But anyways. Don't want to have troubles with migrations so
+    # let's just keep it for now.
     # The map type will already be JSONB in Postgres by default. It will be simply TEXT in other DBs.
     field :results, :map
     # Not to be confused with the `id` used by the DB to index entries, thus the prefix.
@@ -16,13 +17,18 @@ defmodule ProComPrag.Experiment do
     timestamps()
   end
 
-  def changeset(model, params \\ %{}) do
+  def construct_changeset(model, params \\ %{}) do
     model
     # `cast/3` ensures that only the allowed parameters are let through, and that the input is safe.
     |> cast(params, [:results, :experiment_id, :author, :description])
-    # Validate the required parameters are all there. In our case all parameters are required.
+      # Validate the required parameters are all there. In our case all parameters are required.
     |> validate_required([:results, :experiment_id, :author, :description])
+  end
+
+  def transform_changeset(changeset) do
+    changeset
     |> validate_trials_exists()
+    |> transform_trials()
   end
 
   def construct_experiment_query(experiment_id, author) do
@@ -41,6 +47,17 @@ defmodule ProComPrag.Experiment do
       changeset
     else
       add_error(changeset, :map_field, "Missing trials key")
+    end
+  end
+
+  defp transform_trials(changeset) do
+    results = get_field(changeset, :results)
+    case results["trials"] do
+      nil -> changeset
+      trials ->
+        new_trials = ProComPrag.ExperimentHelper.convert_trials(trials)
+        new_results = Map.put(results, "trials", new_trials)
+        put_change(changeset, :results, new_results)
     end
   end
 end

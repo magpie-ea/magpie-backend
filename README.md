@@ -4,10 +4,12 @@
 - [Server Documentation](#server-documentation)
     - [Required values from experiment submissions](#required-values-from-experiment-submissions)
     - [Retrieving experiment results](#retrieving-experiment-results)
-- [Experiment Documentation](#experiment-documentation)
-    - [Deploying experiments](#deploying-experiments)
-    - [Deploying an experiment to Gitlab Pages](#deploying-an-experiment-to-gitlab-pages)
-    - [Posting/Publishing experiments](#postingpublishing-experiments)
+    - [Deploying the Server](#deploying-the-server)
+        - [Deployment with Heroku](#deployment-with-heroku)
+        - [Local (Offline) Deployment](#local-offline-deployment)
+            - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
+            - [Deployment](#deployment)
+- [Experiments (Frontend)](#experiments-frontend)
 - [Additional Notes](#additional-notes)
 
 <!-- markdown-toc end -->
@@ -20,6 +22,8 @@ Foundation (DFG Schwerpunktprogramm 1727).
 If you encounter any bugs during your experiments please [submit an issue](https://github.com/x-ji/ProComPrag/issues).
 
 A live version of the server is currently deployed at https://procomprag.herokuapp.com
+
+For the documentation of the entire _babe project, please refer to the [project site](https://b-a-b-e.github.io/babe_site)
 
 # Server Documentation
 This section documents the server program.
@@ -41,7 +45,7 @@ server:
 Additionally, an optional array named `trial_keys_order`, which specifies the order in which the trial data should be
  printed in the CSV output, can be included. If this array is not included, the trial data will be printed in alphabetical order, which might not be ideal.
 
-Any additional keys in the `exp.data` object will be printed in the CSV file output as well. However, note that the 
+Any additional keys in the `exp.data` object will be printed in the CSV file output as well. However, note that the
 basis for CSV generation will be the `trials` array, i.e. each trial within the `trials` array will result in one row in the final CSV file.
 
 An example object from the [Minimal Template](https://github.com/ProComPrag/MinimalTemplate) is shown below:
@@ -126,7 +130,7 @@ An example object from the [Minimal Template](https://github.com/ProComPrag/Mini
 }
 ```
 
-When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk/using the 
+When an experiment is finished, instead of sending it with `mmturkey` to the interface provided by MTurk/using the
 original `turk.submit(exp.data)`, please POST the JSON to the following web address: `{SERVER_ADDRESS}/api/submit_experiment`, e.g. https://procomprag.herokuapp.com/api/submit_experiment.
 
 Note that to [POST a JSON object correctly](https://stackoverflow.com/questions/12693947/jquery-ajax-how-to-send-json-instead-of-querystring),
@@ -205,19 +209,17 @@ heroku config:set POOL_SIZE=18
 ### Local (Offline) Deployment
 Normally, running the server in a local development environment would involve installing and configuring Elixir and PostgreSQL. To simplify the development flow, [Docker](https://www.docker.com/) is used instead.
 
-#### First-time installation
+#### First-time installation (requires internet connection)
 
 The following steps require an internet connection. After they are finished, the server can be launched offline.
 
-1. Install Docker from https://docs.docker.com/install/. You may have to open the application
-   in order to let it install its command line tools. Ensure that it's running by typing
-   `docker version` in a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows).
+1. Install Docker from https://docs.docker.com/install/. You may have to launch the application once in order to let it install its command line tools. Ensure that it's running by typing `docker version` in a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows).
 
-  Note: 
+  Note:
   - Although the Docker app on Windows and Mac asks for login credentials to Docker Hub, they are not needed for local deployment . You can proceed without creating any Docker account/logging in.
   - Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
 
-2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/ProComPrag/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone the server repo with `git clone https://github.com/b-a-b-e/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
 
 3. Open a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows), `cd` into the project directory just cloned via git.
 
@@ -227,53 +229,23 @@ The following steps require an internet connection. After they are finished, the
   docker volume create --name procomprag-db-volume -d local
   docker-compose run --rm web bash -c "mix deps.get && npm install && node node_modules/brunch/bin/brunch build && mix ecto.migrate"
   ```
-#### Actual deployment
 
-After installation, you can launch a local server instance which sets up the experiment in your browser and stores the results.
+#### Deployment
+
+After first-time installation, you can launch a local server instance which sets up the experiment in your browser and stores the results.
 
 1. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
 
 2. Visit localhost:4000 in your browser. You should see the server up and running.
 
-  Note: Windows 7 users who installed *Docker Machine* might need to find out the IP address used by `docker-machine` instead of `localhost`. See https://docs.docker.com/get-started/part2/#build-the-app for details.
+  Note: Windows 7 users who installed *Docker Machine* might need to find out the IP address used by `docker-machine` instead of `localhost`. See [Docker documentation](https://docs.docker.com/get-started/part2/#build-the-app) for details.
 
 Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/procomprag-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
 
+# Experiments (Frontend)
+This program is intended to serve as the backend which stores and returns experiment results. An experiment frontend is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Github Pages](https://pages.github.com/)) and loaded in the participant's browser.
 
-# Experiment Documentation
-This section documents the experiments themselves, which should work independent of the backend (e.g. this program or the default backend provided by Amazon MTurk) used to receive their results.
-
-## Deploying experiments
-This program is intended to serve as the backend. An experiment is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Gitlab Pages](https://about.gitlab.com/features/pages/)) and loaded in the participant's browser. Currently, most experiments collected by this backend are conducted on the crowdsourcing platform [Prolific](https://www.prolific.ac/). However, there should be no restrictions on the way the experiment is run (via e.g. another crowdsourcing platform such as Amazon MTurk, or without any third-party platform at all).
-
-Sample experiments based on the framework originally developed by [Stanford CoCoLab](https://cocolab.stanford.edu/) are provided under `doc/sample-experiments`. The experiment `1c` is for Amazon MTurk and the experiment `italian_free_production` is for Prolific.ac. The entry point for the experiments is the file `index.html`.
-
-## Deploying an experiment to Gitlab Pages
-Currently all the experiments are deployed with Gitlab Pages, though other solutions might also be used, e.g. [Bitballon](https://www.bitballoon.com/).
-
-The following is a short description of the deployment process on Gitlab Pages:
-
-1. Go to the folder containing the experiment: e.g. `cd doc/sample-experiments/1c` if you use the deployment script, or `cd test` if you followed the manual method.
-2. In your browser, create a gitlab repository, e.g. `test`
-3. Initialize git repo: `git init`
-4. Add the repository as a remote: `git remote add origin git@gitlab.com:exprag-lab/test.git`
-5. Add all the files in the folder: `git add .`
-6. Commit: `git commit -m "Initial commit"`
-7. Push: `git push -u origin master`
-8. Check whether the deployment task was successfully run on Gitlab:
-    ![Pipeline](doc/Pipeline.png)
-9. The experiment should be available at user-name.gitlab.io/repo-name, e.g. https://exprag-lab.gitlab.io/test/
-
-As an alternative, you may also deploy to a hosting site such as Bitballon by simply dragging and dropping the `public` folder. However, this has the disadvantage of not being able to use a custom domain prefix such as `exprag-lab` when displaying the experiment.
-
-An example of deployed experiment may be found at https://exprag-lab.gitlab.io/experiment-1c/ (Pushed to the repository "experiment-1c" under the user "exprag-lab").
-
-To write a new experiment, you may modify the files `norming.js` and `index.html`. You may also include additional resources in the `experiment` folder, e.g. images to be used in the experiment. The file `css/local-style.css` can be used to define experiment-specific layouts. Due to differences in folder structures, the easiest way to update an experiment is to modify just the source files, and use the `deploy.sh` script to deploy the generated folder into actual Gitlab repos.
-
-## Posting/Publishing experiments
-After having successfully deployed an experiment to Gitlab Pages and tested it, you may want to post it on crowdsourcing platforms. To post an experiment on MTurk, you may use the script [Submiterator](https://github.com/feste/Submiterator) together with [MTurk command line tools](https://requester.mturk.com/developer/tools/clt), or you may do so manually.
-
-To post an experiment on Prolific.ac, just follow the instructions given on their user interface and link to the experiment deployed on Gitlab Pages. Please remember to change the variable `exp.completionURL` in the file `norming.js` to match the Prolific completion URL for that particular experiment.
+For detailed documentation on the structure and deployment of experiments, please refer to the [minimal template](https://github.com/b-a-b-e/MinimalTemplate/) and the [_babe documentation](https://b-a-b-e.github.io/babe_site/).
 
 # Additional Notes
 - The assumption on the server side when receiving the experiments is that each set of experiment results would have the same keys in the JSON file submitted and that each trial n an experiment would have the same keys in an object named `trials`. Violating this assumption might lead to failure in the CSV generation process. Look at `norming.js` files in the sample experiments for details.

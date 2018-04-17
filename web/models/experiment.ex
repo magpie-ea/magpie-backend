@@ -17,16 +17,27 @@ defmodule ProComPrag.Experiment do
     timestamps()
   end
 
-  def construct_changeset(model, params \\ %{}) do
+  def changeset(model, params \\ %{}) do
     model
-    # `cast/3` ensures that only the allowed parameters are let through, and that the input is safe.
-    |> cast(params, [:results, :experiment_id, :author, :description])
+    # `cast/3` ignores all parameters not explicitly permitted, converts all permitted key names into atoms, and store them in the :changes field of the changeset
+    # The point is that only the :changes field will work when performing any real DB action with Repo.
+    # This is to say, the other parameters are not "deleted" at this step yet. You can chain multiple `cast` calls.
+    |> cast(params, [:experiment_id, :author])
       # Validate the required parameters are all there. In our case all parameters are required.
-    |> validate_required([:results, :experiment_id, :author, :description])
+    |> validate_required([:experiment_id, :author])
   end
 
-  def transform_changeset(changeset) do
-    changeset
+  # Changeset function for `create` function.
+  # Though admittedly in our case `cast` is rather useless since `:results` actually contains everything from the incoming JSON file anyways, as is specified by our experiment.
+  # Are there actually attack vectors from storing and retrieving jsonb in Postgres?
+  # One way to handle this potential problem is to ask the experimenter to specify all the parameters of an experiment beforehand. though I'm not sure if it's worth the trouble.
+  # Surely if the attacker is really to attack by using some malicious input, he can use the existing keys in the experiment all the same?
+  # Anyways, this submitted serialized JSON should be safe enough. Let's just do it this way first.
+  def create_changeset(model, params) do
+    model
+    |> changeset(params)
+    |> cast(params, [:results, :description])
+    |> validate_required([:results, :description])
     |> validate_trials_exists()
     |> transform_trials()
   end
@@ -35,6 +46,12 @@ defmodule ProComPrag.Experiment do
     from e in "experiments",
     where: e.experiment_id == ^experiment_id,
     where: e.author == ^author
+  end
+
+  def retrieve_changeset(model, params \\ %{}) do
+    model
+    |> cast(params, [:experiment_id, :author])
+    |> validate_required([:experiment_id, :author])
   end
 
   # Verify that the trials key exists in the submitted JSON.

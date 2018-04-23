@@ -11,6 +11,7 @@
       <th>Active?</th>
 
       <th></th>
+      <th></th>
     </tr>
   </thead>
 
@@ -24,7 +25,10 @@
         <td><%= experiment.active %></td>
 
         <td class="text-right">
-          <%= link "Toggle activation status", to: experiment_path(@conn, :toggle, experiment), class: "btn btn-default btn-xs" %>
+          <%= link "Toggle activation status", to: experiment_path(@conn, :toggle, experiment), class: "btn btn-warning btn-sm" %>
+        </td>
+        <td class="text-right">
+          <%= link "Retrieve experiment results", to: experiment_path(@conn, :retrieve, experiment), class: "btn btn-success btn-sm" %>
         </td>
       </tr>
     <% end %>

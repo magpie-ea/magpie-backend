@@ -73,12 +73,13 @@ defmodule ProComPrag.ExperimentController do
     render conn, "query.html", changeset: changeset
   end
 
-  def retrieve(conn, %{"experiment" => experiment_params}) do
+  def retrieve(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
     # First check whether the password is right.
     # password = experiment_params["password"]
     # These two are used as keys to query the DB.
-    experiment_id = experiment_params["experiment_id"]
-    author = experiment_params["author"]
+    experiment_id = experiment.experiment_id
+    author = experiment.author
     query = from e in ProComPrag.ExperimentResult,
                  where: e.experiment_id == ^experiment_id,
                  where: e.author == ^author
@@ -91,8 +92,8 @@ defmodule ProComPrag.ExperimentController do
       [] ->
         conn
         # Render the error message.
-        |> put_flash(:error, "The experiment with the given id and author cannot be found!")
-        |> redirect(to: experiment_path(conn, :query))
+        |> put_flash(:error, "No results for this experiment yet!")
+        |> redirect(to: experiment_path(conn, :index))
 
       _ ->
         # Name the CSV file to be returned.

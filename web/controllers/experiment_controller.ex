@@ -5,10 +5,44 @@ defmodule ProComPrag.ExperimentController do
   require Iteraptor
 
   alias ProComPrag.Experiment
+  alias ProComPrag.ExperimentResult
 
   import ProComPrag.ExperimentHelper
 
-  def create(conn, raw_params) do
+  @doc """
+  Page to create an experiment record
+  """
+  def new(conn, _params) do
+    changeset = Experiment.changeset(%Experiment{})
+    render conn, "new.html", changeset: changeset
+  end
+
+  @doc """
+  Function called when an experiment record creation request is submitted (from `new`)
+  """
+  def create(conn, %{"experiment" => experiment_params}) do
+    # Add password check later
+
+    # experiment_id = experiment_params["experiment_id"]
+    # author = experiment_params["author"]
+
+    changeset = Experiment.changeset(%Experiment{}, experiment_params)
+
+    case Repo.insert(changeset) do
+      {:ok, experiment} ->
+        conn
+        |> put_flash(:info, "#{experiment.experiment_id} created and set to active!")
+        |> redirect(to: page_path(conn, :index))
+      {:error, changeset} ->
+        # The error message is already included in the template file and will be rendered by then.
+        render(conn, "new.html", changeset: changeset)
+    end
+  end
+
+  @doc """
+  Stores a set of experiment results submitted via the API
+  """
+  def submit(conn, raw_params) do
     # The meta information is to be inserted into the DB as standalone keys.
     # Therefore they are excluded from the JSON file here.
     params_without_meta = Map.drop(raw_params, ["author", "experiment_id", "description"])
@@ -16,7 +50,7 @@ defmodule ProComPrag.ExperimentController do
     # No need to worry about error handling here since if any of the fields is missing, it will become `nil` only. The validation defined in the model layer will notice the error, and later :unprocessable_entity will be sent.
     params = %{author: raw_params["author"], experiment_id: raw_params["experiment_id"], description: raw_params["description"], results: params_without_meta}
 
-    changeset =  Experiment.create_changeset(%Experiment{}, params)
+    changeset =  ExperimentResult.submit_changeset(%ExperimentResult{}, params)
 
     case Repo.insert(changeset) do
       {:ok, _} ->
@@ -30,7 +64,7 @@ defmodule ProComPrag.ExperimentController do
   end
 
   def query(conn, _params) do
-    changeset = Experiment.changeset(%Experiment{})
+    changeset = ExperimentResult.changeset(%ExperimentResult{})
     render conn, "query.html", changeset: changeset
   end
 
@@ -40,7 +74,7 @@ defmodule ProComPrag.ExperimentController do
     # These two are used as keys to query the DB.
     experiment_id = experiment_params["experiment_id"]
     author = experiment_params["author"]
-    query = from e in ProComPrag.Experiment,
+    query = from e in ProComPrag.ExperimentResult,
                  where: e.experiment_id == ^experiment_id,
                  where: e.author == ^author
 

@@ -9,6 +9,11 @@ defmodule ProComPrag.ExperimentController do
 
   import ProComPrag.ExperimentHelper
 
+  def index(conn, _params) do
+    experiments = Repo.all(Experiment)
+    render(conn, "index.html", experiments: experiments)
+  end
+
   @doc """
   Page to create an experiment record
   """
@@ -109,6 +114,24 @@ defmodule ProComPrag.ExperimentController do
         # |> put_flash(:info, "The experiment file is retrieved successfully.")
         |> send_download({:file, file_path})
     end
+  end
+
+  def toggle(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+    active = experiment.active
+    experiment = Ecto.Changeset.change experiment, active: !active
+
+    case Repo.update experiment do
+      {:ok, struct} ->
+        conn
+        |> put_flash(:info, "The activation status has been successfully changed to #{!active}")
+        |> redirect(to: experiment_path(conn, :index))
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "The activation status wasn't changed successfully!")
+        |> redirect(to: experiment_path(conn, :index))
+    end
+
   end
 
 end

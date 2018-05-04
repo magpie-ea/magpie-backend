@@ -30,6 +30,6 @@ defmodule ProComPrag.Router do
   scope "/api", ProComPrag do
     pipe_through :api
 
-    post "/submit_experiment", ExperimentController, :create
+    post "/submit_experiment", ExperimentController, :submit
   end
 end

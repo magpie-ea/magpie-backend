@@ -51,6 +51,23 @@ defmodule ProComPrag.ExperimentController do
   Stores a set of experiment results submitted via the API
   """
   def submit(conn, raw_params) do
+    # This is the "Experiment" object that's supposed to be associated with this submission.
+    experiment = Repo.get_by(Experiment, author: raw_params["author"], experiment_id: raw_params["experiment_id"])
+
+    case experiment do
+      nil -> conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(404, "No experiment with the author and experiment_id combination found. Please check your configuration.")
+      _ -> case experiment.active do
+             false -> conn
+               |> put_resp_content_type("text/plain")
+               |> send_resp(403, "The experiment is not active at the moment and submissions are not allowed.")
+             true -> record_submission(conn, raw_params, experiment)
+            end
+    end
+  end
+
+  defp record_submission(conn, raw_params, experiment) do
     # The meta information is to be inserted into the DB as standalone keys.
     # Therefore they are excluded from the JSON file here.
     params_without_meta = Map.drop(raw_params, ["author", "experiment_id", "description"])
@@ -61,13 +78,24 @@ defmodule ProComPrag.ExperimentController do
     changeset =  ExperimentResult.submit_changeset(%ExperimentResult{}, params)
 
     case Repo.insert(changeset) do
-      {:ok, _} ->
+      {:ok, _} -> # Update the submission count
+        current_submissions = experiment.current_submissions
+        changeset_experiment = Ecto.Changeset.change experiment, current_submissions: current_submissions + 1
+        # Automatically set the experiment to inactive if the maximum submission is reached.
+        # IO.puts(current_submissions + 1)
+        # IO.puts(experiment.maximum_submissions)
+        if current_submissions + 1 >= experiment.maximum_submissions do
+          changeset_experiment = Ecto.Changeset.put_change(changeset_experiment, :active, false)
+        end
+        Repo.update! changeset_experiment
         # Currently I don't think there's a need to send the created resource back. Just acknowledge that the information is received.
         # created is 201
         send_resp(conn, :created, "")
       {:error, _} ->
         # unprocessable entity is 422
-        send_resp(conn, :unprocessable_entity, "")
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(:unprocessable_entity, "Unsuccessful submission. The results are probably malformed. Probably check your trials object.")
     end
   end
 

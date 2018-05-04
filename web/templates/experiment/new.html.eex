@@ -22,21 +22,27 @@
   </div>
 
   <div class="form-group">
-    <%= label f, :description, class: "control-label" %>
+    <%= label f, :active, "Active experiment", class: "control-label" %>
+    <%= checkbox f, :active, checked: true%>
+    <%= error_tag f, :active %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :description, "(Optional) Description", class: "control-label" %>
     <%= textarea f, :description, placeholder: "e.g. An example experiment", class: "form-control" %>
     <%= error_tag f, :description %>
   </div>
 
   <div class="form-group">
-    <%= label f, :maximum_submissions, "(Optional) maximum allowed submissions", class: "control-label" %>
+    <%= label f, :maximum_submissions, "(Optional) Maximum allowed submissions", class: "control-label" %>
+    <p>
+      With maximum_submissions specified, once the number of submissions reaches this value, the experiment will automatically <b>deactivate</b>.
+    </p>
+    <p>
+      If you're running the experiment on a crowdsourcing platform with participant control, it's recommended to rely on the platform's built-in mechanism instead.
+    </p>
     <%= text_input f, :maximum_submissions, placeholder: "e.g. 30", class: "form-control" %>
     <%= error_tag f, :description %>
-  </div>
-
-  <div class="form-group">
-    <%= label f, :active, class: "control-label" %>
-    <%= checkbox f, :active, checked: true%>
-    <%= error_tag f, :active %>
   </div>
 
   <!-- <div class="form-group" > -->

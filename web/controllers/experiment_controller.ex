@@ -163,7 +163,30 @@ defmodule ProComPrag.ExperimentController do
         |> put_flash(:error, "The activation status wasn't changed successfully!")
         |> redirect(to: experiment_path(conn, :index))
     end
+  end
 
+  # Currently seems to be no need for that. The edit page suffices
+  # def show(conn, %{"id" => id}) do
+  # end
+
+  def edit(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+    changeset = Experiment.changeset(experiment)
+    render(conn, "edit.html", experiment: experiment, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "experiment" => experiment_params}) do
+    experiment = Repo.get!(Experiment, id)
+    changeset = Experiment.changeset(experiment, experiment_params)
+
+    case Repo.update(changeset) do
+      {:ok, experiment} ->
+        conn
+        |> put_flash(:info, "Experiment updated successfully.")
+        |> redirect(to: experiment_path(conn, :index))
+      {:error, changeset} ->
+        render(conn, "edit.html", experiment: experiment, changeset: changeset)
+    end
   end
 
 end

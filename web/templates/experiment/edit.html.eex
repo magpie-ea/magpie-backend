@@ -1,0 +1,51 @@
+<h2>Edit an experiment</h2>
+
+<%= form_for @changeset, experiment_path(@conn, :update, @experiment), fn f -> %>
+
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger" >
+      <p>Something is wrong. Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <p>
+    (Note: Once created, an experiment's ID and author cannot be modified. Please create a new experiment if you want to do so.)
+  </p>
+
+  <h4>Experiment ID: <%= @experiment.experiment_id %></h4>
+
+  <h4>Author: <%= @experiment.author %></h4>
+
+  <div class="form-group">
+    <%= label f, :active, "Active experiment", class: "control-label" %>
+    <%= checkbox f, :active %>
+    <%= error_tag f, :active %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :description, "(Optional) Description", class: "control-label" %>
+    <%= textarea f, :description, placeholder: "e.g. An example experiment", class: "form-control" %>
+    <%= error_tag f, :description %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :maximum_submissions, "(Optional) Maximum allowed submissions", class: "control-label" %>
+    <p>
+      With <code>maximum_submissions</code> specified, once the number of submissions reaches this value, the experiment will automatically be <b>deactivated</b>.
+    </p>
+    <p>
+      If you're running the experiment on a crowdsourcing platform with participant control, it's recommended to rely on the platform's built-in mechanism instead.
+    </p>
+    <%= text_input f, :maximum_submissions, placeholder: "e.g. 30", class: "form-control" %>
+    <%= error_tag f, :maximum_submissions %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit Changes", class: "btn btn-primary" %>
+  </div>
+
+  <div class="form-group">
+    <%= link "Back", to: experiment_path(@conn, :index), class: "btn btn-default" %>
+  </div>
+
+<% end %>

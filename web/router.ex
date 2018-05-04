@@ -18,7 +18,7 @@ defmodule ProComPrag.Router do
 
     get "/", PageController, :index
 
-    resources "/experiments", ExperimentController, only: [:index, :new, :create]
+    resources "/experiments", ExperimentController, only: [:index, :new, :create, :edit, :update]
 
     # A special endpoint only for activating/deactivating an experiment
     get "/experiments/:id/toggle", ExperimentController, :toggle

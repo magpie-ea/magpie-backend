@@ -9,6 +9,8 @@
       <th>Author</th>
       <th>Description</th>
       <th>Submissions</th>
+      <th>Creation</th>
+      <th>Last Updated</th>
       <th>Active?</th>
 
       <th></th>
@@ -30,6 +32,10 @@
             <%= experiment.maximum_submissions %>
           <% end %>
         </td>
+
+        <td><%= NaiveDateTime.truncate(experiment.inserted_at, :second) %></td>
+        <td><%= NaiveDateTime.truncate(experiment.updated_at, :second) %></td>
+
         <td><%= experiment.active %></td>
 
         <td class="text-right">

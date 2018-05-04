@@ -22,5 +22,6 @@ defmodule ProComPrag.Experiment do
     struct
     |> cast(params, [:experiment_id, :author, :description, :active, :maximum_submissions])
     |> validate_required([:experiment_id, :author, :active])
+    |> unique_constraint(:experiment_id, name: :experiment_index)
   end
 end

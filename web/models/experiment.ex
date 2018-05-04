@@ -9,6 +9,8 @@ defmodule ProComPrag.Experiment do
     field :author, :string
     field :description, :string
     field :active, :boolean, default: false
+    field :maximum_submissions, :integer
+    field :current_submissions, :integer, default: 0, null: false
 
     timestamps()
   end
@@ -18,7 +20,7 @@ defmodule ProComPrag.Experiment do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:experiment_id, :author, :description, :active])
+    |> cast(params, [:experiment_id, :author, :description, :active, :maximum_submissions])
     |> validate_required([:experiment_id, :author, :active])
   end
 end

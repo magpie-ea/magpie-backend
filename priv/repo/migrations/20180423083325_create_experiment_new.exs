@@ -1,5 +1,5 @@
 # This is the creation of the true "Experiment" table used to manage experiments now
-defmodule ProComPrag.Repo.Migrations.CreateExperiment do
+defmodule ProComPrag.Repo.Migrations.CreateExperimentNew do
   use Ecto.Migration
 
   def change do

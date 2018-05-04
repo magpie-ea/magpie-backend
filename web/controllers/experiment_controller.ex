@@ -11,6 +11,9 @@ defmodule ProComPrag.ExperimentController do
 
   def index(conn, _params) do
     experiments = Repo.all(Experiment)
+    # We want to also display the count of ExperimentResult for each experiment.
+    # Guess currently the most straightforward way is to run a map on all those experiments and query the DB for the count... which might be slow though.
+    # Just add a field for it? It doesn't sound the most elegant way but it could be a more efficient alternative I suppose.
     render(conn, "index.html", experiments: experiments)
   end
 
@@ -37,7 +40,7 @@ defmodule ProComPrag.ExperimentController do
       {:ok, experiment} ->
         conn
         |> put_flash(:info, "#{experiment.experiment_id} created and set to active!")
-        |> redirect(to: page_path(conn, :index))
+        |> redirect(to: experiment_path(conn, :index))
       {:error, changeset} ->
         # The error message is already included in the template file and will be rendered by then.
         render(conn, "new.html", changeset: changeset)

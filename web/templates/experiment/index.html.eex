@@ -8,6 +8,7 @@
       <th>Experiment ID</th>
       <th>Author</th>
       <th>Description</th>
+      <th>Submissions</th>
       <th>Active?</th>
 
       <th></th>
@@ -22,6 +23,13 @@
         <td><%= experiment.experiment_id %></td>
         <td><%= experiment.author %></td>
         <td><%= experiment.description %></td>
+        <td>
+          <%= experiment.current_submissions %>
+          <%= if experiment.maximum_submissions do %>
+            /
+            <%= experiment.maximum_submissions %>
+          <% end %>
+        </td>
         <td><%= experiment.active %></td>
 
         <td class="text-right">

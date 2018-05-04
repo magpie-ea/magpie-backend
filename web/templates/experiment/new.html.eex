@@ -28,6 +28,12 @@
   </div>
 
   <div class="form-group">
+    <%= label f, :maximum_submissions, "(Optional) maximum allowed submissions", class: "control-label" %>
+    <%= text_input f, :maximum_submissions, placeholder: "e.g. 30", class: "form-control" %>
+    <%= error_tag f, :description %>
+  </div>
+
+  <div class="form-group">
     <%= label f, :active, class: "control-label" %>
     <%= checkbox f, :active, checked: true%>
     <%= error_tag f, :active %>

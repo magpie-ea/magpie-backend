@@ -31,5 +31,6 @@ defmodule ProComPrag.Router do
     pipe_through :api
 
     post "/submit_experiment", ExperimentController, :submit
+    get "/dynamic_retrieval", ExperimentController, :dynamic_retrieve
   end
 end

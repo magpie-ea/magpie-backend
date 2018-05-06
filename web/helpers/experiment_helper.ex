@@ -30,7 +30,7 @@ defmodule ProComPrag.ExperimentHelper do
 
     # If it's old data, we want to convert them first. If it's new data, it should have already been converted when
     # being inserted, meaning we can use it as it is.
-    trials = if (is_list(results["trials"])) do
+    trials = if is_list(results["trials"]) do
       results["trials"]
     else
       convert_trials(results["trials"])

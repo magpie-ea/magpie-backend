@@ -105,19 +105,26 @@ defmodule ProComPrag.ExperimentController do
     render conn, "query.html", changeset: changeset
   end
 
-  def retrieve(conn, %{"id" => id}) do
-    experiment = Repo.get!(Experiment, id)
-    # First check whether the password is right.
-    # password = experiment_params["password"]
+  defp get_experiment_submissions(experiment) do
     # These two are used as keys to query the DB.
     experiment_id = experiment.experiment_id
     author = experiment.author
     query = from e in ProComPrag.ExperimentResult,
-                 where: e.experiment_id == ^experiment_id,
-                 where: e.author == ^author
+      where: e.experiment_id == ^experiment_id,
+      where: e.author == ^author
 
     # This should return a list of submissions (results)
-    experiments = Repo.all(query)
+    Repo.all(query)
+  end
+
+  def retrieve(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+    # First check whether the password is right.
+    # password = experiment_params["password"]
+
+    experiment_id = experiment.experiment_id
+    author = experiment.author
+    experiments = get_experiment_submissions(experiment)
 
     case experiments do
       # In this case nothing could be found in the DB.
@@ -176,13 +183,6 @@ defmodule ProComPrag.ExperimentController do
     render(conn, "edit.html", experiment: experiment, changeset: changeset)
   end
 
-  # Currently no need for this since there is a form solution.
-  # defp transform_dynamic_retrieval_keys(experiment) do
-  #   experiment[""]
-
-  #   experiment_params = Map.update(experiment_params, "dynamic_retrieval_keys", [], &String.split(&1, [",", " "]))
-  # end
-
   def update(conn, %{"id" => id, "experiment" => experiment_params}) do
     # If all the keys are removed, we need to reset it to nil.
     experiment_params = Map.put_new(experiment_params, "dynamic_retrieval_keys", nil)
@@ -197,6 +197,35 @@ defmodule ProComPrag.ExperimentController do
       {:error, changeset} ->
         render(conn, "edit.html", experiment: experiment, changeset: changeset)
     end
+  end
+
+  @doc """
+  Retrieves the results up to now for an experiment.
+  """
+  def dynamic_retrieve(conn, raw_params) do
+    # This is the "Experiment" object that's supposed to be associated with this request.
+    experiment = Repo.get_by(Experiment, author: raw_params["author"], experiment_id: raw_params["experiment_id"])
+
+    case experiment do
+      nil -> conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(404, "No experiment with the author and experiment_id combination found. Please check your configuration.")
+        _ -> case experiment.dynamic_retrieval_keys do
+               nil -> conn
+                 |> put_resp_content_type("text/plain")
+                 |> send_resp(403, "Please specify the keys for retrieval (in the user interface)!")
+                 _ ->
+                   submissions = get_experiment_submissions(experiment)
+                   case submissions do
+                     [] -> conn
+                     |> put_resp_content_type("text/plain")
+                     |> send_resp(404, "No submissions for this experiment recorded yet.")
+                     _ ->
+                         render(conn, "retrieval.json", keys: experiment.dynamic_retrieval_keys, submissions: submissions)
+                    end
+                  end
+                end
+
   end
 
   # def check_duplicate(conn, params) do

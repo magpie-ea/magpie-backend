@@ -57,4 +57,25 @@ end
     ]
     link("Add", to: "#", data: data, class: "add-form-field")
   end
+
+  def render("retrieval.json", keys, submissions) do
+    Enum.map(submissions, &transform_submission(&1, keys))
+  end
+
+  defp transform_submission(submission, keys) do
+    # Simply check if the keys are specified.
+    contents = submission.results
+    trials = Map.get(contents, "trials")
+
+    contents = contents
+    |> Enum.filter(fn ({k, v}) -> Enum.member?(keys, k) end)
+    |> Map.new
+
+    trials = trials
+    |> Enum.map(fn t -> t
+    |> Enum.filter(fn ({k, v}) -> Enum.member?(keys, k) end)
+    |> Map.new
+    end)
+    result = Map.put(contents, "trials", trials)
+  end
 end

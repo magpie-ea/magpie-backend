@@ -11,6 +11,7 @@ defmodule ProComPrag.Experiment do
     field :active, :boolean, default: false
     field :maximum_submissions, :integer
     field :current_submissions, :integer, default: 0, null: false
+    field :dynamic_retrieval_keys, {:array, :string}
 
     timestamps()
   end
@@ -20,8 +21,9 @@ defmodule ProComPrag.Experiment do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:experiment_id, :author, :description, :active, :maximum_submissions])
+    |> cast(params, [:experiment_id, :author, :description, :active, :maximum_submissions, :dynamic_retrieval_keys])
     |> validate_required([:experiment_id, :author, :active])
     |> unique_constraint(:experiment_id, name: :experiment_index)
   end
+
 end

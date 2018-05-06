@@ -31,8 +31,9 @@ defmodule ProComPrag.ExperimentController do
   def create(conn, %{"experiment" => experiment_params}) do
     # Add password check later
 
-    # experiment_id = experiment_params["experiment_id"]
-    # author = experiment_params["author"]
+    # Needs to perform some manual processing on the :dynamic_retrieval_keys param out there.
+    # Might as well use empty list as the default value here.
+    # experiment_params = Map.update(experiment_params, "dynamic_retrieval_keys", [], &String.split(&1, [",", " "]))
 
     changeset = Experiment.changeset(%Experiment{}, experiment_params)
 
@@ -175,7 +176,16 @@ defmodule ProComPrag.ExperimentController do
     render(conn, "edit.html", experiment: experiment, changeset: changeset)
   end
 
+  # Currently no need for this since there is a form solution.
+  # defp transform_dynamic_retrieval_keys(experiment) do
+  #   experiment[""]
+
+  #   experiment_params = Map.update(experiment_params, "dynamic_retrieval_keys", [], &String.split(&1, [",", " "]))
+  # end
+
   def update(conn, %{"id" => id, "experiment" => experiment_params}) do
+    # If all the keys are removed, we need to reset it to nil.
+    experiment_params = Map.put_new(experiment_params, "dynamic_retrieval_keys", nil)
     experiment = Repo.get!(Experiment, id)
     changeset = Experiment.changeset(experiment, experiment_params)
 
@@ -188,5 +198,9 @@ defmodule ProComPrag.ExperimentController do
         render(conn, "edit.html", experiment: experiment, changeset: changeset)
     end
   end
+
+  # def check_duplicate(conn, params) do
+
+  # end
 
 end

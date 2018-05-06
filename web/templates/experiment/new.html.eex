@@ -49,6 +49,12 @@
     <%= error_tag f, :maximum_submissions %>
   </div>
 
+  <div class="form-group">
+    <%= label f, :dynamic_retrieval_keys, "(Optional) Keys that should be included during the dynamic retrieval of experiment results", class: "control-label" %>
+    <%= array_input f, :dynamic_retrieval_keys %>
+    <%= array_add_button f, :dynamic_retrieval_keys %>
+  </div>
+
   <!-- <div class="form-group" > -->
     <%#= password_input f, :password, placeholder: "Your Password", class: "form-control" %>
     <%#= error_tag f, :password %>

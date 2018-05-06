@@ -41,6 +41,12 @@
   </div>
 
   <div class="form-group">
+    <%= label f, :dynamic_retrieval_keys, "(Optional) Keys that should be included during the dynamic retrieval of experiment results", class: "control-label" %>
+    <%= array_input f, :dynamic_retrieval_keys %>
+    <%= array_add_button f, :dynamic_retrieval_keys %>
+  </div>
+
+  <div class="form-group">
     <%= submit "Submit Changes", class: "btn btn-primary" %>
   </div>
 

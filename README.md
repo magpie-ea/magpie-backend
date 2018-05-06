@@ -162,6 +162,10 @@ Note that `crossDomain: true` is needed since the server domain will likely be d
 ## Retrieving experiment results
 Just visit the server (e.g. at https://procomprag.herokuapp.com), enter the `experiment_id` and `author` originally contained within the JSON file, and hit "Submit". Authentication mechanisms might be added later, if necessary.
 
+## Dynamic experiment result retrieval as JSON
+For some experiments, there might be a need to fetch and use the data from previous experiment submissions in order to dynamically adjust the future assignments.
+
+One can now specify the keys that should be fetched in the "Edit Experiment" user interface. Then, with a HTTP GET call to the `dynamic_retrieval` endpoint, specifying `author` and `experiment_id`, e.g. https://procomprag.herokuapps.com/api/dynamic_retrieval?author=RandomJane&experiment_id=MinimalTemplateDEMO, one will be able to get a JSON object that contains the results so far.
 ## Deploying the Server
 This section documents some methods one can use to deploy the server, for both online and offline usages.
 

@@ -1,6 +1,7 @@
 defmodule ProComPrag.ExperimentController do
   @moduledoc false
   use ProComPrag.Web, :controller
+  plug BasicAuth, use_config: {:procomprag, :authentication}
   require Logger
   require Iteraptor
 
@@ -8,6 +9,7 @@ defmodule ProComPrag.ExperimentController do
   alias ProComPrag.ExperimentResult
 
   import ProComPrag.ExperimentHelper
+
 
   def index(conn, _params) do
     experiments = Repo.all(Experiment)

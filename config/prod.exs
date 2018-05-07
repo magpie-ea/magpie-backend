@@ -31,6 +31,11 @@ config :procomprag, ProComPrag.Repo,
 # Do not print debug messages in production
 config :logger, level: :info
 
+# Used for basic_auth
+config :procomprag, :authentication,
+  username: System.get_env("AUTH_USERNAME"),
+  password: System.get_env("AUTH_PASSWORD")
+
 config :procomprag, :environment, :prod
 
 # ## SSL Support

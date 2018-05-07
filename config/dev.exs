@@ -22,7 +22,7 @@ config :procomprag, ProComPrag.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{web/views/.*(ex)$},
-      ~r{web/templates/.*(eex)$}
+      ~r{web/templates/[^.#].*(eex)$}
     ]
   ]
 
@@ -39,15 +39,19 @@ config :procomprag, ProComPrag.Repo,
        username: "procomprag_dev",
        password: "procomprag",
        # Used for Docker deployment
-       hostname: "db",
-       # Used for running it directly in command line with native Elixir installation.
        # I should probably create a Docker-only environment name. Let me do it later then.
-       # hostname: "localhost",
+#       hostname: "db",
+       # Used for running it directly in command line with native Elixir installation.
+       hostname: "localhost",
        database: "procomprag_dev",
        pool_size: 10
+
+# Used for basic_auth
+config :procomprag, :authentication,
+  username: "default",
+  password: "password"
 
 config :procomprag, :environment, :dev
 
 # See https://github.com/phoenixframework/phoenix/issues/1199. Seems that it suffices in most cases to keep the passwords in this file.
 # import_config "dev.secret.exs"
-

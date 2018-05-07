@@ -31,21 +31,22 @@ defmodule ProComPrag.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [ {:phoenix, "~> 1.3.0"},
-      {:phoenix_pubsub, "~> 1.0"},
-      {:phoenix_ecto, "~> 3.0"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.6"},
-      {:phoenix_live_reload, "~> 1.0", only: :dev},
-      {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"},
-      {:poison, "~> 3.1"},
-      {:iteraptor, "~> 0.7.0"},
-      {:cors_plug, "~> 1.2"},
-      {:csv, "~> 2.1"},
-      # Error checking and linting
-      {:credo, "~> 0.5", only: [:dev, :test]},
-      {:dogma, "~> 0.1", only: [:dev]}
+    [{:phoenix, "~> 1.3.0"},
+     {:phoenix_pubsub, "~> 1.0"},
+     {:phoenix_ecto, "~> 3.0"},
+     {:postgrex, ">= 0.0.0"},
+     {:phoenix_html, "~> 2.6"},
+     {:phoenix_live_reload, "~> 1.0", only: :dev},
+     {:gettext, "~> 0.11"},
+     {:cowboy, "~> 1.0"},
+     {:poison, "~> 3.1"},
+     {:iteraptor, "~> 0.7.0"},
+     {:cors_plug, "~> 1.2"},
+     {:csv, "~> 2.1"},
+     {:basic_auth, "~> 2.2.2"},
+     # Error checking and linting
+     {:credo, "~> 0.5", only: [:dev, :test]},
+     {:dogma, "~> 0.1", only: [:dev]}
     ]
   end
 

@@ -16,7 +16,7 @@ defmodule ProComPrag.Router do
   scope "/", ProComPrag do
     pipe_through :browser # Use the default browser stack
 
-    get "/", PageController, :index
+    get "/", ExperimentController, :index
 
     resources "/experiments", ExperimentController, only: [:index, :new, :create, :edit, :update]
 

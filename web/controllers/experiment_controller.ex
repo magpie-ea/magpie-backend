@@ -11,9 +11,6 @@ defmodule ProComPrag.ExperimentController do
 
   def index(conn, _params) do
     experiments = Repo.all(Experiment)
-    # We want to also display the count of ExperimentResult for each experiment.
-    # Guess currently the most straightforward way is to run a map on all those experiments and query the DB for the count... which might be slow though.
-    # Just add a field for it? It doesn't sound the most elegant way but it could be a more efficient alternative I suppose.
     render(conn, "index.html", experiments: experiments)
   end
 
@@ -30,10 +27,6 @@ defmodule ProComPrag.ExperimentController do
   """
   def create(conn, %{"experiment" => experiment_params}) do
     # Add password check later
-
-    # Needs to perform some manual processing on the :dynamic_retrieval_keys param out there.
-    # Might as well use empty list as the default value here.
-    # experiment_params = Map.update(experiment_params, "dynamic_retrieval_keys", [], &String.split(&1, [",", " "]))
 
     changeset = Experiment.changeset(%Experiment{}, experiment_params)
 
@@ -83,8 +76,6 @@ defmodule ProComPrag.ExperimentController do
         current_submissions = experiment.current_submissions
         changeset_experiment = Ecto.Changeset.change experiment, current_submissions: current_submissions + 1
         # Automatically set the experiment to inactive if the maximum submission is reached.
-        # IO.puts(current_submissions + 1)
-        # IO.puts(experiment.maximum_submissions)
         if current_submissions + 1 >= experiment.maximum_submissions do
           changeset_experiment = Ecto.Changeset.put_change(changeset_experiment, :active, false)
         end
@@ -150,26 +141,7 @@ defmodule ProComPrag.ExperimentController do
         File.close(file)
 
         conn
-        # The flash doesn't work very well since the page wasn't refreshed anyways.
-        # |> put_flash(:info, "The experiment file is retrieved successfully.")
         |> send_download({:file, file_path})
-    end
-  end
-
-  def toggle(conn, %{"id" => id}) do
-    experiment = Repo.get!(Experiment, id)
-    active = experiment.active
-    experiment = Ecto.Changeset.change experiment, active: !active
-
-    case Repo.update experiment do
-      {:ok, struct} ->
-        conn
-        |> put_flash(:info, "The activation status has been successfully changed to #{!active}")
-        |> redirect(to: experiment_path(conn, :index))
-      {:error, changeset} ->
-        conn
-        |> put_flash(:error, "The activation status wasn't changed successfully!")
-        |> redirect(to: experiment_path(conn, :index))
     end
   end
 

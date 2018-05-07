@@ -38,10 +38,6 @@
 
         <td><%= experiment.active %></td>
 
-        <!-- <td class="text-right"> -->
-          <%#= link "Toggle activation status", to: experiment_path(@conn, :toggle, experiment), class: "btn btn-warning btn-sm" %>
-        <!-- </td> -->
-
         <td class="text-right">
           <%= link "Edit experiment", to: experiment_path(@conn, :edit, experiment), class: "btn btn-warning btn-sm" %>
         </td>

@@ -28,6 +28,12 @@ For the documentation of the entire _babe project, please refer to the [project 
 # Server Documentation
 This section documents the server program.
 
+## Username and password for authentication
+The app now comes with [Basic access Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). The username and password are set under `config :procomprag, :authentication`.
+
+For local deployment (`:dev` environment), the default username is `default` and the default password is `password`. You may change it in `dev.exs`.
+
+If you're deploying on Heroku, be sure to set environment variables `AUTH_USERNAME` and `AUTH_PASSWORD`, either via Heroku command line tool or in the Heroku user interface, under `Settings` tab.
 ## Required values from experiment submissions
 
 The server expects to receive results from experiments which are structured in a particular
@@ -39,7 +45,6 @@ Data in `exp.data` requires **four crucial values** for the data to be processab
 server:
 - `author`: The author of this experiment
 - `experiment_id`: The identifier (can be a string) that the author uses to name this experiment
-- `description`: A brief description of this experiment
 - `trials`: A JSON array containing trial objects. The keys contained in each trial object should be the same.
 
 Additionally, an optional array named `trial_keys_order`, which specifies the order in which the trial data should be

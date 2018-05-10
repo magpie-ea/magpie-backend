@@ -173,6 +173,244 @@ Just visit the server (e.g. at https://procomprag.herokuapp.com), enter the `exp
 For some experiments, there might be a need to fetch and use the data from previous experiment submissions in order to dynamically adjust the future assignments.
 
 One can now specify the keys that should be fetched in the "Edit Experiment" user interface. Then, with a HTTP GET call to the `dynamic_retrieval` endpoint, specifying `author` and `experiment_id`, e.g. https://procomprag.herokuapps.com/api/dynamic_retrieval?author=RandomJane&experiment_id=MinimalTemplateDEMO, one will be able to get a JSON object that contains the results so far.
+
+Example response after specifying `option_chosen`, `RT` and `timeSpent` as keys on the `MinimalTemplate` experiment:
+
+```json
+[
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 506
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 110
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 573
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 122
+            }
+        ],
+        "timeSpent": 0.07485
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 878
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 108
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 519
+            },
+            {
+                "option_chosen": "here",
+                "RT": 131
+            }
+        ],
+        "timeSpent": 0.19921666666666665
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 502
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 223
+            },
+            {
+                "option_chosen": "here",
+                "RT": 711
+            },
+            {
+                "option_chosen": "shiny",
+                "RT": 109
+            }
+        ],
+        "timeSpent": 0.07365
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 446
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 325
+            },
+            {
+                "option_chosen": "here",
+                "RT": 457
+            },
+            {
+                "option_chosen": "shiny",
+                "RT": 130
+            }
+        ],
+        "timeSpent": 0.0691
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 566
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 119
+            },
+            {
+                "option_chosen": "here",
+                "RT": 489
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 104
+            }
+        ],
+        "timeSpent": 0.08233333333333333
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 566
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 119
+            },
+            {
+                "option_chosen": "here",
+                "RT": 489
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 104
+            }
+        ],
+        "timeSpent": 0.08233333333333333
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 566
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 119
+            },
+            {
+                "option_chosen": "here",
+                "RT": 489
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 104
+            }
+        ],
+        "timeSpent": 0.08233333333333333
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 566
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 119
+            },
+            {
+                "option_chosen": "here",
+                "RT": 489
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 104
+            }
+        ],
+        "timeSpent": 0.08233333333333333
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 566
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 119
+            },
+            {
+                "option_chosen": "here",
+                "RT": 489
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 104
+            }
+        ],
+        "timeSpent": 0.08233333333333333
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 566
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 119
+            },
+            {
+                "option_chosen": "here",
+                "RT": 489
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 104
+            }
+        ],
+        "timeSpent": 0.08233333333333333
+    },
+    {
+        "trials": [
+            {
+                "option_chosen": "here",
+                "RT": 566
+            },
+            {
+                "option_chosen": "jam",
+                "RT": 119
+            },
+            {
+                "option_chosen": "here",
+                "RT": 489
+            },
+            {
+                "option_chosen": "fine",
+                "RT": 104
+            }
+        ],
+        "timeSpent": 0.08233333333333333
+    }
+]
+```
 ## Deploying the Server
 This section documents some methods one can use to deploy the server, for both online and offline usages.
 

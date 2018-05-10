@@ -58,7 +58,7 @@ defmodule ProComPrag.ExperimentView do
     link("Add", to: "#", data: data, class: "add-form-field")
   end
 
-  def render("retrieval.json", keys, submissions) do
+  def render("retrieval.json", %{keys: keys, submissions: submissions}) do
     Enum.map(submissions, &transform_submission(&1, keys))
   end
 

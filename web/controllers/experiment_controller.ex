@@ -1,7 +1,7 @@
 defmodule ProComPrag.ExperimentController do
   @moduledoc false
   use ProComPrag.Web, :controller
-  plug BasicAuth, use_config: {:procomprag, :authentication}
+  plug BasicAuth, [use_config: {:procomprag, :authentication}] when not action in [:submit, :dynamic_retrieve]
   require Logger
   require Iteraptor
 
@@ -91,11 +91,6 @@ defmodule ProComPrag.ExperimentController do
         |> put_resp_content_type("text/plain")
         |> send_resp(:unprocessable_entity, "Unsuccessful submission. The results are probably malformed. Probably check your trials object.")
     end
-  end
-
-  def query(conn, _params) do
-    changeset = ExperimentResult.changeset(%ExperimentResult{})
-    render conn, "query.html", changeset: changeset
   end
 
   defp get_experiment_submissions(experiment) do
@@ -195,6 +190,7 @@ defmodule ProComPrag.ExperimentController do
                      |> put_resp_content_type("text/plain")
                      |> send_resp(404, "No submissions for this experiment recorded yet.")
                      _ ->
+                         IO.puts("Should be rendering")
                          render(conn, "retrieval.json", keys: experiment.dynamic_retrieval_keys, submissions: submissions)
                     end
                   end

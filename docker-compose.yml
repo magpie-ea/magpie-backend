@@ -10,6 +10,7 @@ services:
     environment:
       - MIX_ENV=dev
       - PORT=4000
+      - DOCKER=true
     volumes:
       - procomprag-app-volume:/app
     # Ensures that the postgres service is started first.

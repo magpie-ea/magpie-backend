@@ -485,11 +485,14 @@ After first-time installation, you can launch a local server instance which sets
 
 1. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
 
-2. Visit localhost:4000 in your browser. You should see the server up and running.
+2. Visit `localhost:4000` in your browser. You should see the server up and running.
 
   Note: Windows 7 users who installed *Docker Machine* might need to find out the IP address used by `docker-machine` instead of `localhost`. See [Docker documentation](https://docs.docker.com/get-started/part2/#build-the-app) for details.
 
+3. Use <kbd>Ctrl + C</kbd> to shut down the server.
+
 Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/procomprag-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
+
 
 # Experiments (Frontend)
 This program is intended to serve as the backend which stores and returns experiment results. An experiment frontend is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Github Pages](https://pages.github.com/)) and loaded in the participant's browser.

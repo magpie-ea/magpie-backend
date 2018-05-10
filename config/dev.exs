@@ -33,18 +33,14 @@ config :logger, :console, format: "[$level] $message\n"
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20
 
-# These are only the default values for use with the local, offline deployment with Docker.
 config :procomprag, ProComPrag.Repo,
-       adapter: Ecto.Adapters.Postgres,
-       username: "procomprag_dev",
-       password: "procomprag",
-       # Used for Docker deployment
-       # I should probably create a Docker-only environment name. Let me do it later then.
-#       hostname: "db",
-       # Used for running it directly in command line with native Elixir installation.
-       hostname: "localhost",
-       database: "procomprag_dev",
-       pool_size: 10
+  adapter: Ecto.Adapters.Postgres,
+  username: "procomprag_dev",
+  password: "procomprag",
+  # This is the current workaround. "db" is the host name for the Docker postgres container. "localhost" when you actually run it with your system's postgres instead of through Docker.
+  hostname: (if (System.get_env("DOCKER") == "true") do "db" else "localhost" end),
+  database: "procomprag_dev",
+  pool_size: 10
 
 # Used for basic_auth
 config :procomprag, :authentication,

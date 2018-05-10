@@ -2,8 +2,10 @@
 **Table of Contents**
 
 - [Server Documentation](#server-documentation)
+    - [Username and password for authentication](#username-and-password-for-authentication)
     - [Required values from experiment submissions](#required-values-from-experiment-submissions)
     - [Retrieving experiment results](#retrieving-experiment-results)
+    - [Dynamic experiment result retrieval as JSON](#dynamic-experiment-result-retrieval-as-json)
     - [Deploying the Server](#deploying-the-server)
         - [Deployment with Heroku](#deployment-with-heroku)
         - [Local (Offline) Deployment](#local-offline-deployment)

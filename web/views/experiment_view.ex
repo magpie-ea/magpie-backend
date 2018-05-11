@@ -68,14 +68,14 @@ defmodule ProComPrag.ExperimentView do
     trials = Map.get(contents, "trials")
 
     contents = contents
-    |> Enum.filter(fn ({k, v}) -> Enum.member?(keys, k) end)
+    |> Enum.filter(fn ({k, _v}) -> Enum.member?(keys, k) end)
     |> Map.new
 
     trials = trials
     |> Enum.map(fn t -> t
-    |> Enum.filter(fn ({k, v}) -> Enum.member?(keys, k) end)
+    |> Enum.filter(fn ({k, _v}) -> Enum.member?(keys, k) end)
     |> Map.new
     end)
-    result = Map.put(contents, "trials", trials)
+    Map.put(contents, "trials", trials)
   end
 end

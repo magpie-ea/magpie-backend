@@ -23,7 +23,7 @@ defmodule ProComPrag.Router do
     # A special endpoint only for activating/deactivating an experiment
     get "/experiments/:id/toggle", ExperimentController, :toggle
 
-    get "experiments/:id/retrieve", ExperimentController, :retrieve
+    get "/experiments/:id/retrieve", ExperimentController, :retrieve
 
   end
 

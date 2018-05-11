@@ -78,9 +78,12 @@ defmodule ProComPrag.ExperimentController do
         current_submissions = experiment.current_submissions
         changeset_experiment = Ecto.Changeset.change experiment, current_submissions: current_submissions + 1
         # Automatically set the experiment to inactive if the maximum submission is reached.
-        if current_submissions + 1 >= experiment.maximum_submissions do
-          changeset_experiment = Ecto.Changeset.put_change(changeset_experiment, :active, false)
-        end
+        changeset_experiment =
+          if current_submissions + 1 >= experiment.maximum_submissions do
+            Ecto.Changeset.put_change(changeset_experiment, :active, false)
+          else
+            changeset_experiment
+          end
         Repo.update! changeset_experiment
         # Currently I don't think there's a need to send the created resource back. Just acknowledge that the information is received.
         # created is 201
@@ -159,7 +162,7 @@ defmodule ProComPrag.ExperimentController do
     changeset = Experiment.changeset(experiment, experiment_params)
 
     case Repo.update(changeset) do
-      {:ok, experiment} ->
+      {:ok, _experiment} ->
         conn
         |> put_flash(:info, "Experiment updated successfully.")
         |> redirect(to: experiment_path(conn, :index))

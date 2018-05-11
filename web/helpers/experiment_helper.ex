@@ -125,8 +125,8 @@ defmodule ProComPrag.ExperimentHelper do
       trials -> trials
                 |> Enum.map(fn ({k, v}) -> {Integer.parse(k), v} end)
                 |> Enum.to_list
-                |> Enum.sort(fn ({key1, value1}, {key2, value2}) -> key1 < key2 end)
-                |> Enum.map(fn ({k, v}) -> v end)
+                |> Enum.sort(fn ({key1, _value1}, {key2, _value2}) -> key1 < key2 end)
+                |> Enum.map(fn ({_k, v}) -> v end)
     end
   end
 

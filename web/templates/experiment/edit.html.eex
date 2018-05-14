@@ -1,3 +1,13 @@
 <h2>Edit an experiment</h2>
 
+<p>
+  Please use the endpoints shown below when submitting/retrieving experiments:
+</p>
+
+<ul>
+  <li>Submission: <code><i>base_url</i>/api/submit_experiment/<%= @experiment.id %></code></li>
+  <li>Dynamic retrieval: <code><i>base_url</i>/api/retrieve_experiment/<%= @experiment.id %></code></li>
+</ul>
+
+
 <%= render "form.html", changeset: @changeset, action: experiment_path(@conn, :update, @experiment), back_action: experiment_path(@conn, :index) %>

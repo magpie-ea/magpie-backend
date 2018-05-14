@@ -45,7 +45,7 @@
           <%= link "Edit", to: experiment_path(@conn, :edit, experiment), class: "btn btn-warning btn-sm" %>
         </td>
         <td class="text-right">
-          <%= link "CSV", to: experiment_path(@conn, :retrieve_as_csv, experiment), class: "btn btn-success btn-sm" %>
+          <%= link "Retrieve CSV", to: experiment_path(@conn, :retrieve_as_csv, experiment), class: "btn btn-success btn-sm" %>
         </td>
       </tr>
     <% end %>

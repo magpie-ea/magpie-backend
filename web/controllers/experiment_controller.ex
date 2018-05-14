@@ -186,4 +186,21 @@ defmodule ProComPrag.ExperimentController do
         end
   end
 
+  def toggle(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+    active = experiment.active
+    changeset = Ecto.Changeset.change experiment, active: !active
+
+    case Repo.update changeset do
+      {:ok, struct} ->
+        conn
+        |> put_flash(:info, "The activation status has been successfully changed to #{!active}")
+        |> redirect(to: experiment_path(conn, :edit, experiment))
+      {:error, changeset} ->
+        conn
+        |> put_flash(:error, "The activation status wasn't changed successfully!")
+        |> redirect(to: experiment_path(conn, :edit, experiment))
+    end
+  end
+
 end

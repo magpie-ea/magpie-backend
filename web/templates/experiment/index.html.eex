@@ -22,7 +22,7 @@
     <%= for experiment <- @experiments do %>
 
       <tr>
-        <td><%= experiment.experiment_id %></td>
+        <td><%= experiment.name %></td>
         <td><%= experiment.author %></td>
         <td><%= experiment.description %></td>
         <td>
@@ -42,7 +42,7 @@
           <%= link "Edit experiment", to: experiment_path(@conn, :edit, experiment), class: "btn btn-warning btn-sm" %>
         </td>
         <td class="text-right">
-          <%= link "Retrieve experiment results", to: experiment_path(@conn, :retrieve, experiment), class: "btn btn-success btn-sm" %>
+          <%= link "Retrieve experiment results", to: experiment_path(@conn, :retrieve_as_csv, experiment), class: "btn btn-success btn-sm" %>
         </td>
       </tr>
     <% end %>

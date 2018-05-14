@@ -46,7 +46,7 @@ documentation of the front end. Data is submitted to the server via HTTP POST.
 Data in `exp.data` requires **four crucial values** for the data to be processable by the
 server:
 - `author`: The author of this experiment
-- `experiment_id`: The identifier (can be a string) that the author uses to name this experiment
+- `name`: The identifier (can be a string) that the author uses to name this experiment
 - `trials`: A JSON array containing trial objects. The keys contained in each trial object should be the same.
 
 Additionally, an optional array named `trial_keys_order`, which specifies the order in which the trial data should be
@@ -59,7 +59,7 @@ An example object from the [Minimal Template](https://github.com/ProComPrag/Mini
 ```json
 {
    "author":"Random Jane",
-   "experiment_id":"MinimalTemplate",
+   "name":"MinimalTemplate",
    "description":"A minimal template for a browser-based experiment which can be deployed in several ways",
    "startDateTime":"Sun Apr 01 2018 21:31:56 GMT+0200 (CEST)",
    "total_exp_time_minutes":0.1122,
@@ -162,17 +162,17 @@ $.ajax({
 })
 ```
 
-The reason for error would most likely be missing mandatory fields (i.e. `author`, `experiment_id`, `description`, `trials`) in the JSON file.
+The reason for error would most likely be missing mandatory fields (i.e. `author`, `name`, `description`, `trials`) in the JSON file.
 
 Note that `crossDomain: true` is needed since the server domain will likely be different the domain where the experiment is presented to the participant.
 
 ## Retrieving experiment results
-Just visit the server (e.g. at https://procomprag.herokuapp.com), enter the `experiment_id` and `author` originally contained within the JSON file, and hit "Submit". Authentication mechanisms might be added later, if necessary.
+Just visit the server (e.g. at https://procomprag.herokuapp.com), enter the `name` and `author` originally contained within the JSON file, and hit "Submit". Authentication mechanisms might be added later, if necessary.
 
 ## Dynamic experiment result retrieval as JSON
 For some experiments, there might be a need to fetch and use the data from previous experiment submissions in order to dynamically adjust the future assignments.
 
-One can now specify the keys that should be fetched in the "Edit Experiment" user interface. Then, with a HTTP GET call to the `dynamic_retrieval` endpoint, specifying `author` and `experiment_id`, e.g. https://procomprag.herokuapps.com/api/dynamic_retrieval?author=RandomJane&experiment_id=MinimalTemplateDEMO, one will be able to get a JSON object that contains the results so far.
+One can now specify the keys that should be fetched in the "Edit Experiment" user interface. Then, with a HTTP GET call to the `dynamic_retrieval` endpoint, specifying `author` and `name`, e.g. https://procomprag.herokuapps.com/api/dynamic_retrieval?author=RandomJane&name=MinimalTemplateDEMO, one will be able to get a JSON object that contains the results so far.
 
 Example response after specifying `option_chosen`, `RT` and `timeSpent` as keys on the `MinimalTemplate` experiment:
 

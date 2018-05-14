@@ -63,19 +63,12 @@ defmodule ProComPrag.ExperimentView do
   end
 
   defp transform_submission(submission, keys) do
+    # Here, each "result" is a JSON array of JSON objects (trials) with the same set of keys
     # Simply check if the keys are specified.
-    contents = submission.results
-    trials = Map.get(contents, "trials")
-
-    contents = contents
-    |> Enum.filter(fn ({k, _v}) -> Enum.member?(keys, k) end)
-    |> Map.new
-
-    trials = trials
-    |> Enum.map(fn t -> t
-    |> Enum.filter(fn ({k, _v}) -> Enum.member?(keys, k) end)
-    |> Map.new
+    submission.results
+    |> Enum.map(fn trial -> trial
+      |> Enum.filter(fn ({k, _v}) -> Enum.member?(keys, k) end)
+      |> Map.new
     end)
-    Map.put(contents, "trials", trials)
   end
 end

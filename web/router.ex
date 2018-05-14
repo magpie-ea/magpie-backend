@@ -23,14 +23,14 @@ defmodule ProComPrag.Router do
     # A special endpoint only for activating/deactivating an experiment
     get "/experiments/:id/toggle", ExperimentController, :toggle
 
-    get "/experiments/:id/retrieve", ExperimentController, :retrieve
+    get "/experiments/:id/retrieve", ExperimentController, :retrieve_as_csv
 
   end
 
   scope "/api", ProComPrag do
     pipe_through :api
 
-    post "/submit_experiment", ExperimentController, :submit
-    get "/dynamic_retrieval", ExperimentController, :dynamic_retrieve
+    post "/submit_experiment/:id/", ExperimentController, :submit
+    get "/retrieve_experiment/:id/", ExperimentController, :retrieve_as_json
   end
 end

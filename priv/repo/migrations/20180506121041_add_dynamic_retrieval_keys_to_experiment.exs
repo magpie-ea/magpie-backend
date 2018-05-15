@@ -1,4 +1,4 @@
-defmodule ProComPrag.Repo.Migrations.AddDynamicRetrievalKeysToExperiment do
+defmodule BABE.Repo.Migrations.AddDynamicRetrievalKeysToExperiment do
   use Ecto.Migration
 
   def change do

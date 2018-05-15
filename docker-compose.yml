@@ -12,7 +12,7 @@ services:
       - PORT=4000
       - DOCKER=true
     volumes:
-      - procomprag-app-volume:/app
+      - babe-app-volume:/app
     # Ensures that the postgres service is started first.
     depends_on:
       - db
@@ -20,14 +20,14 @@ services:
     image: postgres:10
     volumes:
       # Just preserve the postgresql data in the local folder.
-      - procomprag-db-volume:/var/lib/postgresql/data
+      - babe-db-volume:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: procomprag
-      POSTGRES_USER: procomprag_dev
-      POSTGRES_DB: procomprag_dev
+      POSTGRES_PASSWORD: babe
+      POSTGRES_USER: babe_dev
+      POSTGRES_DB: babe_dev
 
 volumes:
-  procomprag-app-volume:
+  babe-app-volume:
     external: true
-  procomprag-db-volume:
+  babe-db-volume:
     external: true

@@ -21,7 +21,7 @@ helps receive, store and retrieve data. Work on this project was funded via the 
 [Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research
 Foundation (DFG Schwerpunktprogramm 1727).
 
-If you encounter any bugs during your experiments please [submit an issue](https://github.com/x-ji/ProComPrag/issues).
+If you encounter any bugs during your experiments please [submit an issue](https://github.com/x-ji/BABE/issues).
 
 A live version of the server is currently deployed at https://procomprag.herokuapp.com
 
@@ -31,7 +31,7 @@ For the documentation of the entire _babe project, please refer to the [project 
 This section documents the server program.
 
 ## Username and password for authentication
-The app now comes with [Basic access Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). The username and password are set under `config :procomprag, :authentication`.
+The app now comes with [Basic access Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). The username and password are set under `config :babe, :authentication`.
 
 For local deployment (`:dev` environment), the default username is `default` and the default password is `password`. You may change it in `dev.exs`.
 
@@ -40,7 +40,7 @@ If you're deploying on Heroku, be sure to set environment variables `AUTH_USERNA
 
 The server expects to receive results from experiments which are structured in a particular
 way, usually stored in variable `exp.data`. For a minimal example, look at the
-[Minimal Template](https://github.com/ProComPrag/MinimalTemplate), together with the
+[Minimal Template](https://github.com/BABE/MinimalTemplate), together with the
 documentation of the front end. Data is submitted to the server via HTTP POST.
 
 Data in `exp.data` requires **four crucial values** for the data to be processable by the
@@ -55,7 +55,7 @@ Additionally, an optional array named `trial_keys_order`, which specifies the or
 Any additional keys in the `exp.data` object will be printed in the CSV file output as well. However, note that the
 basis for CSV generation will be the `trials` array, i.e. each trial within the `trials` array will result in one row in the final CSV file.
 
-An example object from the [Minimal Template](https://github.com/ProComPrag/MinimalTemplate) is shown below:
+An example object from the [Minimal Template](https://github.com/BABE/MinimalTemplate) is shown below:
 ```json
 {
    "author":"Random Jane",
@@ -423,7 +423,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 1. Ensure that you have a [Heroku account](https://signup.heroku.com/) already, and have the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed and working on your computer.
 
-2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/ProComPrag/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/BABE/BABE.git` or `git clone git@github.com:BABE/BABE.git`.
 
 3. `cd` into the project directory just cloned from your Terminal (or cmd.exe on Windows).
 
@@ -468,14 +468,14 @@ The following steps require an internet connection. After they are finished, the
   - Although the Docker app on Windows and Mac asks for login credentials to Docker Hub, they are not needed for local deployment . You can proceed without creating any Docker account/logging in.
   - Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
 
-2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone the server repo with `git clone https://github.com/b-a-b-e/ProComPrag.git` or `git clone git@github.com:ProComPrag/ProComPrag.git`.
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone the server repo with `git clone https://github.com/b-a-b-e/BABE.git` or `git clone git@github.com:BABE/BABE.git`.
 
 3. Open a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows), `cd` into the project directory just cloned via git.
 
 4. For the first-time setup, run in the terminal
   ```
-  docker volume create --name procomprag-app-volume -d local
-  docker volume create --name procomprag-db-volume -d local
+  docker volume create --name babe-app-volume -d local
+  docker volume create --name babe-db-volume -d local
   docker-compose run --rm web bash -c "mix deps.get && npm install && node node_modules/brunch/bin/brunch build && mix ecto.migrate"
   ```
 
@@ -483,7 +483,7 @@ The following steps require an internet connection. After they are finished, the
 
 After first-time installation, you can launch a local server instance which sets up the experiment in your browser and stores the results.
 
-1. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running ProComPrag.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
+1. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1  | [info] Running BABE.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
 
 2. Visit `localhost:4000` in your browser. You should see the server up and running.
 
@@ -491,7 +491,7 @@ After first-time installation, you can launch a local server instance which sets
 
 3. Use <kbd>Ctrl + C</kbd> to shut down the server.
 
-Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/procomprag-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
+Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/babe-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
 
 
 # Experiments (Frontend)

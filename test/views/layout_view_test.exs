@@ -1,3 +1,3 @@
-defmodule ProComPrag.LayoutViewTest do
-  use ProComPrag.ConnCase, async: true
+defmodule BABE.LayoutViewTest do
+  use BABE.ConnCase, async: true
 end

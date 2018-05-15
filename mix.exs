@@ -1,8 +1,8 @@
-defmodule ProComPrag.Mixfile do
+defmodule BABE.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :procomprag,
+    [app: :babe,
      version: "0.0.1",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
@@ -18,7 +18,7 @@ defmodule ProComPrag.Mixfile do
 
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {ProComPrag, []},
+    [mod: {BABE, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
                     :phoenix_ecto, :postgrex]]
   end

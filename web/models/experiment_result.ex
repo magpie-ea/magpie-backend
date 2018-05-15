@@ -1,10 +1,10 @@
 # Now it is actually better called "ExperimentResult", since I'll create another model for experiment management. But anyways let's keep it first?
-defmodule ProComPrag.ExperimentResult do
+defmodule BABE.ExperimentResult do
   @moduledoc """
   An ExperimentResult corresponds to a set of results obtained from one participant finishing one complete experiment, which usually consists of several trials.
   """
 
-  use ProComPrag.Web, :model
+  use BABE.Web, :model
 
   schema "experiment_results" do
     # This is a map, representing the whole JSON object received when the experiment was first submitted.
@@ -14,7 +14,7 @@ defmodule ProComPrag.ExperimentResult do
     # Now that we record JSON arrays, seems that we actually need to change the type to array of map? Is it that complicated?
     field :results, {:array, :map}
 
-    belongs_to :experiment, ProComPrag.Experiment
+    belongs_to :experiment, BABE.Experiment
 
     timestamps()
   end

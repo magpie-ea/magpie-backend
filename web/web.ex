@@ -1,12 +1,12 @@
-defmodule ProComPrag.Web do
+defmodule BABE.Web do
   @moduledoc """
   A module that keeps using definitions for controllers,
   views and so on.
 
   This can be used in your application as:
 
-      use ProComPrag.Web, :controller
-      use ProComPrag.Web, :view
+      use BABE.Web, :controller
+      use BABE.Web, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -30,12 +30,12 @@ defmodule ProComPrag.Web do
     quote do
       use Phoenix.Controller
 
-      alias ProComPrag.Repo
+      alias BABE.Repo
       import Ecto
       import Ecto.Query
 
-      import ProComPrag.Router.Helpers
-      import ProComPrag.Gettext
+      import BABE.Router.Helpers
+      import BABE.Gettext
     end
   end
 
@@ -49,9 +49,9 @@ defmodule ProComPrag.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import ProComPrag.Router.Helpers
-      import ProComPrag.ErrorHelpers
-      import ProComPrag.Gettext
+      import BABE.Router.Helpers
+      import BABE.ErrorHelpers
+      import BABE.Gettext
     end
   end
 
@@ -65,10 +65,10 @@ defmodule ProComPrag.Web do
     quote do
       use Phoenix.Channel
 
-      alias ProComPrag.Repo
+      alias BABE.Repo
       import Ecto
       import Ecto.Query
-      import ProComPrag.Gettext
+      import BABE.Gettext
     end
   end
 

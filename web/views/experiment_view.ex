@@ -1,5 +1,5 @@
-defmodule ProComPrag.ExperimentView do
-  use ProComPrag.Web, :view
+defmodule BABE.ExperimentView do
+  use BABE.Web, :view
 
   # From https://medium.com/@chipdean/phoenix-array-input-field-implementation-7ec0fe0949d
   def array_input(form, field) do

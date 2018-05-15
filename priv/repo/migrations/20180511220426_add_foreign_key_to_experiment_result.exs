@@ -1,4 +1,4 @@
-defmodule ProComPrag.Repo.Migrations.AddForeignKeyToExperimentResult do
+defmodule BABE.Repo.Migrations.AddForeignKeyToExperimentResult do
   use Ecto.Migration
 
   def change do

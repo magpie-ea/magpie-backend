@@ -6,15 +6,15 @@
 use Mix.Config
 
 # General application configuration
-config :procomprag,
-  ecto_repos: [ProComPrag.Repo]
+config :babe,
+  ecto_repos: [BABE.Repo]
 
 # Configures the endpoint
-config :procomprag, ProComPrag.Endpoint,
+config :babe, BABE.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
-  render_errors: [view: ProComPrag.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: ProComPrag.PubSub,
+  render_errors: [view: BABE.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: BABE.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger

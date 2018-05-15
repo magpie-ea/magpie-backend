@@ -1,4 +1,4 @@
-defmodule ProComPrag.Repo.Migrations.ChangeResultsFromMapToArrayOfMaps do
+defmodule BABE.Repo.Migrations.ChangeResultsFromMapToArrayOfMaps do
   use Ecto.Migration
 
   def change do

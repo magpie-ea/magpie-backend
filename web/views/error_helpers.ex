@@ -1,4 +1,4 @@
-defmodule ProComPrag.ErrorHelpers do
+defmodule BABE.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule ProComPrag.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(ProComPrag.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(BABE.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(ProComPrag.Gettext, "errors", msg, opts)
+      Gettext.dgettext(BABE.Gettext, "errors", msg, opts)
     end
   end
 end

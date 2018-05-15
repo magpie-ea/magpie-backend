@@ -2,7 +2,7 @@ use Mix.Config
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :procomprag, ProComPrag.Endpoint,
+config :babe, BABE.Endpoint,
   http: [port: 4001],
   server: false
 
@@ -10,10 +10,10 @@ config :procomprag, ProComPrag.Endpoint,
 config :logger, level: :warn
 
 # Configure your database
-config :procomprag, ProComPrag.Repo,
+config :babe, BABE.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "procomprag_test",
+  database: "babe_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

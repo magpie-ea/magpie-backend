@@ -1,4 +1,4 @@
-defmodule ProComPrag.ExperimentHelper do
+defmodule BABE.ExperimentHelper do
   @moduledoc """
   Stores the helper functions which help to store and retrieve the experiments.
   """

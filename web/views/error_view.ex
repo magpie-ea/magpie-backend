@@ -1,5 +1,5 @@
-defmodule ProComPrag.ErrorView do
-  use ProComPrag.Web, :view
+defmodule BABE.ErrorView do
+  use BABE.Web, :view
 
   def render("404.html", _assigns) do
     "Page not found"

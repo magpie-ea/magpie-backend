@@ -1,8 +1,8 @@
-defmodule ProComPrag.Experiment do
+defmodule BABE.Experiment do
   @moduledoc """
   An Experiment corresponds to an experiment that the author plans to run. They can decide whether to deactivate the experiment so that no new submissions will be accepted.
   """
-  use ProComPrag.Web, :model
+  use BABE.Web, :model
 
   schema "experiments" do
     field :name, :string
@@ -14,7 +14,7 @@ defmodule ProComPrag.Experiment do
     field :current_submissions, :integer, default: 0, null: false
     field :dynamic_retrieval_keys, {:array, :string}
 
-    has_many :experiment_results, ProComPrag.ExperimentResult
+    has_many :experiment_results, BABE.ExperimentResult
 
     timestamps()
   end

@@ -1,4 +1,4 @@
-defmodule ProComPrag.Repo.Migrations.AddSubmissionCountToExperiment do
+defmodule BABE.Repo.Migrations.AddSubmissionCountToExperiment do
   use Ecto.Migration
 
   def change do

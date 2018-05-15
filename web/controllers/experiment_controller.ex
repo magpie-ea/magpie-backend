@@ -1,14 +1,14 @@
-defmodule ProComPrag.ExperimentController do
+defmodule BABE.ExperimentController do
   @moduledoc false
-  use ProComPrag.Web, :controller
-  plug BasicAuth, [use_config: {:procomprag, :authentication}] when not action in [:submit, :retrieve_as_json]
+  use BABE.Web, :controller
+  plug BasicAuth, [use_config: {:babe, :authentication}] when not action in [:submit, :retrieve_as_json]
   require Logger
   require Iteraptor
 
-  alias ProComPrag.Experiment
-  alias ProComPrag.ExperimentResult
+  alias BABE.Experiment
+  alias BABE.ExperimentResult
 
-  import ProComPrag.ExperimentHelper
+  import BABE.ExperimentHelper
 
 
   def index(conn, _params) do

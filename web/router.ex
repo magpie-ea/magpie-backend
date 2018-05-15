@@ -1,5 +1,5 @@
-defmodule ProComPrag.Router do
-  use ProComPrag.Web, :router
+defmodule BABE.Router do
+  use BABE.Web, :router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -13,7 +13,7 @@ defmodule ProComPrag.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", ProComPrag do
+  scope "/", BABE do
     pipe_through :browser # Use the default browser stack
 
     get "/", ExperimentController, :index
@@ -27,7 +27,7 @@ defmodule ProComPrag.Router do
 
   end
 
-  scope "/api", ProComPrag do
+  scope "/api", BABE do
     pipe_through :api
 
     post "/submit_experiment/:id/", ExperimentController, :submit

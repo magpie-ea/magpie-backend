@@ -1,4 +1,4 @@
-defmodule ProComPrag.Repo.Migrations.AddIndexOnExperimentId do
+defmodule BABE.Repo.Migrations.AddIndexOnExperimentId do
   use Ecto.Migration
 
   def change do

@@ -1,4 +1,4 @@
-defmodule ProComPrag.Repo.Migrations.RenameExperimentIdToName do
+defmodule BABE.Repo.Migrations.RenameExperimentIdToName do
   use Ecto.Migration
 
   def change do

@@ -1,4 +1,4 @@
-defmodule ProComPrag.ModelCase do
+defmodule BABE.ModelCase do
   @moduledoc """
   This module defines the test case to be used by
   model tests.
@@ -16,20 +16,20 @@ defmodule ProComPrag.ModelCase do
 
   using do
     quote do
-      alias ProComPrag.Repo
+      alias BABE.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import ProComPrag.ModelCase
+      import BABE.ModelCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ProComPrag.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(BABE.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(ProComPrag.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(BABE.Repo, {:shared, self()})
     end
 
     :ok
@@ -59,7 +59,7 @@ defmodule ProComPrag.ModelCase do
   """
   def errors_on(struct, data) do
     struct.__struct__.changeset(struct, data)
-    |> Ecto.Changeset.traverse_errors(&ProComPrag.ErrorHelpers.translate_error/1)
+    |> Ecto.Changeset.traverse_errors(&BABE.ErrorHelpers.translate_error/1)
     |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
   end
 end

@@ -1,4 +1,4 @@
 ExUnit.start
 
-Ecto.Adapters.SQL.Sandbox.mode(ProComPrag.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(BABE.Repo, :manual)
 

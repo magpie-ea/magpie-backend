@@ -8,7 +8,6 @@
       <th>ID</th>
       <th>Name</th>
       <th>Author</th>
-      <th>Description</th>
       <th>Submissions</th>
       <th>Creation</th>
       <th>Last Updated</th>
@@ -27,7 +26,6 @@
         <td><%= experiment.id %></td>
         <td><%= experiment.name %></td>
         <td><%= experiment.author %></td>
-        <td><%= experiment.description %></td>
         <td>
           <%= experiment.current_submissions %>
           <%= if experiment.maximum_submissions do %>

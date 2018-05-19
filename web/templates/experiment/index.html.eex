@@ -2,7 +2,7 @@
 
 <%= link "New", to: experiment_path(@conn, :new), class: "btn btn-primary btn-lg" %>
 
-<table class="table">
+<table class="table sortable">
   <thead>
     <tr>
       <th>ID</th>

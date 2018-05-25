@@ -14,7 +14,7 @@ use Mix.Config
 config :babe, BABE.Endpoint,
   http: [port: {:system, "PORT"}],
   # Replace the host with your own application URL!
-  url: [scheme: "https", host: "procomprag.herokuapp.com", port: 443],
+  url: [scheme: "https", host: "babe-backend.herokuapp.com", port: 443],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json",
   # Configuration for Heroku

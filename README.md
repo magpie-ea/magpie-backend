@@ -59,7 +59,7 @@ All objects of the array should contain a set of identical keys. Each object nor
 Note that to [POST a JSON object correctly](https://stackoverflow.com/questions/12693947/jquery-ajax-how-to-send-json-instead-of-querystring),
  one needs to specify the `Content-Type` header as `application/json`, and use `JSON.stringify` to encode the data first.
 
-Note that `crossDomain: true` is needed since the server domain will likely be different the domain where the experiment is presented to the participant.
+Note that `crossDomain: true` is needed since the server domain will likely be different to the domain where the experiment is presented to the participant.
 
 ## Retrieval of experiment results as CSV
 
@@ -86,7 +86,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 1. Ensure that you have a [Heroku account](https://signup.heroku.com/) already, and have the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed and working on your computer.
 
-2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/BABE/BABE.git` or `git clone git@github.com:BABE/BABE.git`.
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/babe-project/BABE` or `git clone git@github.com:babe-project/BABE.git`.
 
 3. `cd` into the project directory just cloned from your Terminal (or cmd.exe on Windows).
 
@@ -98,7 +98,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 6. You may want to change the application name instead of using the default name. In that case, go to the Heroku Dashboard, find the newly created app, and edit the name in `Settings` panel.
 
-7. Edit line 17 of the file `config/prod.exs`. Replace the part `procomprag.herokuapp.com` after `host` with the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277.herokuapp.com`, or the app name that you set at step 6, e.g.  `appname.herokuapp.com`). You shouldn't need to modify anything else.
+7. Edit line 17 of the file `config/prod.exs`. Replace the part `babe-backend.herokuapp.com` after `host` with the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277.herokuapp.com`, or the app name that you set at step 6, e.g.  `appname.herokuapp.com`). You shouldn't need to modify anything else.
 
 8. Ensure that you're at the top-level project directory. Run
 ```
@@ -156,7 +156,7 @@ After first-time installation, you can launch a local server instance which sets
 
 3. Use <kbd>Ctrl + C</kbd> to shut down the server.
 
-Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/babe-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
+Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/babe-db-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
 
 
 # Experiments (Frontend)
@@ -165,9 +165,9 @@ This program is intended to serve as the backend which stores and returns experi
 For detailed documentation on the structure and deployment of experiments, please refer to the [minimal template](https://github.com/b-a-b-e/MinimalTemplate/) and the [_babe documentation](https://b-a-b-e.github.io/babe_site/).
 
 # Additional Notes
-- Using JSON objects as the value type of any key in the submitted object is currently not allowed. The reason is that it would be hard for the CSV writer to correctly format and produce a CSV file based on such a format.
+- Using JSON object as the value type in the experiment results object to be submitted is currently not allowed. The reason is that it would be hard for the CSV writer to correctly format and produce a CSV file based on such a format. JSON array is supported though not recommended. It's best to split experiment results into different keys containing simple values, e.g. `response1`, `response2`, `response3`.
 
-- There is limited guarantee on DB security on Heroku's Hobby grade. The experiment authors are expected to take responsibility of the results. They should retrieve them and perform backups as soon as possible.
+- There is limited guarantee on database reliability on Heroku's Hobby grade. The experiment authors are expected to take responsibility of the results. They should retrieve them and perform backups as soon as possible.
 
 - This app is based on Phoenix Framework and written in Elixir. If you wish to modify the app, please look at the resources available at:
   - Official website: http://www.phoenixframework.org/

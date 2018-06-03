@@ -19,13 +19,17 @@
 <!-- markdown-toc end -->
 
 This is a server backend to run simple psychological experiments in the browser and online. It
-helps receive, store and retrieve data. Work on this project was funded via the project
-[Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research
-Foundation (DFG Schwerpunktprogramm 1727).
+helps receive, store and retrieve data.
+
+A [live demo](https://babe-demo.herokuapp.com/) of the app is available. Note that this demo doesn't require user authentication.
 
 If you encounter any bugs during your experiments please [submit an issue](https://github.com/babe-project/BABE/issues).
 
-For the documentation of the entire _babe project, please refer to the [project site](https://babe-project.github.io/babe_site)
+For the documentation of the entire _babe project, please refer to the [project site](https://babe-project.github.io/babe_site).
+
+Work on this project was funded via the project
+[Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research
+Foundation (DFG Schwerpunktprogramm 1727).
 
 # Server Documentation
 This section documents the server program.
@@ -96,15 +100,16 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
   (N.B.: Although the command line output tells you to run `git push heroku master`, don't do it yet.)
 
-6. You may want to change the application name instead of using the default name. In that case, go to the Heroku Dashboard, find the newly created app, and edit the name in `Settings` panel.
+6. You may want to change the application name instead of using the default name. In that case, run `heroku apps:rename newname`.
 
-7. Edit line 17 of the file `config/prod.exs`. Replace the part `babe-backend.herokuapp.com` after `host` with the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277.herokuapp.com`, or the app name that you set at step 6, e.g.  `appname.herokuapp.com`). You shouldn't need to modify anything else.
+7. Edit line 17 of the file `config/prod.exs`. Replace the part `babe-backend.herokuapp.com` after `host` with the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277.herokuapp.com`, or the app name that you set at step 6, e.g.  `newname.herokuapp.com`). You shouldn't need to modify anything else.
 
 8. Ensure that you're at the top-level project directory. Run
-```
-heroku addons:create heroku-postgresql:hobby-dev
-heroku config:set POOL_SIZE=18
-```
+
+  ```
+  heroku addons:create heroku-postgresql:hobby-dev
+  heroku config:set POOL_SIZE=18
+  ```
 
 9. Run `mix phx.gen.secret`. Then run `heroku config:set SECRET_KEY_BASE="OUTPUT"`, where `OUTPUT` should be the output of the `mix phx.gen.secret` step.
 
@@ -112,7 +117,12 @@ heroku config:set POOL_SIZE=18
 
 10. Run `git add config/prod.exs`, then `git commit -m "Set app URL"`.
 
-11. Don't forget to set the environment variables `AUTH_USERNAME` and `AUTH_PASSWORD`, either in the Heroku web interface or via the command line.
+11. Don't forget to set the environment variables `AUTH_USERNAME` and `AUTH_PASSWORD`, either in the Heroku web interface or via the command line, i.e.
+
+  ```
+  heroku config:set AUTH_USERNAME="your_username"
+  heroku config:set AUTH_PASSWORD="your_password"
+  ```
 
 12. Run `git push heroku master`. This will push the repo to the git remote at Heroku (instead of the original remote at Github), and deploy the app.
 

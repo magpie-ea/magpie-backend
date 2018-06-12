@@ -13,6 +13,7 @@
         - [Local (Offline) Deployment](#local-offline-deployment)
             - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
             - [Deployment](#deployment)
+    - [Upgrading a deployed instance of the server](#upgrading-a-deployed-instance-of-the-server)
 - [Experiments (Frontend)](#experiments-frontend)
 - [Additional Notes](#additional-notes)
 

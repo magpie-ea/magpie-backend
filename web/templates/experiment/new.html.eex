@@ -19,10 +19,6 @@
     <%= error_tag f, :author %>
   </div>
 
-  <p>
-    Note: The combination of <code>name</code> and <code>author</code> must be unique.
-  </p>
-
   <div class="form-group">
     <%= label f, :active, "Active experiment", class: "control-label" %>
     <%= checkbox f, :active, checked: true %>

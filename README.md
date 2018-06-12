@@ -168,6 +168,10 @@ After first-time installation, you can launch a local server instance which sets
 
 Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/babe-db-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
 
+## Upgrading a deployed instance of the server
+1. `git pull` to pull in the newest changes.
+2. `git push heroku master` to pull the changes to the deployed instance hosted on Heroku.
+3. You may need to run `heroku run "POOL_SIZE=2" mix ecto.migrate` if there are new changes on the database.
 
 # Experiments (Frontend)
 This program is intended to serve as the backend which stores and returns experiment results. An experiment frontend is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Github Pages](https://pages.github.com/)) and loaded in the participant's browser.

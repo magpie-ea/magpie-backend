@@ -40,10 +40,10 @@
         <td><%= experiment.active %></td>
 
         <td class="text-right">
-          <%= link "Edit", to: experiment_path(@conn, :edit, experiment), class: "btn btn-warning btn-sm" %>
+          <%= link "Retrieve CSV", to: experiment_path(@conn, :retrieve_as_csv, experiment), class: "btn btn-success btn-sm" %>
         </td>
         <td class="text-right">
-          <%= link "Retrieve CSV", to: experiment_path(@conn, :retrieve_as_csv, experiment), class: "btn btn-success btn-sm" %>
+          <%= link "Edit", to: experiment_path(@conn, :edit, experiment), class: "btn btn-warning btn-sm" %>
         </td>
         <td class="text-right">
           <%= link "Delete", to: experiment_path(@conn, :delete, experiment), method: :delete, data: [confirm: "You are about to delete #{experiment.name}. Make sure that you have already backed up the experiment results, if necessary!"], class: "btn btn-danger btn-sm" %>

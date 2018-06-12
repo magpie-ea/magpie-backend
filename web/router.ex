@@ -18,7 +18,8 @@ defmodule BABE.Router do
 
     get "/", ExperimentController, :index
 
-    resources "/experiments", ExperimentController, only: [:index, :new, :create, :edit, :update]
+    # No need for :show as this is currently already covered by :edit
+    resources "/experiments", ExperimentController, except: [:show]
 
     # A special endpoint only for activating/deactivating an experiment
     get "/experiments/:id/toggle", ExperimentController, :toggle

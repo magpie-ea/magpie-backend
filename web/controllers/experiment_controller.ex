@@ -53,7 +53,7 @@ defmodule BABE.ExperimentController do
     case experiment do
       nil -> conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(404, "No experiment with the author and name combination found. Please check your configuration.")
+        |> send_resp(404, "No experiment with the specified id found. Please check your configuration.")
       _ -> case experiment.active do
              false -> conn
                |> put_resp_content_type("text/plain")
@@ -149,13 +149,23 @@ defmodule BABE.ExperimentController do
     changeset = Experiment.changeset(experiment, experiment_params)
 
     case Repo.update(changeset) do
-      {:ok, _experiment} ->
+      {:ok, experiment} ->
         conn
-        |> put_flash(:info, "Experiment updated successfully.")
+        |> put_flash(:info, "Experiment #{experiment.name} updated successfully.")
         |> redirect(to: experiment_path(conn, :index))
       {:error, changeset} ->
         render(conn, "edit.html", experiment: experiment, changeset: changeset)
     end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+
+    Repo.delete!(experiment)
+
+    conn
+    |> put_flash(:info, "Experiment deleted successfully.")
+    |> redirect(to: experiment_path(conn, :index))
   end
 
   @doc """
@@ -202,5 +212,6 @@ defmodule BABE.ExperimentController do
         |> redirect(to: experiment_path(conn, :edit, experiment))
     end
   end
+
 
 end

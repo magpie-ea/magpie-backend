@@ -12,7 +12,8 @@ defmodule BABE.ExperimentController do
 
 
   def index(conn, _params) do
-    experiments = Repo.all(Experiment)
+    # Repo.all takes a query argument.
+    experiments = Repo.all(Experiment |> order_by(asc: :id))
     render(conn, "index.html", experiments: experiments)
   end
 

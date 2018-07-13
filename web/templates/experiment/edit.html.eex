@@ -5,8 +5,8 @@
 </p>
 
 <ul>
-  <li>Submission: <code><i>base_url</i>/api/submit_experiment/<%= @experiment.id %></code></li>
-  <li>Dynamic retrieval: <code><i>base_url</i>/api/retrieve_experiment/<%= @experiment.id %></code></li>
+  <li>Submission: <code><%= BABE.Router.Helpers.experiment_url(BABE.Endpoint, :submit, @experiment.id) %></code></li>
+  <li>Dynamic retrieval: <code><%= BABE.Router.Helpers.experiment_url(BABE.Endpoint, :retrieve_as_json, @experiment.id) %></code></li>
 </ul>
 
 <%= form_for @changeset, experiment_path(@conn, :update, @experiment), fn f -> %>

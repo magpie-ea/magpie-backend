@@ -38,6 +38,9 @@ config :babe, :authentication,
 
 config :babe, :environment, :prod
 
+# This is useful when the app is behind a reverse proxy and you need to actually use the URL shown to the outside by the reverse proxy, e.g. in template generation in web/templates/experiments/edit.html..ex
+# config :babe, :real_url, "URL_PRESENTED_BY_REVERSE_PROXY"
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

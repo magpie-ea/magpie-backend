@@ -71,4 +71,10 @@ defmodule BABE.ExperimentView do
       |> Map.new
     end)
   end
+
+  def get_endpoint_url(type, id) do
+    base_url = Application.get_env(:babe, :real_url, BABE.Endpoint.url)
+    path = BABE.Router.Helpers.experiment_path(BABE.Endpoint, type, id)
+    base_url <> path
+  end
 end

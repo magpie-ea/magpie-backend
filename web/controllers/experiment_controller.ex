@@ -116,13 +116,7 @@ defmodule BABE.ExperimentController do
       _ ->
         # Name the CSV file to be returned.
         orig_name = "results_" <> name <> "_" <> author <> ".csv"
-        file_path =
-        # On Heroku the app is in the /app/ folder.
-        if Application.get_env(:my_app, :environment) == :prod do
-          "/app/results/" <> orig_name
-        else
-          "results/" <> orig_name
-        end
+        file_path = "results/" <> orig_name
         file = File.open!(file_path, [:write, :utf8])
         # This method actually processes the submissions retrieved and write them to the CSV file.
         write_submissions(file, experiment_submissions)

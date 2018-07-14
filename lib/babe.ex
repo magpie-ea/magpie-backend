@@ -7,11 +7,7 @@ defmodule BABE do
     import Supervisor.Spec
 
     # Create the directory to store the results
-    if Application.get_env(:my_app, :environment) == :prod do
-      File.mkdir("/app/results/")
-    else
-      File.mkdir("results/")
-    end
+    File.mkdir("results/")
     # Define workers and child supervisors to be supervised
     children = [
       # Start the Ecto repository

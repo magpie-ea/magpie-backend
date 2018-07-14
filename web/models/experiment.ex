@@ -16,7 +16,7 @@ defmodule BABE.Experiment do
 
     has_many :experiment_results, BABE.ExperimentResult
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

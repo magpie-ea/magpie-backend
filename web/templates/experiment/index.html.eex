@@ -34,8 +34,8 @@
           <% end %>
         </td>
 
-        <td style="white-space:nowrap;"><%= NaiveDateTime.truncate(experiment.inserted_at, :second) %></td>
-        <td style="white-space:nowrap;"><%= NaiveDateTime.truncate(experiment.updated_at, :second) %></td>
+        <td style="white-space:nowrap;"><%= format_timestamp(experiment.inserted_at) %></td>
+        <td style="white-space:nowrap;"><%= format_timestamp(experiment.inserted_at) %></td>
 
         <td><%= experiment.active %></td>
 

@@ -20,7 +20,7 @@ defmodule BABE.Mixfile do
   def application do
     [mod: {BABE, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex]]
+                    :phoenix_ecto, :postgrex, :calendar]]
   end
 
   # Specifies which paths to compile per environment.
@@ -44,6 +44,7 @@ defmodule BABE.Mixfile do
      {:cors_plug, "~> 1.2"},
      {:csv, "~> 2.1"},
      {:basic_auth, "~> 2.2.2"},
+     {:calendar, "~> 0.17.2"},
      # Error checking and linting
      {:credo, "~> 0.5", only: [:dev, :test]},
      {:dogma, "~> 0.1", only: [:dev]}

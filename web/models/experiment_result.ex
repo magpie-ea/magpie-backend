@@ -15,7 +15,7 @@ defmodule BABE.ExperimentResult do
 
     belongs_to :experiment, BABE.Experiment
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(model, params \\ %{}) do

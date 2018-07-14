@@ -77,4 +77,15 @@ defmodule BABE.ExperimentView do
     path = BABE.Router.Helpers.experiment_path(BABE.Endpoint, type, id)
     base_url <> path
   end
+
+  def format_timestamp(timestamp, timezone) do
+    timestamp
+    |> Calendar.DateTime.shift_zone!(timezone)
+    |> Calendar.Strftime.strftime!("%Y-%m-%d %H:%M")
+  end
+
+  def format_timestamp(timestamp) do
+    timezone = Application.get_env(:babe, :timezone, "Etc/UTC")
+    format_timestamp(timestamp, timezone)
+  end
 end

@@ -22,19 +22,39 @@ defmodule BABE.CustomRecordController do
     upload = custom_record_params["record"]
 
     try do
-      csv_content =
-        upload.path
-        |> File.stream!()
-        |> CSV.decode!(headers: true)
-        # We shouldn't need to manually verify that the rows are valid. The decode! should do it for us
-        # |> Stream.filter(fn({k, v}) -> k == :ok end)
-        # |> Stream.map(fn({k, v}) -> v end)
-        |> Enum.take_every(1)
+      content =
+        case upload.content_type do
+          "application/json" ->
+            upload.path
+            |> File.read!()
+            |> Poison.decode!()
+
+          "text/csv" ->
+            upload.path
+            |> File.stream!()
+            |> CSV.decode!(headers: true)
+            # We shouldn't need to manually verify that the rows are valid. The decode! should do it for us
+            # |> Stream.filter(fn({k, v}) -> k == :ok end)
+            # |> Stream.map(fn({k, v}) -> v end)
+            |> Enum.take_every(1)
+
+          _ ->
+            nil
+        end
+
+      if content == nil do
+        conn
+        |> put_flash(:error, "Make sure the file extension is either .csv or .json")
+        |> render("new.html",
+          changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
+        )
+        |> halt
+      end
 
       changeset =
         CustomRecord.changeset(%CustomRecord{
           name: custom_record_params["name"],
-          record: csv_content
+          record: content
         })
 
       case Repo.insert(changeset) do
@@ -49,7 +69,7 @@ defmodule BABE.CustomRecordController do
     rescue
       UndefinedFunctionError ->
         conn
-        |> put_flash(:error, "No CSV file selected.")
+        |> put_flash(:error, "No file selected.")
         |> render("new.html",
           changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
         )
@@ -58,7 +78,7 @@ defmodule BABE.CustomRecordController do
         conn
         |> put_flash(
           :error,
-          "Some rows in the CSV file weren't able to be parsed correctly. Please check the formatting."
+          "Some rows/contents in the file weren't able to be parsed correctly. Please check the formatting."
         )
         |> render("new.html",
           changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})

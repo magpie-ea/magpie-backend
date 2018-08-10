@@ -1,4 +1,4 @@
-<h1>Create a new experiment</h1>
+<h1>Create a New Experiment</h1>
 
 <%= form_for @changeset, experiment_path(@conn, :create), fn f -> %>
   <%= if @changeset.action do %>

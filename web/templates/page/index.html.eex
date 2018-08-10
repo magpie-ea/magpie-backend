@@ -1,5 +1,10 @@
-<!-- <h2>Welcome to BABE</h2> -->
+<h2>Basic Architecture for Browser-based Experiments</h2>
 
-<%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "btn btn-primary btn-block " %>
-
-<%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "btn btn-primary btn-block " %>
+<div class="row navigation-container">
+<div class="col-xs-6">
+<%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "btn btn-primary btn-lg btn-block " %>
+</div>
+<div class="col-xs-6">
+<%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "btn btn-success btn-lg btn-block " %>
+</div>
+</div>

@@ -22,7 +22,7 @@
   </div>
 
   <div class="form-group">
-    <%= label f, :record , "CSV file containing the data to be stored in this record (this will replace the old record)", class: "control-label" %>
+    <%= label f, :record , "CSV file containing the data to be stored in this record (this will replace the old record). The first row will be treated as the headers.", class: "control-label" %>
     <%= file_input f, :record, class: "form-control" %>
     <%= error_tag f, :record %>
   </div>

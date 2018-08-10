@@ -1,6 +1,9 @@
 <h2>Manage Experiments</h2>
 
 <%= link "New", to: experiment_path(@conn, :new), class: "btn btn-primary btn-lg" %>
+<br>
+<br>
+<%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "btn btn-default" %>
 
 <table class="table sortable">
   <thead>

@@ -18,6 +18,9 @@
     <tr>
       <td><%= record.id %></td>
       <td><%= record.name %></td>
+        <td class="text-right">
+          <%= link "Retrieve CSV", to: custom_record_path(@conn, :retrieve_as_csv, record), class: "btn btn-success btn-sm" %>
+        </td>
       <td class="text-right">
         <%= link "Edit", to: custom_record_path(@conn, :edit, record), class: "btn btn-warning btn-sm"  %>
       </td>

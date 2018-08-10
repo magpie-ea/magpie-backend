@@ -5,6 +5,9 @@ defmodule BABE.CustomRecordController do
 
   alias BABE.CustomRecord
 
+  # Used for retrieve_as_csv
+  import BABE.CustomRecordHelper
+
   def index(conn, _params) do
     custom_records = Repo.all(CustomRecord |> order_by(asc: :id))
     render(conn, "index.html", custom_records: custom_records)
@@ -67,5 +70,52 @@ defmodule BABE.CustomRecordController do
     custom_record = Repo.get!(CustomRecord, id)
     changeset = CustomRecord.changeset(custom_record)
     render(conn, "edit.html", record: custom_record, changeset: changeset)
+  end
+
+  def delete(conn, %{"id" => id}) do
+    custom_record = Repo.get!(CustomRecord, id)
+
+    Repo.delete!(custom_record)
+
+    conn
+    |> put_flash(:info, "CustomRecord #{custom_record.name} deleted successfully.")
+    |> redirect(to: custom_record_path(conn, :index))
+  end
+
+  def retrieve_as_csv(conn, %{"id" => id}) do
+    custom_record = Repo.get!(CustomRecord, id)
+
+    name = custom_record.name
+
+    # Name the CSV file to be returned.
+    orig_name = "results_" <> name <> ".csv"
+    file_path = "results/" <> orig_name
+    file = File.open!(file_path, [:write, :utf8])
+    # This method actually processes the submissions retrieved and write them to the CSV file.
+    write_record(file, custom_record.record)
+    File.close(file)
+
+    conn
+    |> send_download({:file, file_path})
+  end
+
+  def retrieve_as_json(conn, %{"id" => id}) do
+    # This is the "CustomRecord" object that's supposed to be associated with this request.
+    custom_record = Repo.get(CustomRecord, id)
+
+    case custom_record do
+      nil ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(
+          404,
+          "No custom_record with the id found. Please check your configuration."
+        )
+
+      _ ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> json(custom_record.record)
+    end
   end
 end

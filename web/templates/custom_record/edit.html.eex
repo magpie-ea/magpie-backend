@@ -5,7 +5,7 @@
 </p>
 
 <ul>
-  <!-- <li>Retrieval: <code><%#= get_endpoint_url(:retrieve_as_json, @record.id) %></code></li> -->
+  <li>Retrieval: <code><%= get_endpoint_url(:retrieve_as_json, @record.id) %></code></li>
 </ul>
 
 <%= form_for @changeset, custom_record_path(@conn, :update, @record), [multipart: true], fn f -> %>
@@ -22,7 +22,7 @@
   </div>
 
   <div class="form-group">
-    <%= label f, :record , "CSV file containing the data to be stored in this record (replaces the old record)", class: "control-label" %>
+    <%= label f, :record , "CSV file containing the data to be stored in this record (this will replace the old record)", class: "control-label" %>
     <%= file_input f, :record, class: "form-control" %>
     <%= error_tag f, :record %>
   </div>

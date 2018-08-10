@@ -29,6 +29,7 @@ defmodule BABE.Router do
 
     # get "/custom_records", CustomRecordController, :index
     resources("/custom_records", CustomRecordController, except: [:show])
+    get("/custom_records/:id/retrieve", CustomRecordController, :retrieve_as_csv)
   end
 
   scope "/api", BABE do
@@ -36,5 +37,6 @@ defmodule BABE.Router do
 
     post("/submit_experiment/:id/", ExperimentController, :submit)
     get("/retrieve_experiment/:id/", ExperimentController, :retrieve_as_json)
+    get("/retrieve_custom_record/:id/", CustomRecordController, :retrieve_as_json)
   end
 end

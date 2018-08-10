@@ -5,10 +5,10 @@
 </p>
 
 <ul>
-  <li>Retrieval: <code><%= get_endpoint_url(:retrieve_as_json, @record.id) %></code></li>
+  <li>Retrieval: <code><%= get_endpoint_url(:retrieve_as_json, @custom_record.id) %></code></li>
 </ul>
 
-<%= form_for @changeset, custom_record_path(@conn, :update, @record), [multipart: true], fn f -> %>
+<%= form_for @changeset, custom_record_path(@conn, :update, @custom_record), [multipart: true], fn f -> %>
   <%= if @changeset.action do %>
     <div class="alert alert-danger" >
       <p>Something is wrong. Please check the errors below.</p>

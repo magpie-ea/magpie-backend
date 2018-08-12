@@ -1,7 +1,12 @@
 defmodule BABE.ExperimentController do
   @moduledoc false
   use BABE.Web, :controller
-  plug BasicAuth, [use_config: {:babe, :authentication}] when not action in [:submit, :retrieve_as_json]
+
+  plug(
+    BasicAuth,
+    [use_config: {:babe, :authentication}] when not (action in [:submit, :retrieve_as_json])
+  )
+
   require Logger
   require Iteraptor
 
@@ -9,7 +14,6 @@ defmodule BABE.ExperimentController do
   alias BABE.ExperimentResult
 
   import BABE.ExperimentHelper
-
 
   def index(conn, _params) do
     # Repo.all takes a query argument.
@@ -22,7 +26,7 @@ defmodule BABE.ExperimentController do
   """
   def new(conn, _params) do
     changeset = Experiment.changeset(%Experiment{})
-    render conn, "new.html", changeset: changeset
+    render(conn, "new.html", changeset: changeset)
   end
 
   @doc """
@@ -38,6 +42,7 @@ defmodule BABE.ExperimentController do
         conn
         |> put_flash(:info, "#{experiment.name} created and set to active!")
         |> redirect(to: experiment_path(conn, :index))
+
       {:error, changeset} ->
         # The error message is already included in the template file and will be rendered by then.
         render(conn, "new.html", changeset: changeset)
@@ -52,15 +57,35 @@ defmodule BABE.ExperimentController do
     experiment = Repo.get(Experiment, id)
 
     case experiment do
-      nil -> conn
+      nil ->
+        conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(404, "No experiment with the specified id found. Please check your configuration.")
-      _ -> case experiment.active do
-             false -> conn
-               |> put_resp_content_type("text/plain")
-               |> send_resp(403, "The experiment is not active at the moment and submissions are not allowed.")
-             true -> if valid_results(results) do record_submission(conn, results, experiment) else conn |> send_resp(400, "The results are not submitted as a JSON array, or each object of the array does not contain the same set of keys.") end
+        |> send_resp(
+          404,
+          "No experiment with the specified id found. Please check your configuration."
+        )
+
+      _ ->
+        case experiment.active do
+          false ->
+            conn
+            |> put_resp_content_type("text/plain")
+            |> send_resp(
+              403,
+              "The experiment is not active at the moment and submissions are not allowed."
+            )
+
+          true ->
+            if valid_results(results) do
+              record_submission(conn, results, experiment)
+            else
+              conn
+              |> send_resp(
+                400,
+                "The results are not submitted as a JSON array, or each object of the array does not contain the same set of keys."
+              )
             end
+        end
     end
   end
 
@@ -72,10 +97,14 @@ defmodule BABE.ExperimentController do
       |> ExperimentResult.changeset(%{"results" => results})
 
     case Repo.insert(changeset) do
-      {:ok, _} -> # Update the submission count
+      # Update the submission count
+      {:ok, _} ->
         # No need to do this for now. Just count the number of associated ExperimentResult entries should work.
         current_submissions = experiment.current_submissions
-        changeset_experiment = Ecto.Changeset.change experiment, current_submissions: current_submissions + 1
+
+        changeset_experiment =
+          Ecto.Changeset.change(experiment, current_submissions: current_submissions + 1)
+
         # Automatically set the experiment to inactive if the maximum submission is reached.
         changeset_experiment =
           if current_submissions + 1 >= experiment.maximum_submissions do
@@ -83,16 +112,23 @@ defmodule BABE.ExperimentController do
           else
             changeset_experiment
           end
-        Repo.update! changeset_experiment
+
+        Repo.update!(changeset_experiment)
+
         # Currently I don't think there's a need to send the created resource back. Just acknowledge that the information is received.
         # created is 201
         send_resp(conn, :created, "")
+
       {:error, changeset} ->
         # unprocessable entity is 422
         IO.puts(changeset)
+
         conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(:unprocessable_entity, "Unsuccessful submission. The results are probably malformed.")
+        |> send_resp(
+          :unprocessable_entity,
+          "Unsuccessful submission. The results are probably malformed."
+        )
     end
   end
 
@@ -127,10 +163,6 @@ defmodule BABE.ExperimentController do
     end
   end
 
-  # Use this for "dynamic retrieval"
-  def show(conn, %{"id" => id}) do
-  end
-
   def edit(conn, %{"id" => id}) do
     experiment = Repo.get!(Experiment, id)
     changeset = Experiment.changeset(experiment)
@@ -148,6 +180,7 @@ defmodule BABE.ExperimentController do
         conn
         |> put_flash(:info, "Experiment #{experiment.name} updated successfully.")
         |> redirect(to: experiment_path(conn, :index))
+
       {:error, changeset} ->
         render(conn, "edit.html", experiment: experiment, changeset: changeset)
     end
@@ -171,42 +204,55 @@ defmodule BABE.ExperimentController do
     experiment = Repo.get(Experiment, id)
 
     case experiment do
-      nil -> conn
+      nil ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(
+          404,
+          "No experiment with the author and name combination found. Please check your configuration."
+        )
+
+      _ ->
+        case experiment.dynamic_retrieval_keys do
+          nil ->
+            conn
             |> put_resp_content_type("text/plain")
-            |> send_resp(404, "No experiment with the author and name combination found. Please check your configuration.")
-      _ -> case experiment.dynamic_retrieval_keys do
-        nil -> conn
-          |> put_resp_content_type("text/plain")
-          |> send_resp(403, "Please specify the keys for retrieval (in the user interface)!")
+            |> send_resp(403, "Please specify the keys for retrieval (in the user interface)!")
+
           _ ->
             experiment_results = Repo.all(assoc(experiment, :experiment_results))
+
             case experiment_results do
-              [] -> conn
-              |> put_resp_content_type("text/plain")
-              |> send_resp(404, "No submissions for this experiment recorded yet.")
+              [] ->
+                conn
+                |> put_resp_content_type("text/plain")
+                |> send_resp(404, "No submissions for this experiment recorded yet.")
+
               _ ->
-                  render(conn, "retrieval.json", keys: experiment.dynamic_retrieval_keys, submissions: experiment_results)
+                render(conn, "retrieval.json",
+                  keys: experiment.dynamic_retrieval_keys,
+                  submissions: experiment_results
+                )
             end
-          end
         end
+    end
   end
 
   def toggle(conn, %{"id" => id}) do
     experiment = Repo.get!(Experiment, id)
     active = experiment.active
-    changeset = Ecto.Changeset.change experiment, active: !active
+    changeset = Ecto.Changeset.change(experiment, active: !active)
 
-    case Repo.update changeset do
-      {:ok, struct} ->
+    case Repo.update(changeset) do
+      {:ok, _} ->
         conn
         |> put_flash(:info, "The activation status has been successfully changed to #{!active}")
         |> redirect(to: experiment_path(conn, :edit, experiment))
-      {:error, changeset} ->
+
+      {:error, _} ->
         conn
         |> put_flash(:error, "The activation status wasn't changed successfully!")
         |> redirect(to: experiment_path(conn, :edit, experiment))
     end
   end
-
-
 end

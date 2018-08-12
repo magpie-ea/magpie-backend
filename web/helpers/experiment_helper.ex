@@ -30,22 +30,31 @@ defmodule BABE.ExperimentHelper do
     # IO.inspect outputs = outputs ++ keys, label: "outputs"
 
     # For each experimentresult, get the results and concatenate it to the `outputs` list.
-    outputs = outputs ++ List.foldl(submissions, [], fn(submission, acc) -> acc ++ format_submission(submission, keys) end)
-    outputs |> CSV.encode |> Enum.each(&IO.write(file, &1))
+    outputs =
+      outputs ++
+        List.foldl(submissions, [], fn submission, acc ->
+          acc ++ format_submission(submission, keys)
+        end)
+
+    outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
   end
 
   # For each trial recorded in this one experimentresult, ensure the proper key order is used to extract values.
   defp format_submission(submission, keys) do
     # Essentially this is just reordering.
-    formatted = Enum.map(submission.results, fn(trial) ->
-        # Inject the column "submission_id"
-        trial = Map.put(trial, "submission_id", submission.id)
-        # For each trial, use the order specified by keys
-        keys
-        |> Enum.map(fn(k) -> trial[k] end)
-        # This is processing done when one of fields is an array. Though this type of submission should be discouraged.
-        |> Enum.map(fn(v) ->
-                          if is_list(v) do Enum.join(v, "|") else v end
+    Enum.map(submission.results, fn trial ->
+      # Inject the column "submission_id"
+      trial = Map.put(trial, "submission_id", submission.id)
+      # For each trial, use the order specified by keys
+      keys
+      |> Enum.map(fn k -> trial[k] end)
+      # This is processing done when one of fields is an array. Though this type of submission should be discouraged.
+      |> Enum.map(fn v ->
+        if is_list(v) do
+          Enum.join(v, "|")
+        else
+          v
+        end
       end)
     end)
   end

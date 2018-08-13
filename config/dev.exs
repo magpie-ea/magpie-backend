@@ -11,9 +11,9 @@ config :babe, BABE.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin",
-                    cd: Path.expand("../", __DIR__)]]
-
+  watchers: [
+    node: ["node_modules/brunch/bin/brunch", "watch", "--stdin", cd: Path.expand("../", __DIR__)]
+  ]
 
 # Watch static and templates for browser reloading.
 config :babe, BABE.Endpoint,
@@ -38,7 +38,12 @@ config :babe, BABE.Repo,
   username: "babe_dev",
   password: "babe",
   # This is the current workaround. "db" is the host name for the Docker postgres container. "localhost" when you actually run it with your system's postgres instead of through Docker.
-  hostname: (if (System.get_env("DOCKER") == "true") do "db" else "localhost" end),
+  hostname:
+    (if System.get_env("DOCKER") == "true" do
+       "db"
+     else
+       "localhost"
+     end),
   database: "babe_dev",
   pool_size: 10
 

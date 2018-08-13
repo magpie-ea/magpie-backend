@@ -14,8 +14,7 @@ config :babe, BABE.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
   render_errors: [view: BABE.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: BABE.PubSub,
-           adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: BABE.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -27,4 +26,4 @@ config :babe, :timezone, "Europe/Berlin"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env}.exs"
+import_config "#{Mix.env()}.exs"

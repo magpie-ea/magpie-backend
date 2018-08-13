@@ -2,13 +2,19 @@
 
 /* For the addition of dynamic retrieval keys in expeirment view */
 .input_container input.form-control {
-    display: inline-block;
-    margin: 5px 5px 0 0;
-    width: 30%;
+  display: inline-block;
+  margin: 5px 5px 0 0;
+  width: 30%;
 }
 
 @media (min-width: 1200px) {
-    .container{
-        max-width: 1000px;
-    }
+  .container {
+    max-width: 1000px;
+  }
 }
+
+/* Not needed because we are using a header instead. */
+/* .navigation-container {
+  position: relative;
+  top: 100px;
+} */

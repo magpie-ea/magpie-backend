@@ -8,8 +8,8 @@ defmodule BABE.CustomRecord do
   use BABE.Web, :model
 
   schema "custom_records" do
-    field :name, :string
-    field :record, {:array, :map}
+    field(:name, :string)
+    field(:record, {:array, :map})
 
     timestamps(type: :utc_datetime)
   end

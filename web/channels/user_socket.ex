@@ -5,8 +5,11 @@ defmodule BABE.UserSocket do
   # channel "room:*", BABE.RoomChannel
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket,
-    timeout: 45_000 # Ensures idle connections are closed by the app before the 55 second timeout window of Heroku.
+  transport(:websocket, Phoenix.Transports.WebSocket,
+    # Ensures idle connections are closed by the app before the 55 second timeout window of Heroku.
+    timeout: 45_000
+  )
+
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can

@@ -13,7 +13,7 @@ defmodule BABE do
       # Start the Ecto repository
       supervisor(BABE.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(BABE.Endpoint, []),
+      supervisor(BABE.Endpoint, [])
       # Start your own worker by calling: BABE.Worker.start_link(arg1, arg2, arg3)
       # worker(BABE.Worker, [arg1, arg2, arg3]),
     ]
@@ -22,7 +22,6 @@ defmodule BABE do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: BABE.Supervisor]
     Supervisor.start_link(children, opts)
-
   end
 
   # Tell Phoenix to update the endpoint configuration

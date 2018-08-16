@@ -77,13 +77,24 @@ Note that `crossDomain: true` is needed since the server domain will likely be d
 Just press the button to the right of each row in the user interface.
 
 ### Dynamic experiment result retrieval as JSON
-For some experiments, there might be a need to fetch and use the data from previous experiment submissions in order to dynamically adjust the future assignments.
+For some experiments, it might helpful to fetch and use data collected from previous experiment submissions in order to dynamically generate future trials. The _babe backend now provides this functionality.
 
-One can now specify the keys that should be fetched in the "Edit Experiment" user interface. Then, with a HTTP GET call to the `retrieve_experiment` endpoint, specifying the experiment ID, one will be able to get a JSON object that contains the results so far.
+For each experiment, you can specify the keys that should be fetched in the "Edit Experiment" user interface on the server app. Then, with a HTTP GET call to the `retrieve_experiment` endpoint, specifying the experiment ID, you will be able to get a JSON object that contains the results of that experiment so far.
 
 `{SERVER_ADDRESS}/api/retrieve_experiment/:id`
 
-A minimal example can be found [here](https://jsfiddle.net/SZJX/dp8ewnfx/)
+A [minimal example](https://jsfiddle.net/SZJX/dp8ewnfx/) of frontend code using jQuery:
+
+```javascript
+  $.ajax({
+    type: 'GET',
+    url: "https://babe-demo.herokuapp.com/api/retrieve_experiment/1",
+    crossDomain: true,
+    success: function (responseData, textStatus, jqXHR) {
+    	console.table(responseData);
+    }
+  });
+```
 
 ## Custom Data Records
 Sometimes, it might be desirable to store custom data records on the server and later retrieve them for experiments, similar to the dynamic retrieval of previous experiment results. Now there is also an interface for it.

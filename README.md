@@ -30,7 +30,7 @@ A [live demo](https://babe-demo.herokuapp.com/) of the app is available. Note th
 
 If you encounter any bugs during your experiments please [submit an issue](https://github.com/babe-project/BABE/issues).
 
-For the documentation of the entire _babe project, please refer to the [project site](https://babe-project.github.io/babe_site).
+For the most up-to-date documentation, please refer to the [_babe project site](https://babe-project.github.io/babe_site) and its [section on the server app](https://babe-project.github.io/babe_site/serverapp/overview.html).
 
 Work on this project was funded via the project
 [Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research

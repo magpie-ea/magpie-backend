@@ -63,7 +63,7 @@ defmodule BABE.CustomRecordController do
       case Repo.insert(changeset) do
         {:ok, custom_record} ->
           conn
-          |> put_flash(:info, "#{custom_record.name} created and set to active!")
+          |> put_flash(:info, "#{custom_record.name} created!")
           |> redirect(to: custom_record_path(conn, :index))
 
         {:error, changeset} ->

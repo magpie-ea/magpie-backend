@@ -17,7 +17,7 @@ defmodule BABE.CustomRecord do
   @doc false
   def changeset(custom_record, attrs \\ %{}) do
     custom_record
-    |> cast(attrs, [:record])
-    |> validate_required([:record])
+    |> cast(attrs, [:name, :record])
+    |> validate_required([:name, :record])
   end
 end

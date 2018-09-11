@@ -8,13 +8,13 @@
   <% end %>
 
   <div class="form-group">
-    <%= label f, :name, "Record Name", class: "control-label" %>
+    <%= label f, :name, "Record Name (Required)", class: "control-label" %>
     <%= text_input f, :name, placeholder: "e.g. Previous Participant IDs", class: "form-control" %>
     <%= error_tag f, :name %>
   </div>
 
   <div class="form-group">
-    <%= label f, :record , "Data to be Stored in the Record", class: "control-label" %>
+    <%= label f, :record , "Data To Be Stored In The Record (Required)", class: "control-label" %>
     <p>
     Can be either of:<br/>
     - A CSV file containing the data to be stored in this record. The first row will be treated as the headers (keys).<br/>

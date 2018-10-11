@@ -35,8 +35,10 @@ defmodule BABE.Router do
   scope "/api", BABE do
     pipe_through(:api)
 
+    # Maybe it would have been better to also follow the POST naming conventions in the API, but now that the frontend code is already out there, better not change it I guess.
     post("/submit_experiment/:id/", ExperimentController, :submit)
     get("/retrieve_experiment/:id/", ExperimentController, :retrieve_as_json)
     get("/retrieve_custom_record/:id/", CustomRecordController, :retrieve_as_json)
+    get("/check_experiment/:id/", ExperimentController, :check_valid)
   end
 end

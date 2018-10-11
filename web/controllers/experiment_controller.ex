@@ -4,7 +4,8 @@ defmodule BABE.ExperimentController do
 
   plug(
     BasicAuth,
-    [use_config: {:babe, :authentication}] when not (action in [:submit, :retrieve_as_json])
+    [use_config: {:babe, :authentication}]
+    when not (action in [:submit, :retrieve_as_json, :check_valid])
   )
 
   require Logger
@@ -253,6 +254,34 @@ defmodule BABE.ExperimentController do
         conn
         |> put_flash(:error, "The activation status wasn't changed successfully!")
         |> redirect(to: experiment_path(conn, :edit, experiment))
+    end
+  end
+
+  def check_valid(conn, %{"id" => id}) do
+    case Repo.get(Experiment, id) do
+      nil ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(
+          404,
+          "No experiment with the specified id found. Please check your configuration."
+        )
+
+      experiment ->
+        case experiment.active do
+          true ->
+            conn
+            |> put_resp_content_type("text/plain")
+            |> send_resp(200, "The experiment exists and is active")
+
+          false ->
+            conn
+            |> put_resp_content_type("text/plain")
+            |> send_resp(
+              403,
+              "The experiment is not active at the moment and submissions are not allowed."
+            )
+        end
     end
   end
 end

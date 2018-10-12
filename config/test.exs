@@ -12,8 +12,15 @@ config :logger, level: :warn
 # Configure your database
 config :babe, BABE.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  username: "babe_dev",
+  password: "babe",
   database: "babe_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+# Used for basic_auth
+config :babe, :authentication,
+  username: "default",
+  password: "password"
+
+config :babe, :environment, :test

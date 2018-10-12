@@ -50,6 +50,59 @@ defmodule BABE.ExperimentController do
     end
   end
 
+  def edit(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+    changeset = Experiment.changeset(experiment)
+    render(conn, "edit.html", experiment: experiment, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => id, "experiment" => experiment_params}) do
+    # If all the keys are removed, we need to reset it to nil.
+    experiment_params = Map.put_new(experiment_params, "dynamic_retrieval_keys", nil)
+    experiment = Repo.get!(Experiment, id)
+    changeset = Experiment.changeset(experiment, experiment_params)
+
+    case Repo.update(changeset) do
+      {:ok, experiment} ->
+        conn
+        |> put_flash(:info, "Experiment #{experiment.name} updated successfully.")
+        |> redirect(to: experiment_path(conn, :index))
+
+      {:error, changeset} ->
+        render(conn, "edit.html", experiment: experiment, changeset: changeset)
+    end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+
+    Repo.delete!(experiment)
+
+    conn
+    |> put_flash(:info, "Experiment deleted successfully.")
+    |> redirect(to: experiment_path(conn, :index))
+  end
+
+  def toggle(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+    active = experiment.active
+    changeset = Ecto.Changeset.change(experiment, active: !active)
+
+    case Repo.update(changeset) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "The activation status has been successfully changed to #{!active}")
+        |> redirect(to: experiment_path(conn, :edit, experiment))
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "The activation status wasn't changed successfully!")
+        |> redirect(to: experiment_path(conn, :edit, experiment))
+    end
+  end
+
+  ## Below are the functions related to the API with the frontend.
+
   @doc """
   Stores a set of experiment results submitted via the API
   """
@@ -164,39 +217,6 @@ defmodule BABE.ExperimentController do
     end
   end
 
-  def edit(conn, %{"id" => id}) do
-    experiment = Repo.get!(Experiment, id)
-    changeset = Experiment.changeset(experiment)
-    render(conn, "edit.html", experiment: experiment, changeset: changeset)
-  end
-
-  def update(conn, %{"id" => id, "experiment" => experiment_params}) do
-    # If all the keys are removed, we need to reset it to nil.
-    experiment_params = Map.put_new(experiment_params, "dynamic_retrieval_keys", nil)
-    experiment = Repo.get!(Experiment, id)
-    changeset = Experiment.changeset(experiment, experiment_params)
-
-    case Repo.update(changeset) do
-      {:ok, experiment} ->
-        conn
-        |> put_flash(:info, "Experiment #{experiment.name} updated successfully.")
-        |> redirect(to: experiment_path(conn, :index))
-
-      {:error, changeset} ->
-        render(conn, "edit.html", experiment: experiment, changeset: changeset)
-    end
-  end
-
-  def delete(conn, %{"id" => id}) do
-    experiment = Repo.get!(Experiment, id)
-
-    Repo.delete!(experiment)
-
-    conn
-    |> put_flash(:info, "Experiment deleted successfully.")
-    |> redirect(to: experiment_path(conn, :index))
-  end
-
   @doc """
   Retrieves the results up to now for an experiment.
   """
@@ -236,24 +256,6 @@ defmodule BABE.ExperimentController do
                 )
             end
         end
-    end
-  end
-
-  def toggle(conn, %{"id" => id}) do
-    experiment = Repo.get!(Experiment, id)
-    active = experiment.active
-    changeset = Ecto.Changeset.change(experiment, active: !active)
-
-    case Repo.update(changeset) do
-      {:ok, _} ->
-        conn
-        |> put_flash(:info, "The activation status has been successfully changed to #{!active}")
-        |> redirect(to: experiment_path(conn, :edit, experiment))
-
-      {:error, _} ->
-        conn
-        |> put_flash(:error, "The activation status wasn't changed successfully!")
-        |> redirect(to: experiment_path(conn, :edit, experiment))
     end
   end
 

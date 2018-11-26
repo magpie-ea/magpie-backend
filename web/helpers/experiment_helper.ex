@@ -20,7 +20,13 @@ defmodule BABE.ExperimentHelper do
   # But then, of course, the caveat is that for each set of *results*, we should only write the column headers once.
   # !!Assumption!!: Each `ExperimentResult` is a JSON array, which contains objects with an identical set keys.
   def write_submissions(file, submissions) do
-    # There were some malformed data for unknown reasons. I'll just use a primitive mechanism to try to catch them for now.
+    # There were some malformed data (empty results field) for unknown reasons. I'll just use some primitive mechanisms to try to deal with them for now.
+    # Also, from now on such results will not be accepted in the future either.
+    submissions =
+      Enum.filter(submissions, fn submission ->
+        valid_results(submission.results)
+      end)
+
     try do
       # Here the headers for the csv file will be recorded
       [submission | _] = submissions

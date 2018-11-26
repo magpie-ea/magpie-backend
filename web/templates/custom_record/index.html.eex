@@ -1,10 +1,10 @@
-<h2>Manage Custom Records</h2>
-
-<%= link "New", to: custom_record_path(@conn, :new), class: "btn btn-primary btn-lg" %>
-
+<h2 class="page-title">Manage Custom Records</h2>
 <br>
-<br>
-<%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "btn btn-default" %>
+<div class="top-buttons-container">
+<div><%= link "New Record", to: custom_record_path(@conn, :new), class: "btn btn-primary btn-default" %></div>
+<div><%= link "Download all Records", to: custom_record_path(@conn, :retrieve_all), class: "btn btn-success" %></div>
+<div><%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "btn btn-info" %></div>
+</div>
 
 <table class="table sortable">
   <thead>
@@ -26,7 +26,7 @@
           <%= link "Retrieve CSV", to: custom_record_path(@conn, :retrieve_as_csv, record), class: "btn btn-success btn-sm" %>
         </td>
       <td class="text-right">
-        <%= link "Edit", to: custom_record_path(@conn, :edit, record), class: "btn btn-warning btn-sm"  %>
+        <%= link "Edit", to: custom_record_path(@conn, :edit, record), class: "btn btn-info btn-sm"  %>
       </td>
       <td class="text-right">
         <%= link "Delete", to: custom_record_path(@conn, :delete, record), method: :delete, data: [confirm: "You are about to delete #{record.name}. Are you sure?"], class: "btn btn-danger btn-sm" %>

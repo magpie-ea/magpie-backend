@@ -11,7 +11,7 @@
   text-align: center;
 }
 
-.experiment-header-buttons-container {
+.top-buttons-container {
   display: inline-flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -21,7 +21,7 @@
   text-align: center;
 }
 
-.experiment-header-buttons-container > div {
+.top-buttons-container > div {
   flex: 1;
   margin: 0;
 }

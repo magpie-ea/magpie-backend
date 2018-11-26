@@ -1,6 +1,6 @@
 <h2 class="page-title">Manage Experiments</h2>
 <br>
-<div class="experiment-header-buttons-container">
+<div class="top-buttons-container">
 <div><%= link "New Experiment", to: experiment_path(@conn, :new), class: "btn btn-primary btn-default" %></div>
 <div><%= link "Download all Experiment Results", to: experiment_path(@conn, :retrieve_all), class: "btn btn-success" %></div>
 <div><%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "btn btn-info" %></div>

@@ -286,10 +286,10 @@ defmodule BABE.ExperimentController do
         end
       end)
 
-    :zip.create('results/results.zip', all_files)
+    :zip.create('results/all_results.zip', all_files)
 
     conn
-    |> send_download({:file, "results/results.zip"})
+    |> send_download({:file, "results/all_results.zip"})
   end
 
   def check_valid(conn, %{"id" => id}) do

@@ -163,7 +163,7 @@ defmodule BABE.CustomRecordController do
     name = custom_record.name
 
     # Name the CSV file to be returned.
-    orig_name = "results_" <> name <> ".csv"
+    orig_name = "record_" <> name <> ".csv"
     file_path = "results/" <> orig_name
     file = File.open!(file_path, [:write, :utf8])
     # This method actually processes the submissions retrieved and write them to the CSV file.
@@ -192,5 +192,27 @@ defmodule BABE.CustomRecordController do
         |> put_resp_content_type("application/json")
         |> json(custom_record.record)
     end
+  end
+
+  def retrieve_all(conn, _params) do
+    all_files =
+      CustomRecord
+      |> Repo.all()
+      |> Enum.reduce([], fn custom_record, acc ->
+        name = custom_record.name
+
+        file_path = "results/" <> "record_" <> name <> ".csv"
+        file = File.open!(file_path, [:write, :utf8])
+        write_record(file, custom_record.record)
+        File.close(file)
+
+        # :zip is an Erlang function. We need to convert Elixir string to Erlang charlist.
+        [String.to_charlist(file_path) | acc]
+      end)
+
+    :zip.create('results/all_records.zip', all_files)
+
+    conn
+    |> send_download({:file, "results/all_records.zip"})
   end
 end

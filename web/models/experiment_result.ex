@@ -11,7 +11,8 @@ defmodule BABE.ExperimentResult do
     # Maybe the name `data` would be more appropriate. But anyways. Don't want to have troubles with migrations so let's just keep it for now.
     # The map type will already be JSONB in Postgres by default. It will be simply TEXT in other DBs.
     # Now that we record JSON arrays, seems that we actually need to change the type to array of map.
-    field(:results, {:array, :map})
+    # Actually I'm not even sure if null: false will stop empty JSONs. Probably will need to perform a check at controller level anyways.
+    field(:results, {:array, :map}, null: false)
 
     belongs_to(:experiment, BABE.Experiment)
 

@@ -8,10 +8,12 @@ defmodule BABE.ExperimentHelper do
   Or maybe let me not check the "same keys" requirement first. We can do it later, or just fill in nil when some keys are not present.
   """
   def valid_results(results) do
-    if is_list(results) do
-      true
-    else
-      false
+    case results do
+      # Sometimes empty results come in for no reason.
+      [] -> false
+      # TODO: A more foolproof way might be to use a JSON schema library to check every item for being identical.
+      [hd | _] when is_map(hd) -> true
+      _ -> false
     end
   end
 

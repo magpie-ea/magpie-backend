@@ -26,6 +26,7 @@ defmodule BABE.Router do
     get("/experiments/:id/toggle", ExperimentController, :toggle)
 
     get("/experiments/:id/retrieve", ExperimentController, :retrieve_as_csv)
+    get("/experiments/retrieve_all", ExperimentController, :retrieve_all)
 
     # get "/custom_records", CustomRecordController, :index
     resources("/custom_records", CustomRecordController, except: [:show])

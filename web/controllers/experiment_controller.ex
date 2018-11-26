@@ -105,6 +105,9 @@ defmodule BABE.ExperimentController do
 
   @doc """
   Stores a set of experiment results submitted via the API
+
+  Note that the incoming JSON array of experiment results is automatically parsed and put under the key _json:
+  https://hexdocs.pm/plug/Plug.Parsers.JSON.html
   """
   def submit(conn, %{"id" => id, "_json" => results}) do
     # This is the "Experiment" object that's supposed to be associated with this submission.
@@ -191,8 +194,6 @@ defmodule BABE.ExperimentController do
 
     name = experiment.name
     author = experiment.author
-    # experiments = get_experiment_submissions(experiment)
-
     experiment_submissions = Repo.all(assoc(experiment, :experiment_results))
 
     case experiment_submissions do
@@ -257,6 +258,38 @@ defmodule BABE.ExperimentController do
             end
         end
     end
+  end
+
+  # By default the second argument is _params even though it might not be used in a controller function.
+  def retrieve_all(conn, _params) do
+    all_files =
+      Experiment
+      |> Repo.all()
+      |> Enum.reduce([], fn experiment, acc ->
+        name = experiment.name
+        author = experiment.author
+        experiment_submissions = Repo.all(assoc(experiment, :experiment_results))
+
+        case experiment_submissions do
+          # If the experiment still has no submissions, just skip it.
+          [] ->
+            acc
+
+          _ ->
+            file_path = "results/" <> "results_" <> name <> "_" <> author <> ".csv"
+            file = File.open!(file_path, [:write, :utf8])
+            write_submissions(file, experiment_submissions)
+            File.close(file)
+
+            # :zip is an Erlang function. We need to convert Elixir string to Erlang charlist.
+            [String.to_charlist(file_path) | acc]
+        end
+      end)
+
+    :zip.create('results/results.zip', all_files)
+
+    conn
+    |> send_download({:file, "results/results.zip"})
   end
 
   def check_valid(conn, %{"id" => id}) do

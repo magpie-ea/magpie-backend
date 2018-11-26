@@ -1,10 +1,29 @@
 /* This file is for your main application css. */
 
-/* For the addition of dynamic retrieval keys in expeirment view */
+/* For the addition of dynamic retrieval keys in experiment view */
 .input_container input.form-control {
   display: inline-block;
   margin: 5px 5px 0 0;
   width: 30%;
+}
+
+.page-title {
+  text-align: center;
+}
+
+.experiment-header-buttons-container {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  text-align: center;
+}
+
+.experiment-header-buttons-container > div {
+  flex: 1;
+  margin: 0;
 }
 
 @media (min-width: 1200px) {

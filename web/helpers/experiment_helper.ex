@@ -18,32 +18,31 @@ defmodule BABE.ExperimentHelper do
   # But then, of course, the caveat is that for each set of *results*, we should only write the column headers once.
   # !!Assumption!!: Each `ExperimentResult` is a JSON array, which contains objects with an identical set keys.
   def write_submissions(file, submissions) do
-    # Just add a check to see if the submissions are empty.
-    case submissions do
-      [] ->
-        {:error}
+    # There were some malformed data for unknown reasons. I'll just use a primitive mechanism to try to catch them for now.
+    try do
+      # Here the headers for the csv file will be recorded
+      [submission | _] = submissions
+      [trial | _] = submission.results
+      keys = Map.keys(trial)
+      # We need to prepend a column which contains uid in the output
+      keys = ["submission_id" | keys]
 
-      _ ->
-        # Here the headers for the csv file will be recorded
-        [submission | _] = submissions
-        [trial | _] = submission.results
-        keys = Map.keys(trial)
-        # We need to prepend a column which contains uid in the output
-        keys = ["submission_id" | keys]
+      # The first element in the `outputs` list of lists will be the keys, i.e. headers
+      outputs = [keys]
+      # IO.inspect outputs = outputs ++ keys, label: "outputs"
 
-        # The first element in the `outputs` list of lists will be the keys, i.e. headers
-        outputs = [keys]
-        # IO.inspect outputs = outputs ++ keys, label: "outputs"
+      # For each experimentresult, get the results and concatenate it to the `outputs` list.
+      outputs =
+        outputs ++
+          List.foldl(submissions, [], fn submission, acc ->
+            acc ++ format_submission(submission, keys)
+          end)
 
-        # For each experimentresult, get the results and concatenate it to the `outputs` list.
-        outputs =
-          outputs ++
-            List.foldl(submissions, [], fn submission, acc ->
-              acc ++ format_submission(submission, keys)
-            end)
-
-        outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
-        {:ok}
+      outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
+      {:ok}
+    rescue
+      # Usually it's a MatchError
+      MatchError -> {:error}
     end
   end
 

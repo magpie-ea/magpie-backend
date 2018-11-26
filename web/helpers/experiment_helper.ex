@@ -18,25 +18,33 @@ defmodule BABE.ExperimentHelper do
   # But then, of course, the caveat is that for each set of *results*, we should only write the column headers once.
   # !!Assumption!!: Each `ExperimentResult` is a JSON array, which contains objects with an identical set keys.
   def write_submissions(file, submissions) do
-    # Here the headers for the csv file will be recorded
-    [submission | _] = submissions
-    [trial | _] = submission.results
-    keys = Map.keys(trial)
-    # We need to prepend a column which contains uid in the output
-    keys = ["submission_id" | keys]
+    # Just add a check to see if the submissions are empty.
+    case submissions do
+      [] ->
+        {:error}
 
-    # The first element in the `outputs` list of lists will be the keys, i.e. headers
-    outputs = [keys]
-    # IO.inspect outputs = outputs ++ keys, label: "outputs"
+      _ ->
+        # Here the headers for the csv file will be recorded
+        [submission | _] = submissions
+        [trial | _] = submission.results
+        keys = Map.keys(trial)
+        # We need to prepend a column which contains uid in the output
+        keys = ["submission_id" | keys]
 
-    # For each experimentresult, get the results and concatenate it to the `outputs` list.
-    outputs =
-      outputs ++
-        List.foldl(submissions, [], fn submission, acc ->
-          acc ++ format_submission(submission, keys)
-        end)
+        # The first element in the `outputs` list of lists will be the keys, i.e. headers
+        outputs = [keys]
+        # IO.inspect outputs = outputs ++ keys, label: "outputs"
 
-    outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
+        # For each experimentresult, get the results and concatenate it to the `outputs` list.
+        outputs =
+          outputs ++
+            List.foldl(submissions, [], fn submission, acc ->
+              acc ++ format_submission(submission, keys)
+            end)
+
+        outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
+        {:ok}
+    end
   end
 
   # For each trial recorded in this one experimentresult, ensure the proper key order is used to extract values.

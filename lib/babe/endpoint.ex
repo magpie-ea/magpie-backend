@@ -4,6 +4,7 @@ defmodule BABE.Endpoint do
   # This is needed since the experiments are likely to be hosted on external domains.
   plug(CORSPlug)
 
+  # By default we have one socket handler, which should suffice. The default name is "UserSocket". Doesn't really mean it only deals with user-related issues though.
   socket("/socket", BABE.UserSocket)
 
   # Serve at "/" the static files from "priv/static" directory.

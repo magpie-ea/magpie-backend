@@ -13,7 +13,9 @@ defmodule BABE do
       # Start the Ecto repository
       supervisor(BABE.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(BABE.Endpoint, [])
+      supervisor(BABE.Endpoint, []),
+      # The presence supervisor
+      BABE.Presence
       # Start your own worker by calling: BABE.Worker.start_link(arg1, arg2, arg3)
       # worker(BABE.Worker, [arg1, arg2, arg3]),
     ]

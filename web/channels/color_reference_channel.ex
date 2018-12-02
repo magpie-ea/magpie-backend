@@ -88,6 +88,14 @@ defmodule BABE.ColorReferenceChannel do
     {:noreply, socket}
   end
 
+  @doc """
+  Also send just broadcast `next_round` messages to all the participants.
+  """
+  def handle_in("next_round", payload, socket) do
+    broadcast(socket, "next_round", payload)
+    {:noreply, socket}
+  end
+
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
   # Currently not needed.

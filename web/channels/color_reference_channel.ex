@@ -23,6 +23,7 @@ defmodule BABE.ColorReferenceChannel do
       online_at: inspect(System.system_time(:second))
     })
 
+    # Trigger the condition checks in :after_user_join_lobby
     send(self(), :after_user_join_lobby)
     {:ok, socket}
   end
@@ -39,6 +40,7 @@ defmodule BABE.ColorReferenceChannel do
       [user1_id | [user2_id | _]] = existing_users
       lounge_id = Ecto.UUID.generate()
 
+      # Tell each user to start the game and join the specified lounge.
       BABE.Endpoint.broadcast!("color_reference:user:#{user1_id}", "game_start", %{
         lounge_id: lounge_id,
         role: "speaker"
@@ -48,11 +50,6 @@ defmodule BABE.ColorReferenceChannel do
         lounge_id: lounge_id,
         role: "listener"
       })
-
-      # If the users leave the lobby channel on their own, don't think we need to manually remove them here.
-      # Presence.untrack(socket, user1_id)
-      # Presence.untrack(socket, user2_id)
-      # IO.inspect(Presence.list(socket))
     end
 
     {:noreply, socket}
@@ -65,10 +62,8 @@ defmodule BABE.ColorReferenceChannel do
   """
   def join("color_reference:lounge:" <> lounge_id, _payload, socket) do
     existing_users = Map.keys(Presence.list(socket))
-    IO.puts("lounge: #{lounge_id}")
-    IO.inspect(Presence.list(socket))
 
-    # Maybe there will be errors where somehow more users than intended try to join. We can only reject the last user if that's the case.
+    # Sometimes maybe there will somehow be more users than intended who try to join. We can only reject the last user if that's the case.
     if length(existing_users) >= @num_users_per_game do
       {:error, %{reason: "Game already full! Please refresh."}}
     else

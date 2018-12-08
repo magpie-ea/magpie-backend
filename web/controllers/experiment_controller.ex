@@ -41,7 +41,7 @@ defmodule BABE.ExperimentController do
     case Repo.insert(changeset) do
       {:ok, experiment} ->
         conn
-        |> put_flash(:info, "#{experiment.name} created and set to active!")
+        |> put_flash(:info, "#{experiment.name} created!")
         |> redirect(to: experiment_path(conn, :index))
 
       {:error, changeset} ->

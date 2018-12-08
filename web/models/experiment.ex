@@ -14,6 +14,8 @@ defmodule BABE.Experiment do
     field(:maximum_submissions, :integer)
     field(:current_submissions, :integer, default: 0, null: false)
     field(:dynamic_retrieval_keys, {:array, :string})
+    field(:is_interactive_experiment, :boolean, default: false)
+    field(:num_participants_interactive_experiment, :integer, null: true)
 
     has_many(:experiment_results, BABE.ExperimentResult)
 
@@ -31,7 +33,9 @@ defmodule BABE.Experiment do
       :description,
       :active,
       :maximum_submissions,
-      :dynamic_retrieval_keys
+      :dynamic_retrieval_keys,
+      :is_interactive_experiment,
+      :num_participants_interactive_experiment
     ])
     |> validate_required([:name, :author, :active])
   end

@@ -40,6 +40,24 @@
   </div>
 
   <div class="form-group">
+    <%= label f, :is_interactive_experiment, "Interactive experiment", class: "control-label" %>
+    <%= checkbox f, :is_interactive_experiment %>
+    <p>
+      In this experiment, multiple participants interact with each other. The server will be responsible for providing the communication channel between them.
+    </p>
+    <%= error_tag f, :is_interactive_experiment %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :num_participants_interactive_experiment, "(Optional) Number of required participants per experiment", class: "control-label" %>
+    <p>
+      (Only for interactive experiments) Specifies the number of participants needed for an interactive experiment. For example, a chess game would need two participants to play.
+    </p>
+    <%= text_input f, :num_participants_interactive_experiment, placeholder: "e.g. 2", class: "form-control" %>
+    <%= error_tag f, :num_participants_interactive_experiment %>
+  </div>
+
+  <div class="form-group">
     <%= label f, :description, "(Optional) Description", class: "control-label" %>
     <%= textarea f, :description, placeholder: "e.g. An example experiment", class: "form-control" %>
     <%= error_tag f, :description %>

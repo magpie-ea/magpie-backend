@@ -1,0 +1,67 @@
+  <div class="form-group" >
+    <%= label @f, :name, "Experiment name", class: "control-label" %>
+    <%= text_input @f, :name, placeholder: "e.g. MinimalTemplate", class: "form-control" %>
+    <%= error_tag @f, :name %>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :author, class: "control-label" %>
+    <%= text_input @f, :author, placeholder: "e.g. Random Jane", class: "form-control" %>
+    <%= error_tag @f, :author %>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :active, "Active experiment", class: "control-label" %>
+    <%= checkbox @f, :active, checked: true %>
+    <%= error_tag @f, :active %>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :is_interactive_experiment, "Interactive experiment", class: "control-label" %>
+    <%= checkbox @f, :is_interactive_experiment %>
+    <p>
+      In this experiment, multiple participants interact with each other. The server will be responsible for providing the communication channel between them.
+    </p>
+    <%= error_tag @f, :is_interactive_experiment %>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_participants_interactive_experiment, "(Optional) Number of required participants per experiment", class: "control-label" %>
+    <p>
+      (Only for interactive experiments) Specifies the number of participants needed for an interactive experiment. For example, a chess game would need two participants to play.
+    </p>
+    <%= text_input @f, :num_participants_interactive_experiment, placeholder: "e.g. 2", class: "form-control" %>
+    <%= error_tag @f, :num_participants_interactive_experiment %>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :description, "(Optional) Description", class: "control-label" %>
+    <%= textarea @f, :description, placeholder: "e.g. An example experiment", class: "form-control" %>
+    <%= error_tag @f, :description %>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :maximum_submissions, "(Optional) Maximum allowed submissions", class: "control-label" %>
+    <p>
+      With <code>maximum_submissions</code> specified, once the number of submissions reaches this value, the experiment will automatically be <b>deactivated</b>.
+    </p>
+    <p>
+      If you're running the experiment on a crowdsourcing platform with participant control, it's recommended to rely on the platform's built-in mechanism instead.
+    </p>
+    <%= text_input @f, :maximum_submissions, placeholder: "e.g. 30", class: "form-control" %>
+    <%= error_tag @f, :maximum_submissions %>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :dynamic_retrieval_keys, "(Optional) Keys that should be included for the dynamic retrieval of experiment results. List one key per entry.", class: "control-label" %>
+    <%= array_input @f, :dynamic_retrieval_keys %>
+    <%= array_add_button @f, :dynamic_retrieval_keys %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+
+  <div class="form-group">
+    <%= link "Back", to: experiment_path(@conn, :index), class: "btn btn-default" %>
+  </div>

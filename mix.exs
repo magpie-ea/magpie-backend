@@ -25,13 +25,18 @@ defmodule BABE.Mixfile do
       applications: [
         :phoenix,
         :phoenix_pubsub,
-        :phoenix_html,
-        :cowboy,
-        :logger,
-        :gettext,
         :phoenix_ecto,
+        :phoenix_html,
         :postgrex,
-        :calendar
+        :gettext,
+        :cowboy,
+        :poison,
+        :iteraptor,
+        :cors_plug,
+        :csv,
+        :basic_auth,
+        :calendar,
+        :logger
       ]
     ]
   end

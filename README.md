@@ -9,6 +9,7 @@
         - [Experiment Result submission](#experiment-result-submission)
         - [Retrieval of experiment results as CSV](#retrieval-of-experiment-results-as-csv)
         - [Dynamic experiment result retrieval as JSON](#dynamic-experiment-result-retrieval-as-json)
+        - [Interactive experiments](#interactive-experiments)
     - [Custom Data Records](#custom-data-records)
         - [Uploading a data record](#uploading-a-data-record)
         - [Retrieval of data records](#retrieval-of-data-records)
@@ -95,6 +96,13 @@ A [minimal example](https://jsfiddle.net/SZJX/dp8ewnfx/) of frontend code using 
     }
   });
 ```
+
+### Interactive experiments
+In an interactive experiment, multiple participants interact with each other. The server will be responsible for providing the communication channel between them.
+
+You can mark an experiment as interactive and specify the number of participants needed to work together for the experiment. Once that number is reached, the server will group the participants together, and send each of them a `"game_start"` message. From then on, it will broadcast within the group all messages coming from any participant.
+
+To make the backend as generic as possible, the particular interpretation and handling of the messages depend on the frontend _babe. An example experimnet can be found at the repo [color-reference](https://github.com/babe-project/color-reference).
 
 ## Custom Data Records
 Sometimes, it might be desirable to store custom data records on the server and later retrieve them for experiments, similar to the dynamic retrieval of previous experiment results. Now there is also an interface for it.

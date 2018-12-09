@@ -91,18 +91,11 @@ defmodule BABE.InteractiveExperimentChannel do
   This function handles what happens when the participants send in the join request.
   """
   def join("interactive_experiment:lounge:" <> lounge_id, _payload, socket) do
-    existing_participants = Map.keys(Presence.list(socket))
+    Presence.track(socket, socket.assigns.participant_id, %{
+      online_at: inspect(System.system_time(:second))
+    })
 
-    # Sometimes maybe there will somehow be more participants than intended who try to join. We can only reject the last participant if that's the case.
-    if length(existing_participants) >= @num_participants_per_game do
-      {:error, %{reason: "Game already full! Please refresh."}}
-    else
-      Presence.track(socket, socket.assigns.participant_id, %{
-        online_at: inspect(System.system_time(:second))
-      })
-
-      {:ok, socket}
-    end
+    {:ok, socket}
   end
 
   @doc """

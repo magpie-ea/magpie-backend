@@ -190,6 +190,10 @@ That's it!
 
 Note that the experiment database lives in the file `babe_db.sqlite3`.
 
+For now, since the database file is bundled with the release itself, whenever you download a new release, it will contain no previous experiment results. For dynamic retrieval, you can manually upload relevant experiment results as custom records. If you want to keep all previous experiments, you may:
+- Copy the old `babe_db.sqlite3` file from the old release to the old release. However, that wouldn't work whenever the database schema changes between releases.
+- Execute database migrations when the database schema changes. (Instructions to come later).
+
 ### Local (Offline) Deployment with Docker (Old method)
 If, for whatever reason, the downloaded release fails to run on your system, you may run the *_babe* backend via Docker instead. The following are the instructions.
 

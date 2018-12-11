@@ -16,6 +16,7 @@
     - [Deploying the Server](#deploying-the-server)
         - [Deployment with Heroku](#deployment-with-heroku)
         - [Local (Offline) Deployment](#local-offline-deployment)
+        - [Local (Offline) Deployment with Docker (Old method)](#local-offline-deployment-with-docker-old-method)
             - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
             - [Deployment](#deployment)
     - [Upgrading a deployed instance of the server](#upgrading-a-deployed-instance-of-the-server)
@@ -178,7 +179,19 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 14. Now, `heroku open` should open the frontpage of the app.
 
 ### Local (Offline) Deployment
-Normally, running the server in a local development environment would involve installing and configuring Elixir and PostgreSQL. To simplify the development flow, [Docker](https://www.docker.com/) is used instead.
+From now on, the *_babe* backend is available as a one-click executable to be run locally. Just download the archive corresponding to your platform under the Releases tab](https://github.com/babe-project/BABE/releases). Then:
+
+- Extract the archive
+- Go to the folder `bin/`
+- In your terminal, run `./babe console`
+- Open `localhost:4000` in your browser
+
+That's it!
+
+Note that the experiment database lives in the file `babe_db.sqlite3`.
+
+### Local (Offline) Deployment with Docker (Old method)
+If, for whatever reason, the downloaded release fails to run on your system, you may run the *_babe* backend via Docker instead. The following are the instructions.
 
 #### First-time installation (requires internet connection)
 

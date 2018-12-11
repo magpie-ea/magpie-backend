@@ -8,12 +8,13 @@ defmodule BABE do
 
     # Create the directory to store the results
     File.mkdir("results/")
+
     # Define workers and child supervisors to be supervised
     children = [
       # Start the Ecto repository
-      supervisor(BABE.Repo, []),
+      BABE.Repo,
       # Start the endpoint when the application starts
-      supervisor(BABE.Endpoint, []),
+      BABE.Endpoint,
       # The presence supervisor
       BABE.Presence
       # Start your own worker by calling: BABE.Worker.start_link(arg1, arg2, arg3)

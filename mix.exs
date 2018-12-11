@@ -15,29 +15,36 @@ defmodule BABE.Mixfile do
     ]
   end
 
+  @applications [
+    :phoenix,
+    :phoenix_pubsub,
+    :phoenix_ecto,
+    :phoenix_html,
+    :gettext,
+    :cowboy,
+    :poison,
+    :iteraptor,
+    :cors_plug,
+    :csv,
+    :basic_auth,
+    :calendar,
+    :logger
+  ]
+
   # Configuration for the OTP application.
-  #
+  defp applications(:local) do
+    @applications ++ [:sqlite_ecto2]
+  end
+
+  defp applications(_) do
+    @applications ++ [:postgrex]
+  end
 
   # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {BABE, []},
-      applications: [
-        :phoenix,
-        :phoenix_pubsub,
-        :phoenix_ecto,
-        :phoenix_html,
-        :postgrex,
-        :gettext,
-        :cowboy,
-        :poison,
-        :iteraptor,
-        :cors_plug,
-        :csv,
-        :basic_auth,
-        :calendar,
-        :logger
-      ]
+      applications: applications(Mix.env())
     ]
   end
 
@@ -53,7 +60,7 @@ defmodule BABE.Mixfile do
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.0"},
-      {:postgrex, ">= 0.0.0"},
+      {:postgrex, ">= 0.0.0", except: :local},
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
@@ -65,6 +72,8 @@ defmodule BABE.Mixfile do
       {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 0.17.2"},
       {:distillery, "~> 2.0"},
+      # {:sqlite_ecto2, "~> 2.3", only: :local},
+      {:sqlite_ecto2, "~> 2.3"},
       # Error checking and linting
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]}

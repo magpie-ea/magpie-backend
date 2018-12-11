@@ -26,7 +26,7 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_participants_interactive_experiment, "(Optional) Number of required participants per experiment", class: "control-label" %>
+    <%= label @f, :num_participants_interactive_experiment, "Number of required participants per experiment", class: "control-label" %>
     <p>
       (Only for interactive experiments) Specifies the number of participants needed for an interactive experiment. For example, a chess game would need two participants to play.
     </p>

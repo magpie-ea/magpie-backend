@@ -161,9 +161,10 @@ defmodule BABE.CustomRecordController do
     custom_record = Repo.get!(CustomRecord, id)
 
     name = custom_record.name
+    id = custom_record.id
 
     # Name the CSV file to be returned.
-    orig_name = "record_" <> name <> ".csv"
+    orig_name = "record_" <> id <> "_" <> name <> ".csv"
     file_path = "results/" <> orig_name
     file = File.open!(file_path, [:write, :utf8])
     # This method actually processes the submissions retrieved and write them to the CSV file.
@@ -199,9 +200,10 @@ defmodule BABE.CustomRecordController do
       CustomRecord
       |> Repo.all()
       |> Enum.reduce([], fn custom_record, acc ->
+        id = custom_record.id
         name = custom_record.name
 
-        file_path = "results/" <> "record_" <> name <> ".csv"
+        file_path = "results/" <> "record_" <> id <> "_" <> name <> ".csv"
         file = File.open!(file_path, [:write, :utf8])
         write_record(file, custom_record.record)
         File.close(file)

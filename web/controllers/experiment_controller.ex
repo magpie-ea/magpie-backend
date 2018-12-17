@@ -192,6 +192,7 @@ defmodule BABE.ExperimentController do
   def retrieve_as_csv(conn, %{"id" => id}) do
     experiment = Repo.get!(Experiment, id)
 
+    id = experiment.id
     name = experiment.name
     author = experiment.author
     experiment_submissions = Repo.all(assoc(experiment, :experiment_results))
@@ -206,7 +207,7 @@ defmodule BABE.ExperimentController do
 
       _ ->
         # Name the CSV file to be returned.
-        orig_name = "results_" <> name <> "_" <> author <> ".csv"
+        orig_name = "results_" <> id <> "_" <> name <> "_" <> author <> ".csv"
         file_path = "results/" <> orig_name
         file = File.open!(file_path, [:write, :utf8])
         # This method actually processes the submissions retrieved and write them to the CSV file.
@@ -266,6 +267,7 @@ defmodule BABE.ExperimentController do
       Experiment
       |> Repo.all()
       |> Enum.reduce([], fn experiment, acc ->
+        id = experiment.id
         name = experiment.name
         author = experiment.author
         experiment_submissions = Repo.all(assoc(experiment, :experiment_results))
@@ -276,7 +278,7 @@ defmodule BABE.ExperimentController do
             acc
 
           _ ->
-            file_path = "results/" <> "results_" <> name <> "_" <> author <> ".csv"
+            file_path = "results/" <> "results_" <> id <> "_" <> name <> "_" <> author <> ".csv"
             file = File.open!(file_path, [:write, :utf8])
             write_submissions(file, experiment_submissions)
             File.close(file)

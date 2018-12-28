@@ -1,0 +1,23 @@
+  <div class="form-group">
+    <%= label @f, :is_complex, "Complex experiment", class: "control-label" %>
+    <%= checkbox @f, :is_complex, disabled: "disabled"%>
+    <%= error_tag @f, :is_complex%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_variants, "(Only for complex experiments) Number of variants", class: "control-label" %>
+    <%= text_input @f, :num_variants, class: "form-control", disabled: "disabled" %>
+    <%= error_tag @f, :num_variants%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_chains, "(Only for complex experiments) Number of chains", class: "control-label" %>
+    <%= text_input @f, :num_chains, class: "form-control", disabled: "disabled" %>
+    <%= error_tag @f, :num_chains%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_realizations, "(Only for complex experiments) Number of realizations (per chain)", class: "control-label" %>
+    <%= text_input @f, :num_realizations, class: "form-control", disabled: "disabled" %>
+    <%= error_tag @f, :num_realizations%>
+  </div>

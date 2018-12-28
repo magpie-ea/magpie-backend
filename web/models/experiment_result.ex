@@ -13,6 +13,9 @@ defmodule BABE.ExperimentResult do
     # Now that we record JSON arrays, seems that we actually need to change the type to array of map.
     # Actually I'm not even sure if null: false will stop empty JSONs. Probably will need to perform a check at controller level anyways.
     field(:results, {:array, :map}, null: false)
+    field(:variant, :integer, null: true)
+    field(:chain, :integer, null: true)
+    field(:realization, :integer, null: true)
 
     belongs_to(:experiment, BABE.Experiment)
 
@@ -24,8 +27,8 @@ defmodule BABE.ExperimentResult do
     # `cast/3` ignores all parameters not explicitly permitted, converts all permitted key names into atoms, and store them in the :changes field of the changeset
     # The point is that only the :changes field will work when performing any real DB action with Repo.
     # This is to say, the other parameters are not "deleted" at this step yet. You can chain multiple `cast` calls.
-    |> cast(params, [:results, :experiment_id])
-    |> validate_required([:results, :experiment_id])
+    |> cast(params, [:results, :experiment_id, :variant, :chain, :realization, :status])
+    |> validate_required([:experiment_id, :results])
     # Must be associated with an experiment
     |> assoc_constraint(:experiment)
   end

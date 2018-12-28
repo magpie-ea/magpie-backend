@@ -1,0 +1,66 @@
+  <div class="form-group">
+    <%= label @f, :is_complex, "Complex experiment", class: "control-label" %>
+    <%= checkbox @f, :is_complex%>
+    <p>
+      In this experiment, There is some sort of dependency between different realizations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
+      </p>
+
+<p>
+      Each participant will be assigned a unique <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> identifier, so that such dependencies can be made explicit.
+    </p>
+
+<p>
+    The client must connect with the server via Phoenix Channel in such experiments.
+    </p>
+    <%= error_tag @f, :is_complex%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_variants, "(Only for complex experiments) Number of variants", class: "control-label" %>
+    <p>
+       Specifies the number of variants for an experiment in regard to the <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> tri-tuple.
+      </p>
+
+      <p>
+
+      For example, in a speaker-listener experiment, the speaker would be <code>variant-1</code> while the listener would be <code>variant-2</code>.
+
+</p>
+
+<p>
+      Leave it as 1 if there are no different variants of the experiment.
+    </p>
+    <%= text_input @f, :num_variants, placeholder: "e.g. 2", class: "form-control" %>
+    <%= error_tag @f, :num_variants%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_chains, "(Only for complex experiments) Number of chains", class: "control-label" %>
+    <p>
+       Specifies the number of chains for an experiment in regard to the <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> tri-tuple.
+      </p>
+
+      <p>
+      In multi-generational experiments, a chain forms a coherent unit. For example, in an iterated narration experiment, the participant <code><1, 1, 2></code> gets the previous version of the story from the participant <code><1, 1, 1></code>, while the participant <code><1, 3, 2></code> gets the previous version of the story from the participant <code><1, 3, 1></code>.
+
+      </p>
+
+      <p>
+      Leave it as <code>1</code> if there is no need for different chains in the experiment.
+    </p>
+    <%= text_input @f, :num_chains, placeholder: "e.g. 10", class: "form-control" %>
+    <%= error_tag @f, :num_chains%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_realizations, "(Only for complex experiments) Number of realizations (per chain)", class: "control-label" %>
+    <p>
+       Specifies the number of realizations for an experiment in regard to the <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> tri-tuple.
+      </p>
+
+      <p>
+      A chain will reach its end when all realizations have been submitted. For example, an iterated narration experiment might have 1 variant, 10 chains, with 20 realizations each chain, meaning that a total of 200 participants will be recruited.
+</p>
+    <%= text_input @f, :num_realizations, placeholder: "e.g. 100", class: "form-control" %>
+    <%= error_tag @f, :num_realizations%>
+  </div>

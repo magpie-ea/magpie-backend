@@ -17,6 +17,15 @@ defmodule BABE.Experiment do
     field(:is_interactive_experiment, :boolean, default: false)
     field(:num_participants_interactive_experiment, :integer, null: true)
 
+    # Should they be null or by default 1? At least num_realizations should not be 1 by default IMO.
+    field(:num_variants, :integer, null: true)
+    field(:num_chains, :integer, null: true)
+    # Let me just make it a large number by default.
+    field(:num_realizations, :integer, null: true)
+
+    # If an experiment is iterative, we only assign a participant to <variant-nr, chain-nr, realization-nr + 1> when <variant-nr, chain-nr, realization-nr> is submitted.
+    field(:is_complex, :boolean, default: false)
+
     has_many(:experiment_results, BABE.ExperimentResult)
 
     timestamps(type: :utc_datetime)
@@ -35,8 +44,22 @@ defmodule BABE.Experiment do
       :maximum_submissions,
       :dynamic_retrieval_keys,
       :is_interactive_experiment,
-      :num_participants_interactive_experiment
+      :num_participants_interactive_experiment,
+      :num_variants,
+      :num_chains,
+      :num_realizations,
+      :is_complex
     ])
     |> validate_required([:name, :author, :active])
+    |> validate_required_if_complex(params)
+  end
+
+  defp validate_required_if_complex(changeset, %{"is_complex" => "true"}) do
+    changeset
+    |> validate_required([:num_variants, :num_chains, :num_realizations])
+  end
+
+  defp validate_required_if_complex(changeset, _) do
+    changeset
   end
 end

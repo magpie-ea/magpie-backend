@@ -8,5 +8,13 @@
   <% end %>
 
   <%= render "form.html", conn: @conn, f: f%>
+  <%= render "complex_experiment_new.html", conn: @conn, f: f%>
 
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+
+  <div class="form-group">
+    <%= link "Back", to: experiment_path(@conn, :index), class: "btn btn-default" %>
+  </div>
 <% end %>

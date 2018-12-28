@@ -11,8 +11,8 @@ defmodule BABE.ExperimentController do
   require Logger
   require Iteraptor
 
-  alias BABE.Experiment
-  alias BABE.ExperimentResult
+  alias BABE.{Experiment, ExperimentStatus, ExperimentResult}
+  alias Ecto.Multi
 
   import BABE.ExperimentHelper
 
@@ -34,19 +34,41 @@ defmodule BABE.ExperimentController do
   Function called when an experiment record creation request is submitted (from `new`)
   """
   def create(conn, %{"experiment" => experiment_params}) do
-    # Add password check later
+    changeset_experiment = Experiment.changeset(%Experiment{}, experiment_params)
 
-    changeset = Experiment.changeset(%Experiment{}, experiment_params)
+    multi =
+      if experiment_params["is_complex"] == "true" do
+        Multi.new()
+        |> Multi.insert(:experiment, changeset_experiment)
+        # Use `Multi.merge` so that we can take the Experiment created from `Multi.insert` above.
+        |> Multi.merge(fn %{experiment: experiment} ->
+          Multi.new()
+          |> Multi.insert_all(
+            :experiment_statuses,
+            ExperimentStatus,
+            ExperimentStatus.multi_changeset_from_experiment(experiment)
+          )
+        end)
+      else
+        Multi.new()
+        |> Multi.insert(:experiment, changeset_experiment)
+      end
 
-    case Repo.insert(changeset) do
-      {:ok, experiment} ->
+    case Repo.transaction(multi) do
+      # We can just pattern match on one of the keys in the map. It's fine.
+      {:ok, %{experiment: experiment}} ->
         conn
         |> put_flash(:info, "#{experiment.name} created!")
         |> redirect(to: experiment_path(conn, :index))
 
-      {:error, changeset} ->
-        # The error message is already included in the template file and will be rendered by then.
-        render(conn, "new.html", changeset: changeset)
+      {:error, :experiment, failed_value, _changes_so_far} ->
+        render(conn, "new.html", changeset: failed_value)
+
+      # The failure doesn't lie in experiment creation
+      {:error, _, _failed_value, _changes_so_far} ->
+        conn
+        |> put_flash(:error, "Sorry, something went wrong.")
+        |> render("new.html", changeset: changeset_experiment)
     end
   end
 
@@ -64,6 +86,11 @@ defmodule BABE.ExperimentController do
 
     case Repo.update(changeset) do
       {:ok, experiment} ->
+        # TODO: Now we need to decide what to do to the experiment status trackers.
+        # It will be pretty weird. Sounds a kind of like some strange 3-D algebra, in that I'll have to remove excessive ExperimentStatus and add previously nonexistent ExperimentStatus
+        # Is that a reasonable approach after all? Not sure.
+        # OK I think the case of increasing any number in the trituple is easier to handle: Just create new ExperimentStatus entries and that will be it
+        # But the case of reducing any number will be really annoying. Maybe they just simply shouldn't do it after all. Who knows.
         conn
         |> put_flash(:info, "Experiment #{experiment.name} updated successfully.")
         |> redirect(to: experiment_path(conn, :index))
@@ -108,6 +135,8 @@ defmodule BABE.ExperimentController do
 
   Note that the incoming JSON array of experiment results is automatically parsed and put under the key _json:
   https://hexdocs.pm/plug/Plug.Parsers.JSON.html
+
+  The "id" field is identifiable in the URL, as defined in router.ex
   """
   def submit(conn, %{"id" => id, "_json" => results}) do
     # This is the "Experiment" object that's supposed to be associated with this submission.
@@ -149,7 +178,7 @@ defmodule BABE.ExperimentController do
   defp record_submission(conn, results, experiment) do
     changeset =
       experiment
-      # This creates an ExperimentResult struct with the name field filled in
+      # This creates an ExperimentResult struct with the :experiment_id field filled in
       |> build_assoc(:experiment_results)
       |> ExperimentResult.changeset(%{"results" => results})
 
@@ -187,6 +216,21 @@ defmodule BABE.ExperimentController do
           "Unsuccessful submission. The results are probably malformed."
         )
     end
+  end
+
+  @doc """
+  Get all experiment results of an experiment.
+
+  For now only results from completed assignments will be retrieved.
+  """
+  defp get_experiment_results(experiment) do
+    query =
+      from(r in ExperimentResult,
+        where: r.experiment_id == ^experiment.experiment_id,
+        where: r.status == 2
+      )
+
+    Repo.all(query)
   end
 
   def retrieve_as_csv(conn, %{"id" => id}) do

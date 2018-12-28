@@ -8,17 +8,6 @@ defmodule BABE.InteractiveExperimentChannel do
   alias BABE.{Repo, Experiment}
 
   @doc """
-  The first step after establishing connection for any participant is to log in with a (in most cases randomly generated in the frontend) participant_id
-  """
-  def join("interactive_experiment:participant:" <> participant_id, _payload, socket) do
-    if socket.assigns.participant_id == participant_id do
-      {:ok, socket}
-    else
-      {:error, %{reason: "unauthorized"}}
-    end
-  end
-
-  @doc """
   After a participant successfully logs in, they should join the lobby to wait for other participants to start a game.
 
   Each experiment has a designated lobby. Only those experiments with their ":is_interactive_experiment" attribute explicitly turned on will be allowed.
@@ -59,7 +48,7 @@ defmodule BABE.InteractiveExperimentChannel do
   """
   def handle_info({:after_participant_join_lobby, num_participants}, socket) do
     # The `list` function returns presences for a topic.
-    # Note that here the topic should already include the specific experiment itself
+    # Note that here the topic should already identify the specific experiment itself
     # The keys are participant_ids
     existing_participants = Map.keys(Presence.list(socket))
 

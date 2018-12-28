@@ -10,7 +10,7 @@ defmodule BABE.Experiment do
 
     # Note that the type :text is actually used for Postgres (specified in the migration file). It may not be valid for other databases. The description is potentially longer than varchar(255) limited by the default :string.
     field(:description, :string)
-    field(:active, :boolean, default: false, null: false)
+    field(:active, :boolean, default: true, null: false)
     field(:maximum_submissions, :integer)
     field(:current_submissions, :integer, default: 0, null: false)
     field(:dynamic_retrieval_keys, {:array, :string})

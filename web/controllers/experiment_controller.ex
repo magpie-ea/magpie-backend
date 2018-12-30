@@ -251,8 +251,8 @@ defmodule BABE.ExperimentController do
 
       _ ->
         # Name the CSV file to be returned.
-        orig_name = "results_" <> id <> "_" <> name <> "_" <> author <> ".csv"
-        file_path = "results/" <> orig_name
+        orig_name = "results_#{id}_#{name}_#{author}.csv"
+        file_path = "results/#{orig_name}"
         file = File.open!(file_path, [:write, :utf8])
         # This method actually processes the submissions retrieved and write them to the CSV file.
         write_submissions(file, experiment_submissions)

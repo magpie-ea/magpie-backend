@@ -164,8 +164,8 @@ defmodule BABE.CustomRecordController do
     id = custom_record.id
 
     # Name the CSV file to be returned.
-    orig_name = "record_" <> id <> "_" <> name <> ".csv"
-    file_path = "results/" <> orig_name
+    orig_name = "record_#{id}_#{name}.csv"
+    file_path = "results/#{orig_name}"
     file = File.open!(file_path, [:write, :utf8])
     # This method actually processes the submissions retrieved and write them to the CSV file.
     write_record(file, custom_record.record)

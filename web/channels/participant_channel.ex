@@ -6,7 +6,7 @@ defmodule BABE.ParticipantChannel do
   use BABE.Web, :channel
   alias BABE.ChannelHelper
   alias BABE.Presence
-  alias BABE.{Repo, ExperimentStatus, ExperimentResult}
+  alias BABE.{Repo, Experiment, ExperimentStatus, ExperimentResult}
   alias Ecto.Multi
 
   @doc """
@@ -147,12 +147,17 @@ defmodule BABE.ParticipantChannel do
   We might still allow the submissions via the REST API anyways. Both should be viable options.
   """
   def handle_in("submit_results", payload, socket) do
-    IO.puts("submit_results triggered")
     experiment_id = socket.assigns.experiment_id
     variant = socket.assigns.variant
     chain = socket.assigns.chain
     realization = socket.assigns.realization
     results = payload["results"]
+
+    experiment = Repo.get(Experiment, experiment_id)
+
+    experiment_changeset =
+      experiment
+      |> Ecto.Changeset.change(current_submissions: experiment.current_submissions + 1)
 
     experiment_status =
       ChannelHelper.get_experiment_status(
@@ -178,6 +183,7 @@ defmodule BABE.ParticipantChannel do
 
     operation =
       Multi.new()
+      |> Multi.update(:experiment, experiment_changeset)
       |> Multi.update(:status, experiment_status_changeset)
       |> Multi.insert(:result, experiment_result_changeset)
 

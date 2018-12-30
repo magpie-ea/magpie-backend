@@ -4,6 +4,7 @@ defmodule BABE.ParticipantChannel do
   """
 
   use BABE.Web, :channel
+  alias BABE.ChannelHelper
   alias BABE.Presence
   alias BABE.{Repo, ExperimentStatus, ExperimentResult}
   alias Ecto.Multi
@@ -18,6 +19,28 @@ defmodule BABE.ParticipantChannel do
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  @doc """
+  Reset the experiment status when the user leaves halfway through.
+
+  However, this might not catch situations where the connection times out, etc. `presence_diff` is supposed to be preferred, but somehow it is not working for now.
+  """
+  def terminate(reason, socket) do
+    # IO.puts("terminated. #{inspect(reason)}")
+    experiment_status =
+      ChannelHelper.get_experiment_status(
+        socket.assigns.experiment_id,
+        socket.assigns.variant,
+        socket.assigns.chain,
+        socket.assigns.realization
+      )
+
+    # We should only clear the ExperimentStatus to 0 if the participant left when the experiment was still in progress, i.e. not submitted.
+    if experiment_status.status == 1 do
+      changeset = experiment_status |> ExperimentStatus.changeset(%{status: 0})
+      Repo.update!(changeset)
     end
   end
 
@@ -45,86 +68,38 @@ defmodule BABE.ParticipantChannel do
     {:noreply, socket}
   end
 
-  defp get_experiment_status(experiment_id, variant, chain, realization) do
-    status_query =
-      from(s in ExperimentStatus,
-        where: s.experiment_id == ^experiment_id,
-        where: s.variant == ^variant,
-        where: s.chain == ^chain,
-        where: s.realization == ^realization
-      )
+  # Try to reset the experiment status when the participant leaves halfway through.
+  # This is not working for some reason, though.
+  # intercept(["presence_diff"])
+  # def handle_out("presence_diff", payload, socket) do
+  #   IO.puts("presence_diff triggered, payload is #{inspect(payload)}")
 
-    Repo.one!(status_query)
-  end
+  #   leaves = payload.leaves
 
-  @doc """
-  A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.
+  #   for {experiment_id, meta} <- leaves do
+  #     IO.puts("Some leave information: #{meta}")
 
-  Though I'm not even sure if we actually need this callback or not if we're not going to do anything special with it. Let's see what happens then.
-  """
-  def join(
-        "waiting_on_results:" <> assignment_trituple,
-        _payload,
-        socket
-      ) do
-    case String.split(assignment_trituple, ":") do
-      [variant, chain, realization] ->
-        experiment_status =
-          get_experiment_status(socket.assigns.experiment_id, variant, chain, realization)
+  #     for assignment <- meta.metas do
+  #       # Clear out the DB status to mark this assignment as available again.
+  #       experiment_status =
+  #         ChannelHelper.get_experiment_status(
+  #           experiment_id,
+  #           assignment.variant,
+  #           assignment.chain,
+  #           assignment.realization
+  #         )
 
-        case experiment_status.status do
-          2 ->
-            results_query =
-              from(r in ExperimentResult,
-                where: r.experiment_id == ^socket.assigns.experiment_id,
-                where: r.variant == ^variant,
-                where: r.chain == ^chain,
-                where: r.realization == ^realization
-              )
+  #       # We should only clear the ExperimentStatus to 0 if the participant left when the experiment was still in progress, i.e. not submitted.
+  #       if experiment_status.status == 1 do
+  #         changeset = experiment_status |> ExperimentStatus.changeset(%{status: 0})
+  #         Repo.update!(changeset)
+  #       end
+  #     end
+  #   end
 
-            experiment_results = Repo.one!(results_query)
-
-            {:reply, {:error, %{reason: "already_finished", results: experiment_results}}, socket}
-
-          # I'm not sure if there's a valid case of waiting on an experiment whose status is 0. But I guess I should handle reassignments of dropouts elsewhere.
-          _ ->
-            {:reply, :ok, socket}
-        end
-
-      _ ->
-        {:reply, {:error, %{reason: "wrong_format"}}, socket}
-    end
-
-    {:ok, socket}
-  end
-
-  intercept(["presence_diff"])
-
-  def handle_out("presence_diff", payload, socket) do
-    leaves = payload.leaves
-
-    for {experiment_id, meta} <- leaves do
-      for assignment <- meta.metas do
-        # Clear out the DB status to mark this assignment as available again.
-        experiment_status =
-          get_experiment_status(
-            experiment_id,
-            assignment.variant,
-            assignment.chain,
-            assignment.realization
-          )
-
-        # We should only clear the ExperimentStatus to 0 if the participant left when the experiment was still in progress, i.e. not submitted.
-        if experiment_status.status != 2 do
-          changeset = experiment_status |> ExperimentStatus.changeset(%{status: 0})
-          Repo.update!(changeset)
-        end
-      end
-    end
-
-    # As mentioned before, we can just clear this spot and not change any of the existing user's assignment.
-    {:noreply, socket}
-  end
+  # As mentioned before, we can just clear this spot and not change any of the existing user's assignment.
+  #   {:noreply, socket}
+  # end
 
   @doc """
   The client should send a "save_intermediate_progress" message at each step of the experiment, so that experiment progress will not be lost if the client drops out before the end.
@@ -172,29 +147,34 @@ defmodule BABE.ParticipantChannel do
   We might still allow the submissions via the REST API anyways. Both should be viable options.
   """
   def handle_in("submit_results", payload, socket) do
+    IO.puts("submit_results triggered")
     experiment_id = socket.assigns.experiment_id
     variant = socket.assigns.variant
     chain = socket.assigns.chain
     realization = socket.assigns.realization
-    results = payload.results
+    results = payload["results"]
 
-    experiment_status_changeset =
-      ExperimentStatus.changeset(%ExperimentStatus{
-        experiment_id: experiment_id,
-        status: 2,
-        variant: variant,
-        chain: chain,
-        realization: realization
-      })
+    experiment_status =
+      ChannelHelper.get_experiment_status(
+        socket.assigns.experiment_id,
+        socket.assigns.variant,
+        socket.assigns.chain,
+        socket.assigns.realization
+      )
+
+    experiment_status_changeset = experiment_status |> ExperimentStatus.changeset(%{status: 2})
 
     experiment_result_changeset =
-      ExperimentResult.changeset(%ExperimentResult{
-        experiment_id: experiment_id,
-        results: results,
-        variant: variant,
-        chain: chain,
-        realization: realization
-      })
+      ExperimentResult.changeset(
+        %ExperimentResult{},
+        %{
+          experiment_id: experiment_id,
+          results: results,
+          variant: variant,
+          chain: chain,
+          realization: realization
+        }
+      )
 
     operation =
       Multi.new()
@@ -205,7 +185,7 @@ defmodule BABE.ParticipantChannel do
       {:ok, _} ->
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
         BABE.Endpoint.broadcast!(
-          "waiting_on_results:#{variant}:#{chain}:#{realization}",
+          "iterated_lobby:#{variant}:#{chain}:#{realization}",
           "finished",
           %{results: results}
         )

@@ -27,7 +27,7 @@ defmodule BABE.ExperimentResult do
     # `cast/3` ignores all parameters not explicitly permitted, converts all permitted key names into atoms, and store them in the :changes field of the changeset
     # The point is that only the :changes field will work when performing any real DB action with Repo.
     # This is to say, the other parameters are not "deleted" at this step yet. You can chain multiple `cast` calls.
-    |> cast(params, [:results, :experiment_id, :variant, :chain, :realization, :status])
+    |> cast(params, [:results, :experiment_id, :variant, :chain, :realization])
     |> validate_required([:experiment_id, :results])
     # Must be associated with an experiment
     |> assoc_constraint(:experiment)

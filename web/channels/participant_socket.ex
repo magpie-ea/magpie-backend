@@ -10,8 +10,8 @@ defmodule BABE.ParticipantSocket do
   # Participant Channel is responsible for holding 2-to-1 connections with each participant.
   # The ":*" part just means that any event with `participant` topic will be sent to the Participant channel.
   channel("participant:*", BABE.ParticipantChannel)
-  channel("interactive_experiment:*", BABE.InteractiveExperimentChannel)
-  channel("lobby:*", BABE.LobbyChannel)
+  channel("interactive_lobby:*", BABE.InteractiveLobbyChannel)
+  channel("iterated_lobby:*", BABE.IteratedLobbyChannel)
 
   ## Transports
   transport(:websocket, Phoenix.Transports.WebSocket,
@@ -57,7 +57,8 @@ defmodule BABE.ParticipantSocket do
             Ecto.Query.from(s in ExperimentStatus,
               where: s.experiment_id == ^experiment_id,
               where: s.status == 0,
-              order_by: [s.variant, s.chain, s.realization]
+              # order_by: [s.variant, s.chain, s.realization]
+              order_by: [s.realization, s.chain, s.variant]
               # limit: 1
             )
 

@@ -4,9 +4,7 @@ defmodule BABE.IteratedLobbyChannel do
   """
   use BABE.Web, :channel
   alias BABE.ChannelHelper
-  alias BABE.Presence
-  alias BABE.{Repo, ExperimentStatus, ExperimentResult}
-  alias Ecto.Multi
+  alias BABE.{Repo, ExperimentResult}
 
   @doc """
   A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.

@@ -27,7 +27,7 @@ defmodule BABE.ParticipantChannel do
 
   However, this might not catch situations where the connection times out, etc. `presence_diff` is supposed to be preferred, but somehow it is not working for now.
   """
-  def terminate(reason, socket) do
+  def terminate(_reason, socket) do
     # IO.puts("terminated. #{inspect(reason)}")
     experiment_status =
       ChannelHelper.get_experiment_status(

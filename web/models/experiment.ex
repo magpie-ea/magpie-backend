@@ -51,15 +51,18 @@ defmodule BABE.Experiment do
       :is_complex
     ])
     |> validate_required([:name, :author, :active])
-    |> validate_required_if_complex(params)
+    |> validate_complex_experiment_requirements(params)
   end
 
-  defp validate_required_if_complex(changeset, %{"is_complex" => "true"}) do
+  defp validate_complex_experiment_requirements(changeset, %{"is_complex" => "true"}) do
     changeset
     |> validate_required([:num_variants, :num_chains, :num_realizations])
   end
 
-  defp validate_required_if_complex(changeset, _) do
+  defp validate_complex_experiment_requirements(changeset, _) do
     changeset
+    |> delete_change(:num_variants)
+    |> delete_change(:num_chains)
+    |> delete_change(:num_realizations)
   end
 end

@@ -7,8 +7,6 @@ defmodule BABE.InteractiveLobbyChannel do
 
   use BABE.Web, :channel
   alias BABE.Presence
-  alias BABE.{Repo, ExperimentStatus, ExperimentResult}
-  alias Ecto.Multi
 
   @doc """
   Let the participant join the lobby and wait in there.

@@ -1,8 +1,7 @@
 defmodule BABE.ParticipantSocket do
   use Phoenix.Socket
   require Ecto.Query
-  alias BABE.{Repo, Experiment, ExperimentResult, ExperimentStatus}
-  alias Ecto.Multi
+  alias BABE.{Repo, Experiment, ExperimentStatus}
 
   ## Channels
   # channel "room:*", BABE.RoomChannel

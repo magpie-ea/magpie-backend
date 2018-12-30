@@ -218,21 +218,6 @@ defmodule BABE.ExperimentController do
     end
   end
 
-  @doc """
-  Get all experiment results of an experiment.
-
-  For now only results from completed assignments will be retrieved.
-  """
-  defp get_experiment_results(experiment) do
-    query =
-      from(r in ExperimentResult,
-        where: r.experiment_id == ^experiment.experiment_id,
-        where: r.status == 2
-      )
-
-    Repo.all(query)
-  end
-
   def retrieve_as_csv(conn, %{"id" => id}) do
     experiment = Repo.get!(Experiment, id)
 

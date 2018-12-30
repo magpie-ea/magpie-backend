@@ -2,8 +2,6 @@ defmodule BABE.ExperimentStatus do
   @moduledoc """
   Keeps track of the experiment status, where it can be available/abandoned (0), in progress (1), or submitted (2). Especially useful for iterated experiments.
   """
-  alias Ecto.Multi
-
   use BABE.Web, :model
 
   schema "experiment_statuses" do
@@ -32,7 +30,6 @@ defmodule BABE.ExperimentStatus do
   def multi_changeset_from_experiment(experiment) do
     # If the responsibility of the model module is only to create changesets then this should be a viable way to do it.
     # We should have a list of changesets after this.
-    changeset_list =
       for variant <- 1..experiment.num_variants,
           chain <- 1..experiment.num_chains,
           realization <- 1..experiment.num_realizations do

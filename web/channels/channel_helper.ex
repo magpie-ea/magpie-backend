@@ -1,10 +1,10 @@
 defmodule BABE.ChannelHelper do
-  use BABE.Web, :channel
-  alias BABE.{Repo, ExperimentStatus, ExperimentResult}
+  alias BABE.{Repo, ExperimentStatus}
+  require Ecto.Query
 
   def get_experiment_status(experiment_id, variant, chain, realization) do
     status_query =
-      from(s in ExperimentStatus,
+      Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment_id,
         where: s.variant == ^variant,
         where: s.chain == ^chain,

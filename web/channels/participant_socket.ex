@@ -9,7 +9,7 @@ defmodule BABE.ParticipantSocket do
   # Participant Channel is responsible for holding 2-to-1 connections with each participant.
   # The ":*" part just means that any event with `participant` topic will be sent to the Participant channel.
   channel("participant:*", BABE.ParticipantChannel)
-  channel("interactive_lobby:*", BABE.InteractiveLobbyChannel)
+  channel("interactive_room:*", BABE.InteractiveRoomChannel)
   channel("iterated_lobby:*", BABE.IteratedLobbyChannel)
 
   ## Transports
@@ -86,7 +86,10 @@ defmodule BABE.ParticipantSocket do
                    |> assign(:experiment_id, experiment_id)
                    |> assign(:variant, next_assignment.variant)
                    |> assign(:chain, next_assignment.chain)
-                   |> assign(:realization, next_assignment.realization)}
+                   |> assign(:realization, next_assignment.realization)
+                   |> assign(:num_variants, experiment.num_variants)
+                   |> assign(:num_chains, experiment.num_chains)
+                   |> assign(:num_realizations, experiment.num_realizations)}
 
                 {:error, _changeset} ->
                   {:error, %{reason: "db_error"}}

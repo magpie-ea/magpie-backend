@@ -12,13 +12,17 @@ defmodule BABE.IteratedLobbyChannel do
   Though I'm not even sure if we actually need this callback or not if we're not going to do anything special with it. Let's see what happens then.
   """
   def join(
-        "iterated_lobby:" <> assignment_trituple,
+        "iterated_lobby:" <> assignment_identifier,
         _payload,
         socket
       ) do
-    case String.split(assignment_trituple, ":") do
-      [variant, chain, realization] ->
-        send(self(), {:after_participant_join, variant, chain, realization})
+    case String.split(assignment_identifier, ":") do
+      [experiment_id, variant, chain, realization] ->
+        # We can also allow a new participant to wait on the results of a previous experiment. Why not if they want to do so.
+        # if experiment_id == socket.assigns.experiment_id do
+
+        # end
+        send(self(), {:after_participant_join, experiment_id, variant, chain, realization})
         {:ok, socket}
 
       _ ->
@@ -26,10 +30,10 @@ defmodule BABE.IteratedLobbyChannel do
     end
   end
 
-  def handle_info({:after_participant_join, variant, chain, realization}, socket) do
+  def handle_info({:after_participant_join, experiment_id, variant, chain, realization}, socket) do
     experiment_status =
       ChannelHelper.get_experiment_status(
-        socket.assigns.experiment_id,
+        experiment_id,
         variant,
         chain,
         realization
@@ -39,7 +43,7 @@ defmodule BABE.IteratedLobbyChannel do
       2 ->
         results_query =
           from(r in ExperimentResult,
-            where: r.experiment_id == ^socket.assigns.experiment_id,
+            where: r.experiment_id == ^experiment_id,
             where: r.variant == ^variant,
             where: r.chain == ^chain,
             where: r.realization == ^realization
@@ -49,7 +53,7 @@ defmodule BABE.IteratedLobbyChannel do
 
         # Just as what we do when the waited-on participant submits their results, send the results to all participants waiting for this participant.
         BABE.Endpoint.broadcast!(
-          "iterated_lobby:#{variant}:#{chain}:#{realization}",
+          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",
           "finished",
           %{results: experiment_results.results}
         )

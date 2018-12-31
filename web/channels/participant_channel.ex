@@ -191,7 +191,7 @@ defmodule BABE.ParticipantChannel do
       {:ok, _} ->
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
         BABE.Endpoint.broadcast!(
-          "iterated_lobby:#{variant}:#{chain}:#{realization}",
+          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",
           "finished",
           %{results: results}
         )

@@ -2,7 +2,7 @@
     <%= label @f, :is_complex, "Complex experiment", class: "control-label" %>
     <%= checkbox @f, :is_complex%>
     <p>
-      In this experiment, There is some sort of dependency between different realizations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
+      In this experiment, there is some sort of dependency between different realizations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
       </p>
 
 <p>

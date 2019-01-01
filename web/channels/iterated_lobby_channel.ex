@@ -8,8 +8,6 @@ defmodule BABE.IteratedLobbyChannel do
 
   @doc """
   A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.
-
-  Though I'm not even sure if we actually need this callback or not if we're not going to do anything special with it. Let's see what happens then.
   """
   def join(
         "iterated_lobby:" <> assignment_identifier,
@@ -18,10 +16,7 @@ defmodule BABE.IteratedLobbyChannel do
       ) do
     case String.split(assignment_identifier, ":") do
       [experiment_id, variant, chain, realization] ->
-        # We can also allow a new participant to wait on the results of a previous experiment. Why not if they want to do so.
-        # if experiment_id == socket.assigns.experiment_id do
-
-        # end
+        # By including `experiment_id` in the identifier we also allow a new participant to wait on the results of a previous experiment. Why not if they want to do so.
         send(self(), {:after_participant_join, experiment_id, variant, chain, realization})
         {:ok, socket}
 
@@ -51,7 +46,7 @@ defmodule BABE.IteratedLobbyChannel do
 
         experiment_results = Repo.one!(results_query)
 
-        # Just as what we do when the waited-on participant submits their results, send the results to all participants waiting for this participant.
+        # The same as what we do when the waited-on participant submits their results, send the results to all participants waiting for this participant.
         BABE.Endpoint.broadcast!(
           "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",
           "finished",

@@ -1,6 +1,6 @@
 defmodule BABE.Experiment do
   @moduledoc """
-  An Experiment corresponds to an experiment that the author plans to run. They can decide whether to deactivate the experiment so that no new submissions will be accepted.
+  An Experiment corresponds to an experiment that the author plans to run. Each ExperimentResult and each ExperimentStatus must belong to an Experiment.
   """
   use BABE.Web, :model
 
@@ -17,16 +17,15 @@ defmodule BABE.Experiment do
     field(:is_interactive_experiment, :boolean, default: false)
     field(:num_participants_interactive_experiment, :integer, null: true)
 
-    # Should they be null or by default 1? At least num_realizations should not be 1 by default IMO.
+    # null: true because they can be null for simple experiments.
     field(:num_variants, :integer, null: true)
     field(:num_chains, :integer, null: true)
-    # Let me just make it a large number by default.
     field(:num_realizations, :integer, null: true)
 
-    # If an experiment is iterative, we only assign a participant to <variant-nr, chain-nr, realization-nr + 1> when <variant-nr, chain-nr, realization-nr> is submitted.
     field(:is_complex, :boolean, default: false)
 
-    has_many(:experiment_results, BABE.ExperimentResult)
+    has_many(:experiment_results, BABE.ExperimentResult, on_delete: :delete_all)
+    has_many(:experiment_statuses, BABE.ExperimentStatus, on_delete: :delete_all)
 
     timestamps(type: :utc_datetime)
   end
@@ -54,11 +53,13 @@ defmodule BABE.Experiment do
     |> validate_complex_experiment_requirements(params)
   end
 
+  # If the experiment is complex, those three numbers must be present.
   defp validate_complex_experiment_requirements(changeset, %{"is_complex" => "true"}) do
     changeset
     |> validate_required([:num_variants, :num_chains, :num_realizations])
   end
 
+  # On the contrary scenario, they must be absent.
   defp validate_complex_experiment_requirements(changeset, _) do
     changeset
     |> delete_change(:num_variants)

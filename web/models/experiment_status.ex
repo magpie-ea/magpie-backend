@@ -1,6 +1,6 @@
 defmodule BABE.ExperimentStatus do
   @moduledoc """
-  Keeps track of the experiment status, where it can be available/abandoned (0), in progress (1), or submitted (2). Especially useful for iterated experiments.
+  Keeps track of the experiment status, where it can be available/abandoned (0), in progress (1), or submitted (2). Used for complex experiments.
   """
   use BABE.Web, :model
 
@@ -18,9 +18,6 @@ defmodule BABE.ExperimentStatus do
 
   def changeset(model, params \\ %{}) do
     model
-    # `cast/3` ignores all parameters not explicitly permitted, converts all permitted key names into atoms, and store them in the :changes field of the changeset
-    # The point is that only the :changes field will work when performing any real DB action with Repo.
-    # This is to say, the other parameters are not "deleted" at this step yet. You can chain multiple `cast` calls.
     |> cast(params, [:experiment_id, :variant, :chain, :realization, :status])
     |> validate_required([:experiment_id, :variant, :chain, :realization, :status])
     # Must be associated with an experiment
@@ -30,19 +27,19 @@ defmodule BABE.ExperimentStatus do
   def multi_changeset_from_experiment(experiment) do
     # If the responsibility of the model module is only to create changesets then this should be a viable way to do it.
     # We should have a list of changesets after this.
-      for variant <- 1..experiment.num_variants,
-          chain <- 1..experiment.num_chains,
-          realization <- 1..experiment.num_realizations do
-        # Manually create maps for `Ecto.insert_all`
-        %{
-          experiment_id: experiment.id,
-          variant: variant,
-          chain: chain,
-          realization: realization,
-          status: 0,
-          inserted_at: Ecto.DateTime.utc(),
-          updated_at: Ecto.DateTime.utc()
-        }
-      end
+    for variant <- 1..experiment.num_variants,
+        chain <- 1..experiment.num_chains,
+        realization <- 1..experiment.num_realizations do
+      # Manually create maps for `Ecto.insert_all`
+      %{
+        experiment_id: experiment.id,
+        variant: variant,
+        chain: chain,
+        realization: realization,
+        status: 0,
+        inserted_at: Ecto.DateTime.utc(),
+        updated_at: Ecto.DateTime.utc()
+      }
+    end
   end
 end

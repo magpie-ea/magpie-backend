@@ -29,6 +29,7 @@ defmodule BABE.InteractiveRoomChannel do
     # Add this participant to the list of all participants waiting in the lobby of this experiment.
     # Let me just make the following assumption: An interactive experiment must happen between participants of the same chain and realization.
     # If they need something more complicated in the future, change the structure by then.
+    # This Presence can also be helpful in informing participants when one participant drops out.
     Presence.track(socket, "#{socket.assigns.participant_id}", %{
       variant: socket.assigns.variant,
       chain: socket.assigns.chain,
@@ -38,33 +39,10 @@ defmodule BABE.InteractiveRoomChannel do
 
     existing_participants = Map.keys(Presence.list(socket))
 
-    # Send the list of all participants currently connected to the lobby, and let them decide whether to perform the next step or not.
-    # Note that this list includes this participant themselves.
-    # push(socket, "presence_state", Presence.list(socket))
-
-    # Or maybe we'll just tell the participants to start the experiment once the number of specified variants is met.
-
     # Start the experiment if the predefined number of variants is reached.
+    # We could also send a presence_state event to the clients. Though this is the easy way to do it.
     if length(existing_participants) >= socket.assigns.num_variants do
-      # With the new backend format there should be no cases where unrelated participants join this channel as well. So we just broadcast the game_start message to everybody.
-      IO.puts("Should broadcast the message")
-
       broadcast!(socket, "start_game", %{})
-
-      # lounge_id =
-      #   "#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
-
-      # existing_participants
-      # |> Enum.take(socket.assigns.num_variants)
-      # |> Enum.each(fn participant_id ->
-      #   BABE.Endpoint.broadcast!(
-      #     "participant:#{participant_id}",
-      #     "start_game",
-      #     %{
-      #       # I don't think we need to send any payload to the participant, actually.
-      #     }
-      #   )
-      # end)
     end
 
     {:noreply, socket}
@@ -78,9 +56,10 @@ defmodule BABE.InteractiveRoomChannel do
     {:noreply, socket}
   end
 
-  # The client can always use new_msg for everything though specialized message types could help ease the job.
   @doc """
   In many cases the game initialization needs to be handled by the client, since the server remains as generic as possible and just provides a channel for communication.
+
+  The client can always use `new_msg` for everything, though specialized message types could help ease the job.
   """
   def handle_in("initialize_game", payload, socket) do
     broadcast(socket, "initialize_game", payload)

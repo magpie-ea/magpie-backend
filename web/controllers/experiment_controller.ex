@@ -90,7 +90,8 @@ defmodule BABE.ExperimentController do
         # It will be pretty weird. Sounds a kind of like some strange 3-D algebra, in that I'll have to remove excessive ExperimentStatus and add previously nonexistent ExperimentStatus
         # Is that a reasonable approach after all? Not sure.
         # OK I think the case of increasing any number in the trituple is easier to handle: Just create new ExperimentStatus entries and that will be it
-        # But the case of reducing any number will be really annoying. Maybe they just simply shouldn't do it after all. Who knows.
+        # But the case of reducing any number will be really annoying.
+        # Now let me just make the trituple uneditable after experiment creation anyways.
         conn
         |> put_flash(:info, "Experiment #{experiment.name} updated successfully.")
         |> redirect(to: experiment_path(conn, :index))
@@ -323,6 +324,9 @@ defmodule BABE.ExperimentController do
     |> send_download({:file, "results/all_results.zip"})
   end
 
+  @doc """
+  Check whether the given experiment_id is valid before the participant ever starts.
+  """
   def check_valid(conn, %{"id" => id}) do
     case Repo.get(Experiment, id) do
       nil ->

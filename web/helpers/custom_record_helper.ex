@@ -12,7 +12,7 @@ defmodule BABE.CustomRecordHelper do
   end
 
   def write_record(file, record) do
-    # Here the headers for the csv file will be recorded
+    # First the headers for the csv file will be generated
     [entry | _] = record
     keys = Map.keys(entry)
     # The first element in the `outputs` list of lists will be the keys, i.e. headers

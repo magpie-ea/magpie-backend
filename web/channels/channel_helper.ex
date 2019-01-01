@@ -1,7 +1,13 @@
 defmodule BABE.ChannelHelper do
+  @moduledoc """
+  Helper module for functionalities common to all channels.
+  """
   alias BABE.{Repo, ExperimentStatus}
   require Ecto.Query
 
+  @doc """
+  Fetch experiment status with the given identifiers.
+  """
   def get_experiment_status(experiment_id, variant, chain, realization) do
     status_query =
       Ecto.Query.from(s in ExperimentStatus,

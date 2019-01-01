@@ -14,8 +14,6 @@ defmodule BABE.Experiment do
     field(:maximum_submissions, :integer)
     field(:current_submissions, :integer, default: 0, null: false)
     field(:dynamic_retrieval_keys, {:array, :string})
-    field(:is_interactive_experiment, :boolean, default: false)
-    field(:num_participants_interactive_experiment, :integer, null: true)
 
     # null: true because they can be null for simple experiments.
     field(:num_variants, :integer, null: true)
@@ -42,8 +40,6 @@ defmodule BABE.Experiment do
       :active,
       :maximum_submissions,
       :dynamic_retrieval_keys,
-      :is_interactive_experiment,
-      :num_participants_interactive_experiment,
       :num_variants,
       :num_chains,
       :num_realizations,

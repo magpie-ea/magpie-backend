@@ -10,8 +10,6 @@ defmodule BABE.Repo.Migrations.SetupSqliteDb do
       add(:author, :string)
       add(:description, :string)
       add(:active, :boolean, default: true, null: false)
-      add(:maximum_submissions, :integer)
-      add(:current_submissions, :integer, default: 0, null: false)
       add(:dynamic_retrieval_keys, {:array, :string})
 
       add(:is_complex, :boolean, default: false)

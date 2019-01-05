@@ -1,5 +1,6 @@
 defmodule BABE.ExperimentView do
   use BABE.Web, :view
+  import Ecto.Query, only: [from: 2]
 
   # From https://medium.com/@chipdean/phoenix-array-input-field-implementation-7ec0fe0949d
   def array_input(form, field) do
@@ -70,6 +71,9 @@ defmodule BABE.ExperimentView do
     link("Add", to: "#", data: data, class: "add-form-field")
   end
 
+  @doc """
+  For dynamic experiment results retrieval as JSON over HTTP. Only render the keys specified in the UI.
+  """
   def render("retrieval.json", %{keys: keys, submissions: submissions}) do
     Enum.map(submissions, &transform_submission(&1, keys))
   end
@@ -83,6 +87,14 @@ defmodule BABE.ExperimentView do
       |> Enum.filter(fn {k, _v} -> Enum.member?(keys, k) end)
       |> Map.new()
     end)
+  end
+
+  @doc """
+  Get the total number of submissions for a particular experiment
+  """
+  def get_current_submissions(experiment) do
+    query = from(r in BABE.ExperimentResult, where: r.experiment_id == ^experiment.id)
+    BABE.Repo.aggregate(query, :count, :id)
   end
 
   def get_endpoint_url(type, id) do

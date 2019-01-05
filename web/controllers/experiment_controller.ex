@@ -186,22 +186,12 @@ defmodule BABE.ExperimentController do
     case Repo.insert(changeset) do
       # Update the submission count
       {:ok, _} ->
-        # No need to do this for now. Just count the number of associated ExperimentResult entries should work.
-        current_submissions = experiment.current_submissions
-
-        changeset_experiment =
-          Ecto.Changeset.change(experiment, current_submissions: current_submissions + 1)
-
-        Repo.update!(changeset_experiment)
-
         # Currently I don't think there's a need to send the created resource back. Just acknowledge that the information is received.
         # created is 201
         send_resp(conn, :created, "")
 
       {:error, changeset} ->
         # unprocessable entity is 422
-        IO.puts(changeset)
-
         conn
         |> put_resp_content_type("text/plain")
         |> send_resp(

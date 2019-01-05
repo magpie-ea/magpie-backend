@@ -66,13 +66,6 @@ defmodule BABE.ParticipantChannel do
     realization = socket.assigns.realization
     results = payload["results"]
 
-    experiment = Repo.get(Experiment, experiment_id)
-
-    # TODO: There will be a race condition (reading the same old value) when multiple participants try to submit at the same time. Maybe just scrap this sort of counter altogether.
-    experiment_changeset =
-      experiment
-      |> Ecto.Changeset.change(current_submissions: experiment.current_submissions + 1)
-
     experiment_status =
       ChannelHelper.get_experiment_status(
         socket.assigns.experiment_id,
@@ -97,7 +90,6 @@ defmodule BABE.ParticipantChannel do
 
     operation =
       Multi.new()
-      |> Multi.update(:experiment, experiment_changeset)
       |> Multi.update(:status, experiment_status_changeset)
       |> Multi.insert(:result, experiment_result_changeset)
 

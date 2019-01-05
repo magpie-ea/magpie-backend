@@ -31,7 +31,7 @@
         <td><%= experiment.name %></td>
         <td><%= experiment.author %></td>
         <td>
-          <%= experiment.current_submissions %>
+          <%= get_current_submissions(experiment) %>
         </td>
 
         <td style="white-space:nowrap;"><%= format_timestamp(experiment.inserted_at) %></td>

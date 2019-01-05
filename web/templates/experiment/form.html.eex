@@ -23,18 +23,6 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :maximum_submissions, "(Optional) Maximum allowed submissions", class: "control-label" %>
-    <p>
-      With <code>maximum_submissions</code> specified, once the number of submissions reaches this value, the experiment will automatically be <b>deactivated</b>.
-    </p>
-    <p>
-      If you're running the experiment on a crowdsourcing platform with participant control, it's recommended to rely on the platform's built-in mechanism instead.
-    </p>
-    <%= text_input @f, :maximum_submissions, placeholder: "e.g. 30", class: "form-control" %>
-    <%= error_tag @f, :maximum_submissions %>
-  </div>
-
-  <div class="form-group">
     <%= label @f, :dynamic_retrieval_keys, "(Optional) Keys that should be included for the dynamic retrieval of experiment results. List one key per entry.", class: "control-label" %>
     <%= array_input @f, :dynamic_retrieval_keys %>
     <%= array_add_button @f, :dynamic_retrieval_keys %>

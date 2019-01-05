@@ -32,10 +32,6 @@
         <td><%= experiment.author %></td>
         <td>
           <%= experiment.current_submissions %>
-          <%= if experiment.maximum_submissions do %>
-            /
-            <%= experiment.maximum_submissions %>
-          <% end %>
         </td>
 
         <td style="white-space:nowrap;"><%= format_timestamp(experiment.inserted_at) %></td>

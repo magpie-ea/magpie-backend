@@ -192,14 +192,6 @@ defmodule BABE.ExperimentController do
         changeset_experiment =
           Ecto.Changeset.change(experiment, current_submissions: current_submissions + 1)
 
-        # Automatically set the experiment to inactive if the maximum submission is reached.
-        changeset_experiment =
-          if current_submissions + 1 >= experiment.maximum_submissions do
-            Ecto.Changeset.put_change(changeset_experiment, :active, false)
-          else
-            changeset_experiment
-          end
-
         Repo.update!(changeset_experiment)
 
         # Currently I don't think there's a need to send the created resource back. Just acknowledge that the information is received.

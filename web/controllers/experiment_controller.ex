@@ -190,7 +190,7 @@ defmodule BABE.ExperimentController do
         # created is 201
         send_resp(conn, :created, "")
 
-      {:error, changeset} ->
+      {:error, _changeset} ->
         # unprocessable entity is 422
         conn
         |> put_resp_content_type("text/plain")

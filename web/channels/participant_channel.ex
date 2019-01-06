@@ -5,8 +5,7 @@ defmodule BABE.ParticipantChannel do
 
   use BABE.Web, :channel
   alias BABE.ChannelHelper
-  alias BABE.Presence
-  alias BABE.{Repo, Experiment, ExperimentStatus, ExperimentResult}
+  alias BABE.{Repo, ExperimentStatus, ExperimentResult}
   alias Ecto.Multi
 
   @doc """

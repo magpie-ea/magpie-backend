@@ -20,7 +20,9 @@ config :babe, BABE.Endpoint,
   # Configuration for Heroku
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE"),
   # Needed for Distillery releases
-  server: true
+  server: true,
+  # Allow clients from anywhere to connect to use the interactive experiment facilities. We can't constrain where the user chooses to host the frontend anyways.
+  check_origin: false
 
 # Configure the database
 config :babe, BABE.Repo,

@@ -302,10 +302,10 @@ For detailed documentation on the structure and deployment of experiments, pleas
 
   ```json
   {
-    response1: "a",
-    response2: "b",
-    response3: "c",
-    ...
+    "response1": "a",
+    "response2": "b",
+    "response3": "c",
+    // ...
   }
   ```
 
@@ -313,8 +313,8 @@ For detailed documentation on the structure and deployment of experiments, pleas
 
   ```json
   {
-    response: {1: "a", 2: "b", 3: "c"},
-    ...
+    "response": {1: "a", 2: "b", 3: "c"},
+    // ...
   }
   ```
 

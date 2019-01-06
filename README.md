@@ -300,7 +300,7 @@ For detailed documentation on the structure and deployment of experiments, pleas
 
 - When submitting experiment results, it is expected that each trial record does not contain any object/array among its values. The reason is that it would then be hard for the CSV writer to correctly format and produce a CSV file. In such cases, it is best to split experiment results into different keys containing simple values, e.g.
 
-  ```json
+  ```js
   {
     "response1": "a",
     "response2": "b",
@@ -311,9 +311,9 @@ For detailed documentation on the structure and deployment of experiments, pleas
 
   instead of
 
-  ```json
+  ```js
   {
-    "response": {1: "a", 2: "b", 3: "c"},
+    "response": {"1": "a", "2": "b", "3": "c"},
     // ...
   }
   ```

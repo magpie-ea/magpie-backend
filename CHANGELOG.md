@@ -1,5 +1,9 @@
 # Changelog
 
+## Newest
+### Fixed
+- Allow socket connection from any host, since we don't constrain where the user hosts the frontend _babe experiment.
+
 ## [0.2.0] - 2018-01-05
 ### Added
 - <variant-nr, chain-nr, realization-nr> based complex experiment mechanism, using Phoenix Channels.

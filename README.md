@@ -1,28 +1,29 @@
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+
 **Table of Contents**
 
 - [Server Documentation](#server-documentation)
-    - [Username and password for authentication](#username-and-password-for-authentication)
-    - [Experiments](#experiments)
-        - [Experiment creation](#experiment-creation)
-        - [Complex experiments](#complex-experiments)
-        - [Editing an experiment](#editing-an-experiment)
-        - [Deactivating an experiment](#deactivating-an-experiment)
-        - [Experiment Result submission via HTTP POST](#experiment-result-submission-via-http-post)
-        - [Experiment results submission via Phoenix Channels](#experiment-results-submission-via-phoenix-channels)
-        - [Experiment results retrieval as CSV](#experiment-results-retrieval-as-csv)
-        - [Experiment results retrieval as JSON](#experiment-results-retrieval-as-json)
-    - [Custom Data Records](#custom-data-records)
-        - [Uploading a data record](#uploading-a-data-record)
-        - [Retrieval of data records](#retrieval-of-data-records)
-    - [Deploying the Server](#deploying-the-server)
-        - [Deployment with Heroku](#deployment-with-heroku)
-        - [Local (Offline) Deployment](#local-offline-deployment)
-        - [Local (Offline) Deployment with Docker (Old method)](#local-offline-deployment-with-docker-old-method)
-            - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
-            - [Deployment](#deployment)
-    - [Upgrading a deployed instance of the server](#upgrading-a-deployed-instance-of-the-server)
-    - [Creating a new local release](#creating-a-new-local-release)
+  - [Username and password for authentication](#username-and-password-for-authentication)
+  - [Experiments](#experiments)
+    - [Experiment creation](#experiment-creation)
+    - [Complex experiments](#complex-experiments)
+    - [Editing an experiment](#editing-an-experiment)
+    - [Deactivating an experiment](#deactivating-an-experiment)
+    - [Experiment Result submission via HTTP POST](#experiment-result-submission-via-http-post)
+    - [Experiment results submission via Phoenix Channels](#experiment-results-submission-via-phoenix-channels)
+    - [Experiment results retrieval as CSV](#experiment-results-retrieval-as-csv)
+    - [Experiment results retrieval as JSON](#experiment-results-retrieval-as-json)
+  - [Custom Data Records](#custom-data-records)
+    - [Uploading a data record](#uploading-a-data-record)
+    - [Retrieval of data records](#retrieval-of-data-records)
+  - [Deploying the Server](#deploying-the-server)
+    - [Deployment with Heroku](#deployment-with-heroku)
+    - [Local (Offline) Deployment](#local-offline-deployment)
+    - [Local (Offline) Deployment with Docker (Old method)](#local-offline-deployment-with-docker-old-method)
+      - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
+      - [Deployment](#deployment)
+  - [Upgrading a deployed instance of the server](#upgrading-a-deployed-instance-of-the-server)
+  - [Creating a new local release](#creating-a-new-local-release)
 - [Experiments (Frontend)](#experiments-frontend)
 - [Additional Notes](#additional-notes)
 - [Development](#development)
@@ -333,8 +334,8 @@ To run the server app locally with `dev` environment, the following instructions
 
 1. Install Postgres. Ensure that you have version 9.2 or greater (for its JSON data type). You can check the version with the command `psql --version`.
 2. Make sure that Postgres is correctly initialized as a service. If you installed it via Homebrew, the instructions should be shown on the command line. If you're on Linux, [the guide on Arch Linux Wiki](https://wiki.archlinux.org/index.php/PostgreSQL#Initial_configuration) could help.
-3. Start a postgres interactive terminal. On Linux you could do it with `sudo su - postgres` followed by `psql`. On MacOS you might be able to run `psql postgres` directly to connect without using `sudo`.
-4. Create the database user for dev environment. The username and password is specified in `dev.config.exs`. By default it's `babe_dev` and `babe`:
+3. Start a postgres interactive terminal. On Linux you could do it with `sudo su - postgres` followed by `psql`. On MacOS you might be able to run `psql postgres` directly without using `sudo`.
+4. Create the database user for dev environment. The username and password is specified in `dev.exs`. By default it's `babe_dev` and `babe`:
 
    ```sql
    CREATE USER babe_dev WITH PASSWORD 'babe';

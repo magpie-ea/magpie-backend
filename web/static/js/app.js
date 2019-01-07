@@ -18,7 +18,7 @@ import 'phoenix_html';
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-import socket from './socket';
+// import socket from './socket';
 
 // From https://medium.com/@chipdean/phoenix-array-input-field-implementation-7ec0fe0949d
 window.onload = () => {

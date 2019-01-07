@@ -16,6 +16,11 @@
     </div>
   <% end %>
 
+  <%= link "Reset experiment", to: experiment_path(@conn, :reset, @experiment), class: "btn btn-danger", method: :delete, data: [confirm: "You are about to reset #{@experiment.name}. All experiment results will be deleted and the experiment stauses will be reset! Make sure that you have already backed up the experiment results, if necessary."] %>
+  
+  <br>
+  <br>
+
   <%= link "Toggle activation status", to: experiment_path(@conn, :toggle, @experiment), class: "btn btn-warning" %>
 
   <br/>

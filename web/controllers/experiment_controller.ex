@@ -129,6 +129,35 @@ defmodule BABE.ExperimentController do
     end
   end
 
+  @doc """
+  Resets an experiment, i.e. delete all results and reset all statuses!
+  """
+  def reset(conn, %{"id" => id}) do
+    experiment = Repo.get!(Experiment, id)
+
+    multi =
+      Multi.new()
+      |> Multi.delete_all(:experiment_results, assoc(experiment, :experiment_results))
+      |> Multi.update_all(:experiment_statuses, assoc(experiment, :experiment_statuses),
+        set: [status: 0]
+      )
+
+    case BABE.Repo.transaction(multi) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "The experiment has been reset!")
+        |> redirect(to: experiment_path(conn, :edit, experiment))
+
+      {:error, _, _failed_value, _changes_so_far} ->
+        conn
+        |> put_flash(
+          :error,
+          "Oops, something went wrong when resetting this experiment. You could create a new experiment instead."
+        )
+        |> redirect(to: experiment_path(conn, :edit, experiment))
+    end
+  end
+
   ## Below are the functions related to the API with the frontend.
 
   @doc """

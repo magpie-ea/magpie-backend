@@ -24,6 +24,8 @@ defmodule BABE.Router do
 
     # A special endpoint only for activating/deactivating an experiment
     get("/experiments/:id/toggle", ExperimentController, :toggle)
+    # Special endpoint for resetting an experiment
+    delete("/experiments/:id/reset", ExperimentController, :reset)
 
     get("/experiments/:id/retrieve", ExperimentController, :retrieve_as_csv)
     get("/experiments/retrieve_all", ExperimentController, :retrieve_all)

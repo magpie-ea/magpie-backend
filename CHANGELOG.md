@@ -2,6 +2,10 @@
 
 ## [0.2.1] - 2018-01-09
 
+### Changed
+
+- The local deployment no longer uses basic authentication.
+
 ### Fixed
 
 - Allow socket connection from any host, since we don't constrain where the user hosts the frontend \_babe experiment.

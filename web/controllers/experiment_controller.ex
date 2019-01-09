@@ -2,16 +2,18 @@ defmodule BABE.ExperimentController do
   @moduledoc false
   use BABE.Web, :controller
 
-  plug(
-    BasicAuth,
-    [use_config: {:babe, :authentication}]
-    when not (action in [:submit, :retrieve_as_json, :check_valid])
-  )
+  if Application.get_env(:babe, :environment) != :local do
+    plug(
+      BasicAuth,
+      [use_config: {:babe, :authentication}]
+      when not (action in [:submit, :retrieve_as_json, :check_valid])
+    )
+  end
 
   require Logger
   require Iteraptor
 
-  alias BABE.{Experiment, ExperimentStatus, ExperimentResult}
+  alias BABE.{Experiment, ExperimentResult}
   alias Ecto.Multi
 
   import BABE.ExperimentHelper

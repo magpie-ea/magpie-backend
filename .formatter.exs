@@ -1,4 +1,5 @@
 [
+  import_deps: [:ecto],
   inputs: [
     "web/**/*.{ex,exs}",
     "lib/**/*.{ex,exs}",

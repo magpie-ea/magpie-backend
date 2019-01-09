@@ -4,7 +4,7 @@ defmodule BABE.Mixfile do
   def project do
     [
       app: :babe,
-      version: "0.2.0",
+      version: "0.2.1",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),

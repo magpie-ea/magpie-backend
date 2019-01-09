@@ -23,23 +23,4 @@ defmodule BABE.ExperimentStatus do
     # Must be associated with an experiment
     |> assoc_constraint(:experiment)
   end
-
-  def multi_changeset_from_experiment(experiment) do
-    # If the responsibility of the model module is only to create changesets then this should be a viable way to do it.
-    # We should have a list of changesets after this.
-    for variant <- 1..experiment.num_variants,
-        chain <- 1..experiment.num_chains,
-        realization <- 1..experiment.num_realizations do
-      # Manually create maps for `Ecto.insert_all`
-      %{
-        experiment_id: experiment.id,
-        variant: variant,
-        chain: chain,
-        realization: realization,
-        status: 0,
-        inserted_at: Ecto.DateTime.utc(),
-        updated_at: Ecto.DateTime.utc()
-      }
-    end
-  end
 end

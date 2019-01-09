@@ -38,17 +38,7 @@ defmodule BABE.ExperimentController do
 
     multi =
       if experiment_params["is_complex"] == "true" do
-        Multi.new()
-        |> Multi.insert(:experiment, changeset_experiment)
-        # Use `Multi.merge` so that we can take the Experiment created from `Multi.insert` above.
-        |> Multi.merge(fn %{experiment: experiment} ->
-          Multi.new()
-          |> Multi.insert_all(
-            :experiment_statuses,
-            ExperimentStatus,
-            ExperimentStatus.multi_changeset_from_experiment(experiment)
-          )
-        end)
+        create_experiment_make_multi_with_insert(changeset_experiment)
       else
         Multi.new()
         |> Multi.insert(:experiment, changeset_experiment)

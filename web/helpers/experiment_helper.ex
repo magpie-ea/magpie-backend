@@ -3,6 +3,9 @@ defmodule BABE.ExperimentHelper do
   Stores the helper functions which help to store and retrieve the experiments.
   """
 
+  alias BABE.ExperimentStatus
+  alias Ecto.Multi
+
   @doc """
   Checks that the submitted results are a JSON array of objects and that each object in the array contains the same set of keys.
   Or maybe let me not check the "same keys" requirement first. We can do it later, or just fill in nil when some keys are not present.
@@ -74,4 +77,66 @@ defmodule BABE.ExperimentHelper do
       end)
     end)
   end
+
+  def create_experiment_make_multi_with_insert(changeset_experiment) do
+    Multi.new()
+    |> Multi.insert(:experiment, changeset_experiment)
+    |> Multi.merge(fn %{experiment: experiment} ->
+      Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
+        Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
+          Enum.reduce(1..experiment.num_realizations, multi, fn realization, multi ->
+            params = %{
+              experiment_id: experiment.id,
+              variant: variant,
+              chain: chain,
+              realization: realization,
+              status: 0
+            }
+
+            changeset = ExperimentStatus.changeset(%ExperimentStatus{}, params)
+
+            multi
+            |> Multi.insert(
+              String.to_atom("experiment_status_#{variant}_#{chain}_#{realization}"),
+              changeset
+            )
+          end)
+        end)
+      end)
+    end)
+  end
+
+  # Those are not useful for now because we just uniformly use Multi.insert instead of Multi.insert_all
+  # def create_experiment_make_multi_with_insert_all(changeset_experiment) do
+  #   Multi.new()
+  #   |> Multi.insert(:experiment, changeset_experiment)
+  #   # Use `Multi.merge` so that we can take the Experiment created from `Multi.insert` above.
+  #   |> Multi.merge(fn %{experiment: experiment} ->
+  #     Multi.new()
+  #     |> Multi.insert_all(
+  #       :experiment_statuses,
+  #       ExperimentStatus,
+  #       multi_changeset_from_experiment_for_insert_all(experiment)
+  #     )
+  #   end)
+  # end
+
+  # defp multi_changeset_from_experiment_for_insert_all(experiment) do
+  #   # If the responsibility of the model module is only to create changesets then this should be a viable way to do it.
+  #   # We should have a list of changesets after this.
+  #   for variant <- 1..experiment.num_variants,
+  #       chain <- 1..experiment.num_chains,
+  #       realization <- 1..experiment.num_realizations do
+  #     # Manually create maps for `Ecto.insert_all`
+  #     %{
+  #       experiment_id: experiment.id,
+  #       variant: variant,
+  #       chain: chain,
+  #       realization: realization,
+  #       status: 0,
+  #       inserted_at: Ecto.DateTime.utc(),
+  #       updated_at: Ecto.DateTime.utc()
+  #     }
+  #   end
+  # end
 end

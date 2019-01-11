@@ -24,11 +24,14 @@ config :logger, :console,
 # The local timezone where the app is deployed.
 config :babe, :timezone, "Europe/Berlin"
 
-config :babe, :no_basic_auth, if(Map.has_key?(System.get_env(), "BABE_NO_BASIC_AUTH")) do
-  true
-else
-  false
-end
+no_basic_auth =
+  config :babe,
+         :no_basic_auth,
+         (if Map.has_key?(System.get_env(), "BABE_NO_BASIC_AUTH") do
+            true
+          else
+            false
+          end)
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

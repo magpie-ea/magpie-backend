@@ -3,7 +3,7 @@ defmodule BABE.ExperimentController do
   use BABE.Web, :controller
 
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
-  unless Application.get_env(:babe, :no_basic_auth) == "true" do
+  unless Application.get_env(:babe, :no_basic_auth) do
     plug(
       BasicAuth,
       [use_config: {:babe, :authentication}]

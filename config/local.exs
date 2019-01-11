@@ -20,7 +20,7 @@ config :babe, BABE.Repo,
 # Do not print debug messages in production
 config :logger, level: :info
 
-config :babe, :no_basic_auth, "true"
+config :babe, :no_basic_auth, true
 
 config :babe, :environment, :local
 

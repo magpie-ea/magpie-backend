@@ -20,11 +20,7 @@ config :babe, BABE.Repo,
 # Do not print debug messages in production
 config :logger, level: :info
 
-# Used for basic_auth
-# Just give the users default username and password as they're going to run it locally.
-config :babe, :authentication,
-  username: "default",
-  password: "password"
+config :babe, :no_basic_auth, "true"
 
 config :babe, :environment, :local
 

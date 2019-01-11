@@ -1,0 +1,188 @@
+defmodule BABE.ExperimentTest do
+  use BABE.ModelCase
+
+  alias BABE.Experiment
+  alias BABE.Repo
+
+  @non_complex_experiment_attrs %{
+    name: "some name",
+    author: "some author",
+    description: "some description",
+    active: true,
+    dynamic_retrieval_keys: ["a", "b", "c"],
+    is_complex: false
+  }
+
+  @complex_experiment_attrs %{
+    name: "some name",
+    author: "some author",
+    description: "some description",
+    active: true,
+    dynamic_retrieval_keys: ["a", "b", "c"],
+    is_complex: true,
+    num_variants: 2,
+    num_chains: 5,
+    num_realizations: 3
+  }
+
+  @innon_complex_experiment_attrs %{
+    name: nil,
+    author: nil,
+    active: nil,
+    is_complex: nil
+  }
+
+  test "changeset with valid attributes" do
+    changeset = Experiment.changeset(%Experiment{}, @non_complex_experiment_attrs)
+    assert changeset.valid?
+  end
+
+  test "changeset with invalid attributes" do
+    changeset = Experiment.changeset(%Experiment{}, @innon_complex_experiment_attrs)
+    refute changeset.valid?
+  end
+
+  test "name is required" do
+    changeset =
+      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :name))
+
+    refute changeset.valid?
+  end
+
+  test "author is required" do
+    changeset =
+      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :author))
+
+    refute changeset.valid?
+  end
+
+  test "active is not required and defaults to `true`" do
+    changeset =
+      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :active))
+
+    {:ok, experiment} = Repo.insert(changeset)
+    assert experiment.active == true
+  end
+
+  test "is_complex is not required and defaults to `false`" do
+    changeset =
+      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :is_complex))
+
+    {:ok, experiment} = Repo.insert(changeset)
+    assert experiment.is_complex == false
+  end
+
+  test "description is not required" do
+    changeset =
+      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :description))
+
+    assert changeset.valid?
+  end
+
+  test "dynamic_retrieval_keys is not required" do
+    changeset =
+      Experiment.changeset(
+        %Experiment{},
+        Map.delete(@non_complex_experiment_attrs, :dynamic_retrieval_keys)
+      )
+
+    assert changeset.valid?
+  end
+
+  describe "complex experiments" do
+    test "complex experiments must have num_variants" do
+      changeset =
+        Experiment.changeset(%Experiment{}, Map.delete(@complex_experiment_attrs, :num_variants))
+
+      refute changeset.valid?
+    end
+
+    test "complex experiments must have num_chains" do
+      changeset =
+        Experiment.changeset(%Experiment{}, Map.delete(@complex_experiment_attrs, :num_chains))
+
+      refute changeset.valid?
+    end
+
+    test "complex experiments must have num_realizations" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.delete(@complex_experiment_attrs, :num_realizations)
+        )
+
+      refute changeset.valid?
+    end
+
+    test "num_variants must be greater than 0" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@complex_experiment_attrs, :num_variants, 0)
+        )
+
+      assert changeset.errors ==
+               [
+                 num_variants:
+                   {"must be greater than %{number}", [validation: :number, number: 0]}
+               ]
+    end
+
+    test "num_chains must be greater than 0" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@complex_experiment_attrs, :num_chains, 0)
+        )
+
+      assert changeset.errors ==
+               [
+                 num_chains: {"must be greater than %{number}", [validation: :number, number: 0]}
+               ]
+    end
+
+    test "num_realizations must be greater than 0" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@complex_experiment_attrs, :num_realizations, 0)
+        )
+
+      assert changeset.errors ==
+               [
+                 num_realizations:
+                   {"must be greater than %{number}", [validation: :number, number: 0]}
+               ]
+    end
+
+    test "non-complex experiments cannot have num_variants" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@non_complex_experiment_attrs, :num_variants, 2)
+        )
+
+      refute changeset.valid?
+    end
+
+    test "non-complex experiments cannot have num_chains" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@non_complex_experiment_attrs, :num_chains, 2)
+        )
+
+      refute changeset.valid?
+    end
+
+    test "non-complex experiments cannot have num_realizations" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@non_complex_experiment_attrs, :num_realizations, 2)
+        )
+
+      refute changeset.valid?
+    end
+  end
+end

@@ -11,6 +11,7 @@ defmodule BABE.ExperimentResult do
     # The map type will already be JSONB in Postgres by default. It will be simply TEXT in other DBs.
     # Now that we record JSON arrays, seems that we actually need to change the type to array of map.
     # Actually I'm not even sure if null: false will stop empty JSONs. Probably will need to perform a check at controller level anyways. (DONE)
+    # OK I think I can check for it forcefully with a manual check. What's the least bit of trouble with that? Nonsensical thoughts eh?
     field(:results, {:array, :map}, null: false)
     field(:variant, :integer, null: true)
     field(:chain, :integer, null: true)
@@ -28,7 +29,33 @@ defmodule BABE.ExperimentResult do
     # This is to say, the other parameters are not "deleted" at this step yet. You can chain multiple `cast` calls.
     |> cast(params, [:results, :experiment_id, :variant, :chain, :realization])
     |> validate_required([:experiment_id, :results])
+    |> validate_change(:results, &check_results(&1, &2))
     # Must be associated with an experiment
     |> assoc_constraint(:experiment)
+  end
+
+  defp check_results(_atom, results) do
+    # First check if the results are empty
+    if Enum.empty?(results) do
+      [results: "cannot be empty"]
+    else
+      # Then check whether each map in the array has the same keys
+      case contain_the_same_keys?(results) do
+        false -> [results: "every entry must have the same set of keys"]
+        true -> []
+      end
+    end
+  end
+
+  defp contain_the_same_keys?(results) do
+    all_keys =
+      results
+      |> Enum.map(fn result -> Enum.sort(Map.keys(result)) end)
+
+    first_keys = hd(all_keys)
+
+    Enum.reduce(all_keys, first_keys, fn keys, problem_free ->
+      problem_free && keys == first_keys
+    end)
   end
 end

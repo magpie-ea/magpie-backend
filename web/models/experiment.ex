@@ -49,6 +49,7 @@ defmodule BABE.Experiment do
   # If the experiment is complex, those three numbers must be present.
   # If the experiment is not complex, all of them must be absent, otherwise the user has made an error.
   # This is still a bit ugly. Can we do it better?
+  # validate_change/3 is only applicable to one single field.
   # A cleaner way would be to create a completely separate model for complex experiments, instead of containing everything within one model.
   # For now let's first continue with this I guess.
   defp validate_complex_experiment_requirements(changeset) do

@@ -91,8 +91,7 @@ defmodule BABE.ExperimentStatusTest do
         Map.put(@valid_attrs, :status, -1)
       )
 
-    assert {:status,
-            {"must be greater than or equal to %{number}", [validation: :number, number: 0]}} in changeset.errors
+    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion]}} in changeset.errors
   end
 
   test "status must be less than or equal to 2" do
@@ -102,7 +101,6 @@ defmodule BABE.ExperimentStatusTest do
         Map.put(@valid_attrs, :status, 3)
       )
 
-    assert {:status,
-            {"must be less than or equal to %{number}", [validation: :number, number: 2]}} in changeset.errors
+    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion]}} in changeset.errors
   end
 end

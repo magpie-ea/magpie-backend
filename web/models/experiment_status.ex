@@ -24,7 +24,7 @@ defmodule BABE.ExperimentStatus do
     |> validate_number(:chain, greater_than: 0)
     |> validate_number(:realization, greater_than: 0)
     # Only 0, 1, 2 are valid entries.
-    |> validate_number(:status, greater_than_or_equal_to: 0, less_than_or_equal_to: 2)
+    |> validate_inclusion(:status, 0..2, message: "must be 0, 1 or 2")
     # Must be associated with an experiment
     |> assoc_constraint(:experiment)
   end

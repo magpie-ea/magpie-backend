@@ -2,26 +2,220 @@ defmodule ExperimentControllerTest do
   @moduledoc false
 
   use BABE.ConnCase
+  alias BABE.{Experiment, Repo, ExperimentResult, ExperimentStatus}
 
-  # test "POST Experiment", %{conn: conn} do
-  # end
+  @username Application.get_env(:babe, :authentication)[:username]
+  @password Application.get_env(:babe, :authentication)[:password]
 
-  test "Requires authentication for administrating experiments", %{conn: conn} do
-    Enum.each(
-      [
-        get(conn, experiment_path(conn, :index)),
-        get(conn, experiment_path(conn, :new)),
-        post(conn, experiment_path(conn, :create, %{})),
-        get(conn, experiment_path(conn, :edit, "123")),
-        put(conn, experiment_path(conn, :update, "123")),
-        delete(conn, experiment_path(conn, :delete, "123")),
-        get(conn, experiment_path(conn, :toggle, "123"))
-      ],
-      fn conn ->
-        # Currently it's just a simple 401 text response. But the browser should know to ask the client to authenticate, seeing this situation, anyways.
-        assert text_response(conn, 401)
-        assert conn.halted
-      end
-    )
+  defp using_basic_auth(conn, username \\ @username, password \\ @password) do
+    header_content = "Basic " <> Base.encode64("#{username}:#{password}")
+    conn |> put_req_header("authorization", header_content)
+  end
+
+  setup %{conn: conn} do
+    experiment = insert_complex_experiment()
+    # TODO: Also insert some dummy experiment results for the experiment.
+    {:ok, conn: conn, experiment: experiment}
+  end
+
+  describe "basic_auth" do
+    test "Requires authentication for administrating experiments", %{conn: conn} do
+      Enum.each(
+        [
+          get(conn, experiment_path(conn, :index)),
+          get(conn, experiment_path(conn, :new)),
+          post(conn, experiment_path(conn, :create, %{})),
+          get(conn, experiment_path(conn, :edit, "123")),
+          put(conn, experiment_path(conn, :update, "123")),
+          delete(conn, experiment_path(conn, :delete, "123")),
+          get(conn, experiment_path(conn, :toggle, "123")),
+          get(conn, experiment_path(conn, :retrieve_as_csv, "123"))
+        ],
+        fn conn ->
+          # Currently it's just a simple 401 text response. But the browser should know to ask the client to authenticate, seeing this situation, anyways.
+          assert text_response(conn, 401)
+          assert conn.halted
+        end
+      )
+    end
+
+    test "The API endpoints don't require authentication", %{conn: conn} do
+      Enum.each(
+        [
+          post(
+            conn,
+            experiment_path(conn, :submit, "123"),
+            %{
+              "_json" => [%{"a" => 1, "b" => 2}, %{"a" => 3, "b" => 4}]
+            }
+          ),
+          get(conn, experiment_path(conn, :retrieve_as_json, "123")),
+          get(conn, experiment_path(conn, :check_valid, "123"))
+        ],
+        fn conn ->
+          refute conn.status == 401
+        end
+      )
+    end
+  end
+
+  describe "index/2" do
+    test "index/2 responds with all experiments", %{conn: conn, experiment: experiment} do
+      experiment2 = insert_experiment(%{name: "some other name", author: "some other author"})
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get("/experiments")
+
+      # The name of the first experiment
+      assert html_response(conn, 200) =~ "some name"
+      # The name of the other experiment
+      assert html_response(conn, 200) =~ "some other name"
+    end
+  end
+
+  describe "new/2" do
+    test "new/2 responds with the experiment creation page", %{conn: conn} do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get("/experiments/new")
+
+      assert html_response(conn, 200) =~ "Create a New Experiment"
+      assert html_response(conn, 200) =~ "Submit"
+    end
+  end
+
+  describe "create/2" do
+    test "Corresponding ExperimentStatus entries are created together with complex experiments" do
+    end
+  end
+
+  describe "edit/2" do
+    test "edit/2 responds with the experiment edit page", %{conn: conn, experiment: experiment} do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get("/experiments/#{experiment.id}/edit")
+
+      assert html_response(conn, 200) =~ "Edit Experiment"
+      assert html_response(conn, 200) =~ "Submit"
+    end
+  end
+
+  describe "update/2" do
+    test "update/2 correctly updates the experiment name" do
+    end
+  end
+
+  describe "delete/2" do
+    test "Related ExperimentResult entries are also deleted after deleting an experiment" do
+    end
+
+    test "Related ExperimentStatus entries are also deleted after deleting a complex experiment" do
+    end
+  end
+
+  describe "toggle/2" do
+    test "toggle/2 toggles an active experiment to be inactive", %{
+      conn: conn,
+      experiment: experiment
+    } do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get("/experiments/#{experiment.id}/toggle")
+
+      experiment = BABE.Repo.get!(BABE.Experiment, experiment.id)
+      assert experiment.active == false
+    end
+
+    test "toggle/2 toggles an inactive experiment to be active", %{conn: conn} do
+      experiment = insert_experiment(%{active: false})
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get("/experiments/#{experiment.id}/toggle")
+
+      experiment = BABE.Repo.get!(BABE.Experiment, experiment.id)
+      assert experiment.active == true
+    end
+  end
+
+  describe "reset/2" do
+    test "Related ExperimentResult entries are deleted after resetting an experiment" do
+    end
+
+    test "Related ExperimentStatus have their :status field set to 0 after resetting an experiment" do
+    end
+  end
+
+  describe "dynamic_retrieval" do
+    test "Dynamic retrieval doesn't return extra data not specified by the user", %{conn: conn} do
+    end
+
+    test "Dynamic retrieval returns the data specified", %{conn: conn} do
+    end
+
+    test "Dynamic retrieval returns 404 for a nonexisting experiment" do
+    end
+
+    test "Dynamic retrieval returns 404 for an existing experiment without any submissions" do
+    end
+
+    test "Dynamic retrieval returns 403 for an existing experiment without any retrieval keys" do
+    end
+
+    # Not sure if these should be a part of the view tests or a part of the controller tests.
+    test "Dynamic retrieval keys set in the UI get correctly stored to the DB", %{conn: conn} do
+    end
+
+    test "Deleting all dynamic retrieval keys gets reflected in the DB" do
+    end
+  end
+
+  describe "check_valid/2" do
+    test "Validity check returns 200 for an existing and valid experiment" do
+    end
+
+    test "Validity check returns 404 for a nonexisting experiment" do
+    end
+
+    test "Validity check returns 403 for an existing but inactive experiment" do
+    end
+  end
+
+  describe "retrieve_as_csv/2" do
+    test "retrieve_as_csv/2 produces a CSV file with the right name" do
+    end
+
+    test "retrieve_as_csv/2 produces a CSV file with expected contents" do
+    end
+  end
+
+  describe "retrieve_as_json/2" do
+    test "retrieve_as_json/2 produces a JSON response with expected contents" do
+    end
+  end
+
+  describe "retrieve_all/2" do
+    test "retrieve_all/2 produces the expected archive (for multiple existing experiments)" do
+    end
+  end
+
+  describe "submit/2" do
+    test "Submission of active experiment succeeds with 201 (created)" do
+    end
+
+    test "Submission of inactive experiment fails with 403" do
+    end
+
+    test "Submission of nonexistent experiment fails with 404" do
+    end
+
+    test "Submission errors on Ecto fails with 422 (unprocessable entity)" do
+    end
   end
 end

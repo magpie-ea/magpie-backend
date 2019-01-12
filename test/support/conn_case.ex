@@ -26,6 +26,7 @@ defmodule BABE.ConnCase do
       import Ecto.Query
 
       import BABE.Router.Helpers
+      import BABE.TestHelpers
 
       # The default endpoint for testing
       @endpoint BABE.Endpoint

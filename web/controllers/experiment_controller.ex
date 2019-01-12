@@ -288,6 +288,9 @@ defmodule BABE.ExperimentController do
   end
 
   # By default the second argument is _params even though it might not be used in a controller function.
+  @doc """
+  Retrieve all experiment results as a zip of CSVs.
+  """
   def retrieve_all(conn, _params) do
     all_files =
       Experiment

@@ -185,15 +185,7 @@ defmodule BABE.ExperimentController do
             )
 
           true ->
-            if valid_results(results) do
-              record_submission(conn, results, experiment)
-            else
-              conn
-              |> send_resp(
-                400,
-                "The results are not submitted as a JSON array, or each object of the array does not contain the same set of keys."
-              )
-            end
+            record_submission(conn, results, experiment)
         end
     end
   end
@@ -218,7 +210,7 @@ defmodule BABE.ExperimentController do
         |> put_resp_content_type("text/plain")
         |> send_resp(
           :unprocessable_entity,
-          "Unsuccessful submission. The results are probably malformed."
+          "Unsuccessful submission. The results are probably malformed. Ensure that the results are submitted as an array of JSON objects, and that each object contains the same set of keys."
         )
     end
   end

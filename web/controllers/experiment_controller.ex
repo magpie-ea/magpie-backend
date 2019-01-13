@@ -37,17 +37,7 @@ defmodule BABE.ExperimentController do
   Function called when an experiment record creation request is submitted (from `new`)
   """
   def create(conn, %{"experiment" => experiment_params}) do
-    changeset_experiment = Experiment.changeset(%Experiment{}, experiment_params)
-
-    multi =
-      if experiment_params["is_complex"] == "true" do
-        create_experiment_make_multi_with_insert(changeset_experiment)
-      else
-        Multi.new()
-        |> Multi.insert(:experiment, changeset_experiment)
-      end
-
-    case Repo.transaction(multi) do
+    case create_experiment(experiment_params) do
       # We can just pattern match on one of the keys in the map. It's fine.
       {:ok, %{experiment: experiment}} ->
         conn
@@ -55,13 +45,15 @@ defmodule BABE.ExperimentController do
         |> redirect(to: experiment_path(conn, :index))
 
       {:error, :experiment, failed_value, _changes_so_far} ->
-        render(conn, "new.html", changeset: failed_value)
+        conn
+        # |> put_flash(:error, "Sorry, something went wrong.")
+        |> render("new.html", changeset: failed_value)
 
       # The failure doesn't lie in experiment creation
       {:error, _, _failed_value, _changes_so_far} ->
         conn
-        |> put_flash(:error, "Sorry, something went wrong.")
-        |> render("new.html", changeset: changeset_experiment)
+        # |> put_flash(:error, "Sorry, something went wrong.")
+        |> render("new.html")
     end
   end
 

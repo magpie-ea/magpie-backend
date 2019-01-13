@@ -23,6 +23,12 @@ defmodule BABE.TestHelpers do
     is_complex: false
   }
 
+  @results_simple_experiment [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}]
+
+  @experiment_result_attrs %{
+    "results" => @results_simple_experiment
+  }
+
   def insert_complex_experiment(attrs \\ %{}) do
     changes =
       Map.merge(
@@ -30,9 +36,8 @@ defmodule BABE.TestHelpers do
         attrs
       )
 
-    %BABE.Experiment{}
-    |> BABE.Experiment.changeset(changes)
-    |> BABE.Repo.insert!()
+    {:ok, %{experiment: experiment}} = BABE.ExperimentHelper.create_experiment(changes)
+    experiment
   end
 
   def insert_experiment(attrs \\ %{}) do
@@ -42,8 +47,28 @@ defmodule BABE.TestHelpers do
         attrs
       )
 
-    %BABE.Experiment{}
-    |> BABE.Experiment.changeset(changes)
+    {:ok, %{experiment: experiment}} = BABE.ExperimentHelper.create_experiment(changes)
+    experiment
+  end
+
+  def insert_experiment_result(attrs \\ %{}) do
+    changes =
+      Map.merge(
+        @experiment_result_attrs,
+        attrs
+      )
+
+    %BABE.ExperimentResult{}
+    |> BABE.ExperimentResult.changeset(changes)
     |> BABE.Repo.insert!()
+  end
+
+  # Functions to expose those attributes to actual test modules.
+  def get_experiment_attrs() do
+    @experiment_attrs
+  end
+
+  def get_complex_experiment_attrs() do
+    @complex_experiment_attrs
   end
 end

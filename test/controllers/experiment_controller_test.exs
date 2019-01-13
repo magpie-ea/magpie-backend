@@ -2,7 +2,7 @@ defmodule ExperimentControllerTest do
   @moduledoc false
 
   use BABE.ConnCase
-  alias BABE.{Experiment, Repo, ExperimentResult, ExperimentStatus}
+  alias BABE.{Repo, ExperimentResult, ExperimentStatus}
 
   @username Application.get_env(:babe, :authentication)[:username]
   @password Application.get_env(:babe, :authentication)[:password]
@@ -12,11 +12,13 @@ defmodule ExperimentControllerTest do
     conn |> put_req_header("authorization", header_content)
   end
 
-  setup %{conn: conn} do
-    experiment = insert_complex_experiment()
-    # TODO: Also insert some dummy experiment results for the experiment.
-    {:ok, conn: conn, experiment: experiment}
-  end
+  # No need to insert experiments up front as we can still do it manually in the tests that need it.
+  # setup %{conn: conn} do
+  #   # experiment = insert_experiment()
+  #   # experiment_result_1 = insert_experiment_result(%{"experiment_id" => experiment.id})
+  #   # experiment_result_2 = insert_experiment_result(%{"experiment_id" => experiment.id})
+  #   {:ok, conn: conn, experiment: experiment}
+  # end
 
   describe "basic_auth" do
     test "Requires authentication for administrating experiments", %{conn: conn} do
@@ -60,8 +62,9 @@ defmodule ExperimentControllerTest do
   end
 
   describe "index/2" do
-    test "index/2 responds with all experiments", %{conn: conn, experiment: experiment} do
-      experiment2 = insert_experiment(%{name: "some other name", author: "some other author"})
+    test "index/2 responds with all experiments", %{conn: conn} do
+      insert_experiment()
+      insert_experiment(%{name: "some other name", author: "some other author"})
 
       conn =
         conn
@@ -88,12 +91,42 @@ defmodule ExperimentControllerTest do
   end
 
   describe "create/2" do
+    test "create/2 successfully creates a simple experiment with valid attributes", %{conn: conn} do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> post("/experiments", %{"experiment" => get_experiment_attrs()})
+
+      # Seems that we can't check this because the first step is a 302 redirect, while only after this redirect do we see the actual page.
+      # assert html_response(conn, 200) =~ "created!"
+      # We can only check whether it is redirecting us to the correct page?
+      assert redirected_to(conn) == experiment_path(conn, :index)
+    end
+
+    test "create/2 fails with invalid attributes and redirects to creation page", %{conn: conn} do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> post("/experiments", %{"experiment" => Map.delete(get_experiment_attrs(), :author)})
+
+      assert html_response(conn, 200) =~ "Something is wrong."
+    end
+
+    # This should usually be put into the context testing module. Since we don't use contexts yet, guess we can only put it here for now.
     test "Corresponding ExperimentStatus entries are created together with complex experiments" do
+      experiment = insert_complex_experiment()
+
+      all_experiment_statuses = BABE.Repo.all(ExperimentStatus, experiment_id: experiment.id)
+
+      assert length(all_experiment_statuses) ==
+               experiment.num_variants * experiment.num_realizations * experiment.num_chains
     end
   end
 
   describe "edit/2" do
-    test "edit/2 responds with the experiment edit page", %{conn: conn, experiment: experiment} do
+    test "edit/2 responds with the experiment edit page", %{conn: conn} do
+      experiment = insert_experiment()
+
       conn =
         conn
         |> using_basic_auth()
@@ -110,22 +143,65 @@ defmodule ExperimentControllerTest do
   end
 
   describe "delete/2" do
-    test "Related ExperimentResult entries are also deleted after deleting an experiment" do
+    test "delete/2 succeeds and redirects to the experiment index page", %{conn: conn} do
+      experiment = insert_experiment()
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> delete("/experiments/#{experiment.id}")
+
+      assert redirected_to(conn) == experiment_path(conn, :index)
     end
 
-    test "Related ExperimentStatus entries are also deleted after deleting a complex experiment" do
+    # TODO: These two tests should also be refactored and put into a "context test" module.
+    test "Related ExperimentResult entries are also deleted after deleting an experiment", %{
+      conn: conn
+    } do
+      experiment = insert_experiment()
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+
+      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+
+      assert length(all_experiment_results) == 2
+
+      conn
+      |> using_basic_auth()
+      |> delete("/experiments/#{experiment.id}")
+
+      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+
+      assert Enum.empty?(all_experiment_results)
+    end
+
+    test "Related ExperimentStatus entries are also deleted after deleting a complex experiment",
+         %{conn: conn} do
+      experiment = insert_complex_experiment()
+      all_experiment_statuses = BABE.Repo.all(ExperimentStatus, experiment_id: experiment.id)
+
+      assert length(all_experiment_statuses) ==
+               experiment.num_variants * experiment.num_realizations * experiment.num_chains
+
+      conn
+      |> using_basic_auth()
+      |> delete("/experiments/#{experiment.id}")
+
+      all_experiment_statuses = BABE.Repo.all(ExperimentStatus, experiment_id: experiment.id)
+
+      assert Enum.empty?(all_experiment_statuses)
     end
   end
 
   describe "toggle/2" do
     test "toggle/2 toggles an active experiment to be inactive", %{
-      conn: conn,
-      experiment: experiment
+      conn: conn
     } do
-      conn =
-        conn
-        |> using_basic_auth()
-        |> get("/experiments/#{experiment.id}/toggle")
+      experiment = insert_experiment()
+
+      conn
+      |> using_basic_auth()
+      |> get("/experiments/#{experiment.id}/toggle")
 
       experiment = BABE.Repo.get!(BABE.Experiment, experiment.id)
       assert experiment.active == false
@@ -134,10 +210,9 @@ defmodule ExperimentControllerTest do
     test "toggle/2 toggles an inactive experiment to be active", %{conn: conn} do
       experiment = insert_experiment(%{active: false})
 
-      conn =
-        conn
-        |> using_basic_auth()
-        |> get("/experiments/#{experiment.id}/toggle")
+      conn
+      |> using_basic_auth()
+      |> get("/experiments/#{experiment.id}/toggle")
 
       experiment = BABE.Repo.get!(BABE.Experiment, experiment.id)
       assert experiment.active == true
@@ -145,10 +220,76 @@ defmodule ExperimentControllerTest do
   end
 
   describe "reset/2" do
-    test "Related ExperimentResult entries are deleted after resetting an experiment" do
+    test "Related ExperimentResult entries are deleted after resetting an experiment", %{
+      conn: conn
+    } do
+      experiment = insert_experiment()
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+
+      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+
+      assert length(all_experiment_results) == 2
+
+      conn
+      |> using_basic_auth()
+      |> delete("/experiments/#{experiment.id}/reset")
+
+      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+
+      assert Enum.empty?(all_experiment_results)
     end
 
-    test "Related ExperimentStatus have their :status field set to 0 after resetting an experiment" do
+    test "Related ExperimentStatus have their :status field set to 0 after resetting an experiment",
+         %{conn: conn} do
+      experiment = insert_complex_experiment()
+
+      from(s in ExperimentStatus,
+        where: s.experiment_id == ^experiment.id,
+        update: [set: [status: 2]]
+      )
+      |> Repo.update_all([])
+
+      conn
+      |> using_basic_auth()
+      |> delete("/experiments/#{experiment.id}/reset")
+
+      experiment_statuses = Repo.all(ExperimentStatus, experiment_id: experiment.id)
+
+      experiment_statuses_with_0 =
+        experiment_statuses |> Enum.filter(fn status -> status.status == 0 end)
+
+      assert length(experiment_statuses) == length(experiment_statuses_with_0)
+    end
+  end
+
+  describe "check_valid/2" do
+    test "Validity check returns 200 for an existing and valid experiment", %{conn: conn} do
+      experiment = insert_experiment()
+
+      conn =
+        conn
+        |> get(experiment_path(conn, :check_valid, experiment.id))
+
+      assert text_response(conn, 200)
+    end
+
+    test "Validity check returns 404 for a nonexisting experiment", %{conn: conn} do
+      conn =
+        conn
+        |> get(experiment_path(conn, :check_valid, :rand.uniform(1000)))
+
+      assert text_response(conn, 404)
+    end
+
+    test "Validity check returns 403 for an existing but inactive experiment", %{conn: conn} do
+      experiment = insert_experiment(%{active: false})
+
+      conn =
+        conn
+        |> get(experiment_path(conn, :check_valid, experiment.id))
+
+      assert text_response(conn, 403)
     end
   end
 
@@ -168,22 +309,11 @@ defmodule ExperimentControllerTest do
     test "Dynamic retrieval returns 403 for an existing experiment without any retrieval keys" do
     end
 
-    # Not sure if these should be a part of the view tests or a part of the controller tests.
+    # Not sure if these two should be a part of the view tests or a part of the controller tests.
     test "Dynamic retrieval keys set in the UI get correctly stored to the DB", %{conn: conn} do
     end
 
     test "Deleting all dynamic retrieval keys gets reflected in the DB" do
-    end
-  end
-
-  describe "check_valid/2" do
-    test "Validity check returns 200 for an existing and valid experiment" do
-    end
-
-    test "Validity check returns 404 for a nonexisting experiment" do
-    end
-
-    test "Validity check returns 403 for an existing but inactive experiment" do
     end
   end
 

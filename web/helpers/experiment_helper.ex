@@ -3,8 +3,9 @@ defmodule BABE.ExperimentHelper do
   Stores the helper functions which help to store and retrieve the experiments.
   """
 
-  alias BABE.ExperimentStatus
+  alias BABE.{ExperimentStatus, Experiment}
   alias Ecto.Multi
+  alias BABE.Repo
 
   # Note that we have a validation in schemas to ensure that each entry in `results` must have the same set of keys. So the following code take take that as an assumption.
   @doc """
@@ -54,7 +55,26 @@ defmodule BABE.ExperimentHelper do
     end)
   end
 
-  def create_experiment_make_multi_with_insert(changeset_experiment) do
+  @doc """
+  Helper function to create an experiment. In Phoenix >= 1.3 should be part of the context module instead of the controller module.
+  """
+  def create_experiment(experiment_params) do
+    changeset_experiment = Experiment.changeset(%Experiment{}, experiment_params)
+
+    # This check is a bit clunky but currently we can only go this way as we don't have a separate ComplexExperiment model yet.
+    multi =
+      if Map.has_key?(changeset_experiment.changes, :is_complex) &&
+           changeset_experiment.changes.is_complex do
+        create_experiment_make_multi_with_insert(changeset_experiment)
+      else
+        Multi.new()
+        |> Multi.insert(:experiment, changeset_experiment)
+      end
+
+    Repo.transaction(multi)
+  end
+
+  defp create_experiment_make_multi_with_insert(changeset_experiment) do
     Multi.new()
     |> Multi.insert(:experiment, changeset_experiment)
     |> Multi.merge(fn %{experiment: experiment} ->

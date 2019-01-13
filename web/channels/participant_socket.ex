@@ -44,13 +44,19 @@ defmodule BABE.ParticipantSocket do
   def connect(%{"participant_id" => participant_id, "experiment_id" => experiment_id}, socket) do
     experiment = Repo.get(Experiment, experiment_id)
 
-    case experiment do
-      nil ->
-        {:error, %{reason: "The experiment with the given id doesn't exist."}}
+    case {String.length(participant_id), experiment} do
+      {0, _} ->
+        :error
+
+      {_, nil} ->
+        # The `connect/2` function is supposed to just return :error without the reason: part. If we want to log the reason we might want to use an extra logging service or whatnot.
+        # {:error, %{reason: "The experiment with the given id doesn't exist."}}
+        :error
 
       _ ->
         if !experiment.active do
-          {:error, %{reason: "The experiment is not active."}}
+          # {:error, %{reason: "The experiment is not active."}}
+          :error
         else
           # This could be a bit slow but I hope it will still be efficient enough. The participant can wait.
           available_assignments_query =
@@ -67,7 +73,8 @@ defmodule BABE.ParticipantSocket do
           case available_assignments do
             [] ->
               # All experiment slots are full.
-              {:error, %{reason: "no_available_assignment"}}
+              # {:error, %{reason: "no_available_assignment"}}
+              :error
 
             # Mark this assignment as "in progress", i.e. allocated to this participant.
             [next_assignment | _] ->
@@ -90,7 +97,8 @@ defmodule BABE.ParticipantSocket do
                    |> assign(:num_realizations, experiment.num_realizations)}
 
                 {:error, _changeset} ->
-                  {:error, %{reason: "db_error"}}
+                  # {:error, %{reason: "db_error"}}
+                  :error
               end
           end
         end

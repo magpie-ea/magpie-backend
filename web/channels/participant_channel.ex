@@ -116,7 +116,7 @@ defmodule BABE.ParticipantChannel do
 
   Maybe we can still save it into the DB without impacting the complete results or something. let's see.
 
-  I'll need to discuss it further with Michael before enabling this functionality. For now just comment out the code.
+  TODO: I'll need to discuss it further with Michael before enabling this functionality. For now just comment out the code.
   """
   # def handle_in("save_intermediate_results", payload, socket) do
   #   experiment_id = socket.assigns.experiment_id

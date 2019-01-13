@@ -25,6 +25,8 @@ defmodule BABE.ChannelCase do
       import Ecto.Changeset
       import Ecto.Query
 
+      import BABE.TestHelpers
+
       # The default endpoint for testing
       @endpoint BABE.Endpoint
     end

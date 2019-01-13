@@ -5,7 +5,6 @@ defmodule BABE.ExperimentResultTest do
   use BABE.ModelCase
 
   alias BABE.ExperimentResult
-  alias BABE.Repo
 
   @valid_attrs %{
     experiment_id: 1,

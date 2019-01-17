@@ -217,6 +217,52 @@ defmodule ExperimentControllerTest do
       experiment = BABE.Repo.get!(BABE.Experiment, experiment.id)
       assert experiment.active == true
     end
+
+    test "toggle/2 resets all in progress experiments for an active experiment", %{conn: conn} do
+      experiment = insert_complex_experiment()
+
+      from(s in ExperimentStatus,
+        where: s.experiment_id == ^experiment.id,
+        update: [set: [status: 1]]
+      )
+      |> Repo.update_all([])
+
+      conn
+      |> using_basic_auth()
+      |> get("/experiments/#{experiment.id}/toggle")
+
+      experiment_statuses = Repo.all(ExperimentStatus, experiment_id: experiment.id)
+
+      experiment_statuses_with_0 =
+        experiment_statuses |> Enum.filter(fn status -> status.status == 0 end)
+
+      assert length(experiment_statuses) == length(experiment_statuses_with_0)
+    end
+
+    test "toggle/2 doesn't reset any completed experiments' status", %{conn: conn} do
+      experiment = insert_complex_experiment()
+
+      from(s in ExperimentStatus,
+        where: s.experiment_id == ^experiment.id,
+        update: [set: [status: 2]]
+      )
+      |> Repo.update_all([])
+
+      conn
+      |> using_basic_auth()
+      |> get("/experiments/#{experiment.id}/toggle")
+
+      experiment_statuses = Repo.all(ExperimentStatus, experiment_id: experiment.id)
+
+      experiment_statuses_with_0 =
+        experiment_statuses |> Enum.filter(fn status -> status.status == 0 end)
+
+      experiment_statuses_with_2 =
+        experiment_statuses |> Enum.filter(fn status -> status.status == 2 end)
+
+      assert length(experiment_statuses_with_0) == 0
+      assert length(experiment_statuses) == length(experiment_statuses_with_2)
+    end
   end
 
   describe "reset/2" do

@@ -6,6 +6,7 @@ defmodule BABE.ExperimentHelper do
   alias BABE.{ExperimentStatus, Experiment}
   alias Ecto.Multi
   alias BABE.Repo
+  require Ecto.Query
 
   # Note that we have a validation in schemas to ensure that each entry in `results` must have the same set of keys. So the following code take take that as an assumption.
   @doc """
@@ -100,5 +101,10 @@ defmodule BABE.ExperimentHelper do
         end)
       end)
     end)
+  end
+
+  def reset_in_progress_experiment_statuses do
+    Ecto.Query.from(p in ExperimentStatus, where: p.status == 1)
+    |> Repo.update_all(set: [status: 0])
   end
 end

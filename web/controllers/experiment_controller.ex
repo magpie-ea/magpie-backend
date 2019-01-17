@@ -98,13 +98,20 @@ defmodule BABE.ExperimentController do
 
   def toggle(conn, %{"id" => id}) do
     experiment = Repo.get!(Experiment, id)
-    active = experiment.active
-    changeset = Ecto.Changeset.change(experiment, active: !active)
+    new_status = !experiment.active
+    changeset = Ecto.Changeset.change(experiment, active: new_status)
+
+    if new_status == false do
+      BABE.ExperimentHelper.reset_in_progress_experiment_statuses()
+    end
 
     case Repo.update(changeset) do
       {:ok, _} ->
         conn
-        |> put_flash(:info, "The activation status has been successfully changed to #{!active}")
+        |> put_flash(
+          :info,
+          "The activation status has been successfully changed to #{new_status}"
+        )
         |> redirect(to: experiment_path(conn, :edit, experiment))
 
       {:error, _} ->

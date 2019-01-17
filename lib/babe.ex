@@ -19,7 +19,9 @@ defmodule BABE do
       BABE.Presence,
       # Start your own worker by calling: BABE.Worker.start_link(arg1, arg2, arg3)
       # worker(BABE.Worker, [arg1, arg2, arg3]),
-      worker(Task, [&BABE.ClearDB.clear_in_progress_experiments_on_restart/0], restart: :temporary)
+      worker(Task, [&BABE.ExperimentHelper.reset_in_progress_experiment_statuses/0],
+        restart: :temporary
+      )
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

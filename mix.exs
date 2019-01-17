@@ -72,8 +72,7 @@ defmodule BABE.Mixfile do
       {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 0.17.2"},
       {:distillery, "~> 2.0"},
-      # {:sqlite_ecto2, "~> 2.3", only: :local},
-      {:sqlite_ecto2, "~> 2.3"},
+      {:sqlite_ecto2, "~> 2.3", only: :local},
       # Error checking and linting
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]}

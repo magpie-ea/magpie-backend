@@ -21,6 +21,7 @@ defmodule BABE.ChannelCase do
       use Phoenix.ChannelTest
 
       alias BABE.Repo
+      alias BABE.ParticipantSocket
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
@@ -29,6 +30,20 @@ defmodule BABE.ChannelCase do
 
       # The default endpoint for testing
       @endpoint BABE.Endpoint
+
+      def create_and_subscribe_participant(experiment) do
+        participant_id = Ecto.UUID.generate()
+
+        {:ok, socket} =
+          connect(ParticipantSocket, %{
+            "participant_id" => participant_id,
+            "experiment_id" => experiment.id
+          })
+
+        {:ok, _, _} = subscribe_and_join(socket, "participant:#{participant_id}")
+
+        {:ok, socket: socket, experiment: experiment, participant_id: participant_id}
+      end
     end
   end
 

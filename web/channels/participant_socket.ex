@@ -1,7 +1,7 @@
 defmodule BABE.ParticipantSocket do
   use Phoenix.Socket
   require Ecto.Query
-  alias BABE.{Repo, Experiment, ExperimentStatus}
+  alias BABE.{Repo, Experiment, ExperimentStatus, ChannelHelper}
 
   ## Channels
   # The ":*" part just means that any event with `participant` topic will be sent to the Participant channel.
@@ -46,34 +46,19 @@ defmodule BABE.ParticipantSocket do
 
     case {String.length(participant_id), experiment} do
       {0, _} ->
+        # The `connect/2` function is supposed to just return :error without the reason: part. If we want to log the reason we might want to use an extra logging service or whatnot.
         :error
 
       {_, nil} ->
-        # The `connect/2` function is supposed to just return :error without the reason: part. If we want to log the reason we might want to use an extra logging service or whatnot.
-        # {:error, %{reason: "The experiment with the given id doesn't exist."}}
         :error
 
       _ ->
         if !experiment.active do
-          # {:error, %{reason: "The experiment is not active."}}
           :error
         else
-          # This could be a bit slow but I hope it will still be efficient enough. The participant can wait.
-          available_assignments_query =
-            Ecto.Query.from(s in ExperimentStatus,
-              where: s.experiment_id == ^experiment_id,
-              where: s.status == 0,
-              # First by realization, then by chain, then by variant. In this way the variant gets incremented first.
-              order_by: [s.realization, s.chain, s.variant]
-              # limit: 1
-            )
-
-          available_assignments = Repo.all(available_assignments_query)
-
-          case available_assignments do
+          case ChannelHelper.get_all_available_assignments(experiment_id) do
             [] ->
               # All experiment slots are full.
-              # {:error, %{reason: "no_available_assignment"}}
               :error
 
             # Mark this assignment as "in progress", i.e. allocated to this participant.
@@ -97,7 +82,6 @@ defmodule BABE.ParticipantSocket do
                    |> assign(:num_realizations, experiment.num_realizations)}
 
                 {:error, _changeset} ->
-                  # {:error, %{reason: "db_error"}}
                   :error
               end
           end

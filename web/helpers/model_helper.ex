@@ -12,7 +12,7 @@ defmodule BABE.ModelHelper do
     end
   end
 
-  def contain_the_same_keys?(record) do
+  defp contain_the_same_keys?(record) do
     all_keys =
       record
       |> Enum.map(fn entry -> Enum.sort(Map.keys(entry)) end)

@@ -13,14 +13,6 @@ defmodule ExperimentControllerTest do
     conn |> put_req_header("authorization", header_content)
   end
 
-  # No need to insert experiments up front as we can still do it manually in the tests that need it.
-  # setup %{conn: conn} do
-  #   # experiment = insert_experiment()
-  #   # experiment_result_1 = insert_experiment_result(%{"experiment_id" => experiment.id})
-  #   # experiment_result_2 = insert_experiment_result(%{"experiment_id" => experiment.id})
-  #   {:ok, conn: conn, experiment: experiment}
-  # end
-
   describe "basic_auth" do
     test "Requires authentication for administrating experiments", %{conn: conn} do
       Enum.each(
@@ -261,7 +253,7 @@ defmodule ExperimentControllerTest do
       experiment_statuses_with_2 =
         experiment_statuses |> Enum.filter(fn status -> status.status == 2 end)
 
-      assert length(experiment_statuses_with_0) == 0
+      assert Enum.empty?(experiment_statuses_with_0)
       assert length(experiment_statuses) == length(experiment_statuses_with_2)
     end
   end
@@ -340,50 +332,94 @@ defmodule ExperimentControllerTest do
     end
   end
 
-  describe "dynamic_retrieval" do
-    test "Dynamic retrieval doesn't return extra data not specified by the user", %{conn: conn} do
-    end
-
-    test "Dynamic retrieval returns the data specified", %{conn: conn} do
-    end
-
-    test "Dynamic retrieval returns 404 for a nonexisting experiment" do
-    end
-
-    test "Dynamic retrieval returns 404 for an existing experiment without any submissions" do
-    end
-
-    test "Dynamic retrieval returns 403 for an existing experiment without any retrieval keys" do
-    end
-
-    # Not sure if these two should be a part of the view tests or a part of the controller tests.
-    test "Dynamic retrieval keys set in the UI get correctly stored to the DB", %{conn: conn} do
-    end
-
-    test "Deleting all dynamic retrieval keys gets reflected in the DB" do
-    end
-  end
-
   describe "retrieve_as_csv/2" do
-    test "retrieve_as_csv/2 produces a CSV file with the right name" do
-    end
+    test "retrieve_as_csv/2 produces a CSV file with expected contents", %{conn: conn} do
+      experiment = insert_experiment()
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+      submission_id = Repo.one!(ExperimentResult).id
 
-    test "retrieve_as_csv/2 produces a CSV file with expected contents" do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(experiment_path(conn, :retrieve_as_csv, experiment.id))
+
+      file = response(conn, 200)
+
+      # Note that the separator defaults to \r\n
+      # Just directly match the content with the expected results anyways.
+      assert(file == "submission_id,a,b\r\n#{submission_id},1,2\r\n#{submission_id},11,22\r\n")
     end
   end
 
   describe "retrieve_as_json/2" do
-    test "retrieve_as_json/2 produces a JSON response with expected contents" do
+    test "Dynamic retrieval returns 403 if no keys are specified", %{conn: conn} do
+      experiment = insert_experiment()
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(experiment_path(conn, :retrieve_as_json, experiment.id))
+
+      assert(response(conn, 403))
     end
+
+    test "Dynamic retrieval returns exactly the data specified", %{conn: conn} do
+      experiment = insert_experiment(%{dynamic_retrieval_keys: ["a"]})
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+      # Insert twice so that we have two "participants" submitting their results
+      insert_experiment_result(%{"experiment_id" => experiment.id})
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(experiment_path(conn, :retrieve_as_json, experiment.id))
+
+      data = response(conn, 200) |> Poison.decode!()
+
+      # List of lists, each inner list being one participant's responses
+      assert(data == [[%{"a" => 1}, %{"a" => 11}], [%{"a" => 1}, %{"a" => 11}]])
+    end
+
+    test "Dynamic retrieval returns 404 for a nonexisting experiment", %{conn: conn} do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(experiment_path(conn, :retrieve_as_json, 1234))
+
+      assert(response(conn, 404))
+    end
+
+    test "Dynamic retrieval returns 404 for an existing experiment without any submissions", %{
+      conn: conn
+    } do
+      experiment = insert_experiment(%{dynamic_retrieval_keys: ["a"]})
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(experiment_path(conn, :retrieve_as_json, experiment.id))
+
+      assert(response(conn, 404))
+    end
+
+    # Maybe these should be view tests
+    # test "Dynamic retrieval keys set in the UI get correctly stored to the DB", %{conn: conn} do
+    # end
+
+    # test "Deleting all dynamic retrieval keys gets reflected in the DB" do
+    # end
   end
 
   describe "retrieve_all/2" do
+    # Maybe just compare binaries with a pre-produced fixture.
     test "retrieve_all/2 produces the expected archive (for multiple existing experiments)" do
     end
   end
 
   describe "submit/2" do
-    test "Submission of active experiment succeeds with 201 (created)", %{conn: conn} do
+    test "Submission of active experiment succeeds with 201 (created) and successfully stores the results in the DB",
+         %{conn: conn} do
       experiment = insert_experiment()
 
       conn =
@@ -392,19 +428,41 @@ defmodule ExperimentControllerTest do
           "_json" => @results_simple_experiment
         })
 
+      results = Map.get(Repo.one!(ExperimentResult), :results)
+      assert(results == @results_simple_experiment)
       assert(response(conn, :created))
     end
 
-    test "Submission of inactive experiment fails with 403" do
+    test "Submission of inactive experiment fails with 403 and wouldn't store the data", %{
+      conn: conn
+    } do
+      experiment = insert_experiment(%{active: false})
+
+      conn =
+        conn
+        |> post("api/submit_experiment/#{experiment.id}/", %{
+          "_json" => @results_simple_experiment
+        })
+
+      assert(nil == Repo.one(ExperimentResult))
+      assert(response(conn, 403))
     end
 
-    test "Submission of nonexistent experiment fails with 404" do
+    test "Submission of nonexistent experiment fails with 404 and wouldn't store the data", %{
+      conn: conn
+    } do
+      conn =
+        conn
+        |> post("api/submit_experiment/1234/", %{
+          "_json" => @results_simple_experiment
+        })
+
+      assert(nil == Repo.one(ExperimentResult))
+      assert(response(conn, 404))
     end
 
-    test "Submission errors on Ecto fails with 422 (unprocessable entity)" do
-    end
-
-    test "submit/2 fails with empty experiment results", %{conn: conn} do
+    test "Submission of empty experiment results fails with 422 (unprocessable entity) and wouldn't store the data",
+         %{conn: conn} do
       experiment = insert_experiment()
 
       conn =
@@ -413,6 +471,21 @@ defmodule ExperimentControllerTest do
           "_json" => []
         })
 
+      assert(nil == Repo.one(ExperimentResult))
+      assert(response(conn, :unprocessable_entity))
+    end
+
+    test "Submission of malformed experiment results fails with 422 (unprocessable entity) and wouldn't store the data",
+         %{conn: conn} do
+      experiment = insert_experiment()
+
+      conn =
+        conn
+        |> post("api/submit_experiment/#{experiment.id}/", %{
+          "_json" => [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22, "c" => 123}]
+        })
+
+      assert(nil == Repo.one(ExperimentResult))
       assert(response(conn, :unprocessable_entity))
     end
   end

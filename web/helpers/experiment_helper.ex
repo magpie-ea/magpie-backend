@@ -32,6 +32,7 @@ defmodule BABE.ExperimentHelper do
           acc ++ format_submission(submission, keys)
         end)
 
+    # Note that the separator defaults to \r\n just to be safe
     outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
   end
 

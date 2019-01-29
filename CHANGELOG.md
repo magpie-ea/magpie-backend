@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2] - 2018-01-29
+
+### Fixed
+
+- Last updated time of experiments are now correctly displayed again.
+- Minor bug fixes on experiment results and custom record submissions.
+
 ## [0.2.1] - 2018-01-09
 
 ### Changed

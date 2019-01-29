@@ -4,12 +4,14 @@ defmodule BABE.CustomRecordController do
 
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
   unless Application.get_env(:babe, :no_basic_auth) do
-    plug(BasicAuth, use_config: {:babe, :authentication})
+    plug(
+      BasicAuth,
+      [use_config: {:babe, :authentication}] when not (action in [:retrieve_as_json])
+    )
   end
 
   alias BABE.CustomRecord
 
-  # Used for retrieve_as_csv
   import BABE.CustomRecordHelper
 
   def index(conn, _params) do
@@ -22,32 +24,14 @@ defmodule BABE.CustomRecordController do
     render(conn, "new.html", changeset: changeset)
   end
 
-  defp convert_uploaded_data(upload) do
-    case upload.content_type do
-      "application/json" ->
-        upload.path
-        |> File.read!()
-        |> Poison.decode!()
-
-      "text/csv" ->
-        upload.path
-        |> File.stream!()
-        |> CSV.decode!(headers: true)
-        # We shouldn't need to manually verify that the rows are valid. The decode! should do it for us
-        # |> Stream.filter(fn({k, v}) -> k == :ok end)
-        # |> Stream.map(fn({k, v}) -> v end)
-        |> Enum.take_every(1)
-
-      _ ->
-        nil
-    end
-  end
-
   def create(conn, %{"custom_record" => custom_record_params}) do
     upload = custom_record_params["record"]
 
     try do
       content = convert_uploaded_data(upload)
+
+      IO.puts("content is")
+      inspect(content)
 
       if content == nil do
         conn

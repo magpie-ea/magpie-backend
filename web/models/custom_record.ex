@@ -7,6 +7,8 @@ defmodule BABE.CustomRecord do
   """
   use BABE.Web, :model
 
+  import BABE.ModelHelper
+
   schema "custom_records" do
     field(:name, :string)
     field(:record, {:array, :map})
@@ -19,5 +21,6 @@ defmodule BABE.CustomRecord do
     custom_record
     |> cast(attrs, [:name, :record])
     |> validate_required([:name, :record])
+    |> validate_change(:record, &check_record(&1, &2))
   end
 end

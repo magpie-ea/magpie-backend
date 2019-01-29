@@ -23,4 +23,26 @@ defmodule BABE.CustomRecordHelper do
     outputs = outputs ++ format_record(record, keys)
     outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
   end
+
+  def convert_uploaded_data(upload) do
+    case upload.content_type do
+      "application/json" ->
+        upload.path
+        |> File.read!()
+        |> Poison.decode!()
+
+      "text/csv" ->
+        upload.path
+        |> File.stream!()
+        |> CSV.decode!(headers: true)
+        # We shouldn't need to manually verify that the rows are valid. The decode! should do it for us
+        # |> Stream.filter(fn({k, v}) -> k == :ok end)
+        # |> Stream.map(fn({k, v}) -> v end)
+        # Because it returns a stream, we just simply make the results concrete here.
+        |> Enum.take_every(1)
+
+      _ ->
+        nil
+    end
+  end
 end

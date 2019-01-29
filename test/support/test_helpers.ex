@@ -23,6 +23,11 @@ defmodule BABE.TestHelpers do
     is_complex: false
   }
 
+  @custom_record_attrs %{
+    name: "some name",
+    record: [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}]
+  }
+
   @results_simple_experiment [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}]
 
   @experiment_result_attrs %{
@@ -49,6 +54,19 @@ defmodule BABE.TestHelpers do
 
     {:ok, %{experiment: experiment}} = BABE.ExperimentHelper.create_experiment(changes)
     experiment
+  end
+
+  def insert_custom_record(attrs \\ %{}) do
+    changes =
+      Map.merge(
+        @custom_record_attrs,
+        attrs
+      )
+
+    changeset = BABE.CustomRecord.changeset(%BABE.CustomRecord{}, changes)
+
+    {:ok, custom_record} = BABE.Repo.insert(changeset)
+    custom_record
   end
 
   def insert_experiment_result(attrs \\ %{}) do

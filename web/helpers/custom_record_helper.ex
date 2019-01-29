@@ -17,7 +17,6 @@ defmodule BABE.CustomRecordHelper do
     keys = Map.keys(entry)
     # The first element in the `outputs` list of lists will be the keys, i.e. headers
     outputs = [keys]
-    # IO.inspect outputs = outputs ++ keys, label: "outputs"
 
     # For each entry, concatenate it to the `outputs` list.
     outputs = outputs ++ format_record(record, keys)

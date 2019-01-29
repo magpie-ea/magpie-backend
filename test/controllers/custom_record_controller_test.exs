@@ -92,27 +92,27 @@ defmodule CustomRecordControllerTest do
       assert redirected_to(conn) == custom_record_path(conn, :index)
     end
 
-    # test "create/2 does not allow uploading an empty CSV file",
-    #      %{conn: conn} do
-    #   csv = %Plug.Upload{
-    #     path: "test/fixtures/custom_record_empty.csv",
-    #     content_type: "text/csv",
-    #     filename: "custom_record.csv"
-    #   }
+    test "create/2 does not allow uploading an empty CSV file",
+         %{conn: conn} do
+      csv = %Plug.Upload{
+        path: "test/fixtures/custom_record_empty.csv",
+        content_type: "text/csv",
+        filename: "custom_record.csv"
+      }
 
-    #   conn =
-    #     conn
-    #     |> using_basic_auth()
-    #     |> post("/custom_records", %{
-    #       "custom_record" => %{
-    #         "name" => "some name",
-    #         "record" => csv
-    #       }
-    #     })
+      conn =
+        conn
+        |> using_basic_auth()
+        |> post("/custom_records", %{
+          "custom_record" => %{
+            "name" => "some name",
+            "record" => csv
+          }
+        })
 
-    #   # assert html_response(conn, 200) =~ "check the formatting"
-    #   assert html_response(conn, 200) =~ "alert"
-    # end
+      # assert html_response(conn, 200) =~ "check the formatting"
+      assert html_response(conn, 200) =~ "alert"
+    end
 
     test "create/2 does not allow a CSV upload with some empty entries",
          %{conn: conn} do

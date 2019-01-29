@@ -28,34 +28,39 @@ defmodule BABE.CustomRecordController do
     upload = custom_record_params["record"]
 
     try do
-      content = convert_uploaded_data(upload)
-
-      IO.puts("content is")
-      inspect(content)
-
-      if content == nil do
-        conn
-        |> put_flash(:error, "Make sure the file extension is either .csv or .json")
-        |> render("new.html",
-          changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
-        )
-        |> halt
-      end
-
-      changeset =
-        CustomRecord.changeset(%CustomRecord{
-          name: custom_record_params["name"],
-          record: content
-        })
-
-      case Repo.insert(changeset) do
-        {:ok, custom_record} ->
+      case convert_uploaded_data(upload) do
+        :error ->
           conn
-          |> put_flash(:info, "#{custom_record.name} created!")
-          |> redirect(to: custom_record_path(conn, :index))
+          |> put_flash(:error, "Make sure the file extension is either .csv or .json")
+          |> render("new.html",
+            changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
+          )
+          |> halt
 
-        {:error, changeset} ->
-          render(conn, "new.html", changeset: changeset)
+        {:ok, data} ->
+          # IO.puts("data is ")
+          # inspect(data)
+          # inspect(length(data))
+          # IO.puts(length(data))
+
+          changeset =
+            CustomRecord.changeset(%CustomRecord{
+              name: custom_record_params["name"],
+              record: data
+            })
+
+          case Repo.insert(changeset) do
+            {:ok, custom_record} ->
+              # IO.puts("No errors")
+
+              conn
+              |> put_flash(:info, "#{custom_record.name} created!")
+              |> redirect(to: custom_record_path(conn, :index))
+
+            {:error, changeset} ->
+              IO.puts("Now errors")
+              render(conn, "new.html", changeset: changeset)
+          end
       end
     rescue
       UndefinedFunctionError ->
@@ -89,37 +94,37 @@ defmodule BABE.CustomRecordController do
     upload = custom_record_params["record"]
 
     try do
-      content = convert_uploaded_data(upload)
-
-      if content == nil do
-        conn
-        |> put_flash(:error, "Make sure the file extension is either .csv or .json")
-        |> render("edit.html",
-          changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
-        )
-        |> halt
-      end
-
-      changeset =
-        CustomRecord.changeset(custom_record, %{
-          name: custom_record_params["name"],
-          record: content
-        })
-
-      case Repo.update(changeset) do
-        {:ok, custom_record} ->
+      case convert_uploaded_data(upload) do
+        :error ->
           conn
-          |> put_flash(:info, "#{custom_record.name} updated successfully.")
-          |> redirect(to: custom_record_path(conn, :index))
+          |> put_flash(:error, "Make sure the file extension is either .csv or .json")
+          |> render("edit.html",
+            changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
+          )
+          |> halt
 
-        {:error, changeset} ->
-          render(conn, "edit.html", custom_record: custom_record, changeset: changeset)
+        {:ok, data} ->
+          changeset =
+            CustomRecord.changeset(custom_record, %{
+              name: custom_record_params["name"],
+              record: data
+            })
+
+          case Repo.update(changeset) do
+            {:ok, custom_record} ->
+              conn
+              |> put_flash(:info, "#{custom_record.name} updated successfully.")
+              |> redirect(to: custom_record_path(conn, :index))
+
+            {:error, changeset} ->
+              render(conn, "edit.html", custom_record: custom_record, changeset: changeset)
+          end
       end
     rescue
       UndefinedFunctionError ->
         conn
         |> put_flash(:error, "No file selected.")
-        |> render("new.html",
+        |> render("edit.html",
           changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
         )
 
@@ -129,7 +134,7 @@ defmodule BABE.CustomRecordController do
           :error,
           "Some rows/contents in the file weren't able to be parsed correctly. Please check the formatting."
         )
-        |> render("new.html",
+        |> render("edit.html",
           changeset: CustomRecord.changeset(%CustomRecord{name: custom_record_params["name"]})
         )
     end

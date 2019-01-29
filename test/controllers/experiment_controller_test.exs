@@ -6,6 +6,7 @@ defmodule ExperimentControllerTest do
 
   @username Application.get_env(:babe, :authentication)[:username]
   @password Application.get_env(:babe, :authentication)[:password]
+  @results_simple_experiment [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}]
 
   defp using_basic_auth(conn, username \\ @username, password \\ @password) do
     header_content = "Basic " <> Base.encode64("#{username}:#{password}")
@@ -383,6 +384,15 @@ defmodule ExperimentControllerTest do
 
   describe "submit/2" do
     test "Submission of active experiment succeeds with 201 (created)" do
+      experiment = insert_experiment()
+
+      conn =
+        conn
+        |> post("api/submit_experiment/#{experiment.id}/", %{
+          "_json" => @results_simple_experiment
+        })
+
+      assert(response(conn, :created))
     end
 
     test "Submission of inactive experiment fails with 403" do
@@ -392,6 +402,18 @@ defmodule ExperimentControllerTest do
     end
 
     test "Submission errors on Ecto fails with 422 (unprocessable entity)" do
+    end
+
+    test "submit/2 fails with empty experiment results" do
+      experiment = insert_experiment()
+
+      conn =
+        conn
+        |> post("api/submit_experiment/#{experiment.id}/", %{
+          "_json" => []
+        })
+
+      assert(response(conn, :unprocessable_entity))
     end
   end
 end

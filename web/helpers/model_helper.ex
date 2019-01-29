@@ -20,8 +20,9 @@ defmodule BABE.ModelHelper do
     # List.first instead of hd because it could be an empty list
     first_keys = List.first(all_keys)
 
-    Enum.reduce(all_keys, first_keys, fn keys, problem_free ->
-      problem_free && keys == first_keys
+    Enum.reduce(all_keys, true, fn keys, acc ->
+      acc and
+        keys == first_keys
     end)
   end
 end

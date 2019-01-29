@@ -383,7 +383,7 @@ defmodule ExperimentControllerTest do
   end
 
   describe "submit/2" do
-    test "Submission of active experiment succeeds with 201 (created)" do
+    test "Submission of active experiment succeeds with 201 (created)", %{conn: conn} do
       experiment = insert_experiment()
 
       conn =
@@ -404,7 +404,7 @@ defmodule ExperimentControllerTest do
     test "Submission errors on Ecto fails with 422 (unprocessable entity)" do
     end
 
-    test "submit/2 fails with empty experiment results" do
+    test "submit/2 fails with empty experiment results", %{conn: conn} do
       experiment = insert_experiment()
 
       conn =

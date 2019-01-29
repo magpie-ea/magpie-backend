@@ -4,7 +4,7 @@ defmodule BABE.InteractiveRoomChannelTest do
   """
   use BABE.ChannelCase
 
-  alias BABE.InteractiveRoomChannel
+  # alias BABE.InteractiveRoomChannel
   alias BABE.ParticipantSocket
 
   setup do
@@ -14,8 +14,8 @@ defmodule BABE.InteractiveRoomChannelTest do
 
   test "joins the interactive room channel successfully", %{
     socket: socket,
-    experiment: experiment,
-    participant_id: participant_id
+    experiment: _experiment,
+    participant_id: _participant_id
   } do
     assert {:ok, _, socket} =
              subscribe_and_join(
@@ -28,10 +28,10 @@ defmodule BABE.InteractiveRoomChannelTest do
 
   test "the newly joined user is tracked by Presence", %{
     socket: socket,
-    experiment: experiment,
-    participant_id: participant_id
+    experiment: _experiment,
+    participant_id: _participant_id
   } do
-    {:ok, _, socket} =
+    {:ok, _, _socket} =
       subscribe_and_join(
         socket,
         "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{

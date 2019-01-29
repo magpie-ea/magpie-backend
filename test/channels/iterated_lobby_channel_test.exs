@@ -5,9 +5,9 @@ defmodule BABE.IteratedLobbyChannelTest do
   use BABE.ChannelCase
 
   alias BABE.ParticipantSocket
-  alias BABE.IteratedLobbyChannel
-  alias BABE.ChannelHelper
-  alias BABE.ExperimentStatus
+  # alias BABE.IteratedLobbyChannel
+  # alias BABE.ChannelHelper
+  # alias BABE.ExperimentStatus
 
   setup do
     experiment = insert_complex_experiment()
@@ -17,7 +17,7 @@ defmodule BABE.IteratedLobbyChannelTest do
   test "joins the iterated lobby channel successfully", %{
     socket: socket,
     experiment: experiment,
-    participant_id: participant_id
+    participant_id: _participant_id
   } do
     assert {:ok, _, socket} =
              subscribe_and_join(

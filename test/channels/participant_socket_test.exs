@@ -4,7 +4,7 @@ defmodule BABE.ParticipantSocketTest do
   """
   use BABE.ChannelCase, async: true
 
-  alias BABE.{Repo, ParticipantSocket, ChannelHelper}
+  alias BABE.{ParticipantSocket, ChannelHelper}
 
   test "connect with a valid experiment_id" do
     experiment = insert_complex_experiment()

@@ -4,7 +4,7 @@ defmodule BABE.ParticipantChannelTest do
   """
   use BABE.ChannelCase
 
-  alias BABE.ParticipantChannel
+  # alias BABE.ParticipantChannel
   alias BABE.ParticipantSocket
 
   setup do
@@ -14,7 +14,7 @@ defmodule BABE.ParticipantChannelTest do
 
   test "joins the participant channel successfully", %{
     socket: socket,
-    experiment: experiment,
+    experiment: _experiment,
     participant_id: participant_id
   } do
     assert {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
@@ -22,7 +22,7 @@ defmodule BABE.ParticipantChannelTest do
 
   test "Receives the trituple denoting the next available experiment slot after joining", %{
     socket: socket,
-    experiment: experiment,
+    experiment: _experiment,
     participant_id: participant_id
   } do
     {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")

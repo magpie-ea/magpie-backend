@@ -2,7 +2,7 @@ defmodule CustomRecordControllerTest do
   @moduledoc false
 
   use BABE.ConnCase
-  alias BABE.{Repo, CustomRecord}
+  # alias BABE.{Repo, CustomRecord}
 
   @username Application.get_env(:babe, :authentication)[:username]
   @password Application.get_env(:babe, :authentication)[:password]

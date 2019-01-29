@@ -1,6 +1,8 @@
 defmodule BABE.ErrorViewTest do
   use BABE.ConnCase, async: true
 
+  # Views are not a very important part of this backend app so no further tests are currently written.
+
   # Bring render/3 and render_to_string/3 for testing custom views
   import Phoenix.View
 

@@ -2,10 +2,12 @@ defmodule CustomRecordControllerTest do
   @moduledoc false
 
   use BABE.ConnCase
-  # alias BABE.{Repo, CustomRecord}
+  alias BABE.{Repo, CustomRecord}
 
   @username Application.get_env(:babe, :authentication)[:username]
   @password Application.get_env(:babe, :authentication)[:password]
+
+  @simple_record [%{"a" => "1", "b" => "2"}, %{"a" => "11", "b" => "22"}]
 
   defp using_basic_auth(conn, username \\ @username, password \\ @password) do
     header_content = "Basic " <> Base.encode64("#{username}:#{password}")
@@ -88,6 +90,8 @@ defmodule CustomRecordControllerTest do
           }
         })
 
+      record = Repo.one!(CustomRecord).record
+      assert(record == @simple_record)
       assert redirected_to(conn) == custom_record_path(conn, :index)
     end
 
@@ -109,7 +113,7 @@ defmodule CustomRecordControllerTest do
           }
         })
 
-      # assert html_response(conn, 200) =~ "check the formatting"
+      assert(nil == Repo.one(CustomRecord))
       assert html_response(conn, 200) =~ "alert"
     end
 
@@ -131,11 +135,12 @@ defmodule CustomRecordControllerTest do
           }
         })
 
+      assert(nil == Repo.one(CustomRecord))
       assert html_response(conn, 200) =~ "alert"
     end
 
     test "create/2 successfully creates a custom record with a valid JSON upload", %{conn: conn} do
-      csv = %Plug.Upload{
+      json = %Plug.Upload{
         path: "test/fixtures/custom_record.json",
         content_type: "application/json",
         filename: "custom_record.json"
@@ -147,11 +152,34 @@ defmodule CustomRecordControllerTest do
         |> post("/custom_records", %{
           "custom_record" => %{
             "name" => "some name",
-            "record" => csv
+            "record" => json
           }
         })
 
+      record = Repo.one!(CustomRecord).record
+      assert(record == @simple_record)
       assert redirected_to(conn) == custom_record_path(conn, :index)
+    end
+
+    test "create/2 does not allow an empty JSON upload", %{conn: conn} do
+      json = %Plug.Upload{
+        path: "test/fixtures/custom_record_empty.json",
+        content_type: "application/json",
+        filename: "custom_record.json"
+      }
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> post("/custom_records", %{
+          "custom_record" => %{
+            "name" => "some name",
+            "record" => json
+          }
+        })
+
+      assert(nil == Repo.one(CustomRecord))
+      assert html_response(conn, 200) =~ "alert"
     end
   end
 end

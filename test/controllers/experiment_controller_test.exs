@@ -6,7 +6,7 @@ defmodule ExperimentControllerTest do
 
   @username Application.get_env(:babe, :authentication)[:username]
   @password Application.get_env(:babe, :authentication)[:password]
-  @results_simple_experiment [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}]
+  @results_simple_experiment [%{"a" => "1", "b" => "2"}, %{"a" => "11", "b" => "22"}]
 
   defp using_basic_auth(conn, username \\ @username, password \\ @password) do
     header_content = "Basic " <> Base.encode64("#{username}:#{password}")

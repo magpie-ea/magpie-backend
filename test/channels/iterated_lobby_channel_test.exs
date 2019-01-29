@@ -6,8 +6,8 @@ defmodule BABE.IteratedLobbyChannelTest do
 
   alias BABE.ParticipantSocket
   # alias BABE.IteratedLobbyChannel
-  # alias BABE.ChannelHelper
-  # alias BABE.ExperimentStatus
+  alias BABE.ChannelHelper
+  alias BABE.ExperimentStatus
 
   setup do
     experiment = insert_complex_experiment()
@@ -28,19 +28,33 @@ defmodule BABE.IteratedLobbyChannelTest do
              )
   end
 
-  # test "successfully gets the experiment result if the corresponding ExperimentStatus is 2" do
+  # test "successfully gets the experiment result if the corresponding ExperimentStatus is 2", %{
+  #   socket: socket,
+  #   experiment: experiment,
+  #   participant_id: _participant_id
+  # } do
+  #   {:ok, _, socket} =
+  #     subscribe_and_join(
+  #       socket,
+  #       "iterated_lobby:#{experiment.id}:#{socket.assigns.variant}:#{socket.assigns.chain}:#{
+  #         socket.assigns.realization
+  #       }"
+  #     )
+
   #   experiment_status =
   #     ChannelHelper.get_experiment_status(
-  #       experiment_id,
-  #       variant,
-  #       chain,
-  #       realization
+  #       experiment.id,
+  #       socket.assigns.variant,
+  #       socket.assigns.chain,
+  #       socket.assigns.realization
   #     )
+
+  #   insert_experiment_result(%{"experiment_id" => experiment.id})
 
   #   experiment_status
   #   |> ExperimentStatus.changeset(%{status: 2})
   #   |> Repo.update!()
 
-  #   # Still needs the helper method to populate reasonable experiment results before this can continue.
+  #   assert_broadcast("finished", %{})
   # end
 end

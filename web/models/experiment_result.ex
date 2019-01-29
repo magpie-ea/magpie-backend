@@ -5,6 +5,8 @@ defmodule BABE.ExperimentResult do
 
   use BABE.Web, :model
 
+  import BABE.ModelHelper
+
   schema "experiment_results" do
     # A map represents the whole JSON object received when the experiment was first submitted.
     # Maybe the name `data` would be more appropriate. But anyways. Don't want to have troubles with migrations so let's just keep it for now.
@@ -29,33 +31,8 @@ defmodule BABE.ExperimentResult do
     # This is to say, the other parameters are not "deleted" at this step yet. You can chain multiple `cast` calls.
     |> cast(params, [:results, :experiment_id, :variant, :chain, :realization])
     |> validate_required([:experiment_id, :results])
-    |> validate_change(:results, &check_results(&1, &2))
+    |> validate_change(:results, &check_record(&1, &2))
     # Must be associated with an experiment
     |> assoc_constraint(:experiment)
-  end
-
-  defp check_results(_atom, results) do
-    # First check if the results are empty
-    if Enum.empty?(results) do
-      [results: "cannot be empty"]
-    else
-      # Then check whether each map in the array has the same keys
-      case contain_the_same_keys?(results) do
-        false -> [results: "every entry must have the same set of keys"]
-        true -> []
-      end
-    end
-  end
-
-  defp contain_the_same_keys?(results) do
-    all_keys =
-      results
-      |> Enum.map(fn result -> Enum.sort(Map.keys(result)) end)
-
-    first_keys = hd(all_keys)
-
-    Enum.reduce(all_keys, first_keys, fn keys, problem_free ->
-      problem_free && keys == first_keys
-    end)
   end
 end

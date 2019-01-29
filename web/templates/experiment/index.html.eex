@@ -35,7 +35,7 @@
         </td>
 
         <td style="white-space:nowrap;"><%= format_timestamp(experiment.inserted_at) %></td>
-        <td style="white-space:nowrap;"><%= format_timestamp(experiment.updated_at) %></td>
+        <td style="white-space:nowrap;"><%= format_timestamp(get_last_submission_time(experiment)) %></td>
 
         <td><%= experiment.active %></td>
 

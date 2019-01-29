@@ -97,6 +97,23 @@ defmodule BABE.ExperimentView do
     BABE.Repo.aggregate(query, :count, :id)
   end
 
+  # TODO: Optimize the query a bit, or use some sort of caching
+  def get_last_submission_time(experiment) do
+    query =
+      from(r in BABE.ExperimentResult,
+        where: r.experiment_id == ^experiment.id,
+        order_by: [desc: r.updated_at],
+        select: r.updated_at,
+        limit: 1
+      )
+
+    case BABE.Repo.one(query) do
+      # No submissions whatsoever. Use the experiment itself.
+      nil -> experiment.updated_at
+      t -> t
+    end
+  end
+
   def get_endpoint_url(type, id) do
     base_url = Application.get_env(:babe, :real_url, BABE.Endpoint.url())
     path = BABE.Router.Helpers.experiment_path(BABE.Endpoint, type, id)

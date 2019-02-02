@@ -11,9 +11,6 @@ defmodule BABE.ExperimentController do
     )
   end
 
-  require Logger
-  require Iteraptor
-
   alias BABE.{Experiment, ExperimentResult}
   alias Ecto.Multi
 

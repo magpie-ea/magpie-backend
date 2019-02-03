@@ -37,6 +37,8 @@ defmodule BABE.CustomRecordHelper do
         data =
           upload.path
           |> File.stream!()
+          # Should probably use the gentler `decode` version and manually pass down the errors. Still let's see then. Another potential issue is that the Enum.take_every part could be a bit tricky.
+          # Or maybe one should simply separate the conversion for JSON and CSV into two separate functions.
           |> CSV.decode!(headers: true)
           # We shouldn't need to manually verify that the rows are valid. The decode! should do it for us
           # |> Stream.filter(fn({k, v}) -> k == :ok end)

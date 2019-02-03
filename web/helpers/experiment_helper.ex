@@ -12,7 +12,7 @@ defmodule BABE.ExperimentHelper do
   @doc """
   Write the submissions to a CSV file.
   """
-  def write_submissions(file, submissions) do
+  def prepare_submissions_for_csv_download(submissions) do
     # Fetch the keys from the first submission.
     [submission | _] = submissions
     [trial | _] = submission.results
@@ -33,7 +33,7 @@ defmodule BABE.ExperimentHelper do
         end)
 
     # Note that the separator defaults to \r\n just to be safe
-    outputs |> CSV.encode() |> Enum.each(&IO.write(file, &1))
+    outputs |> CSV.encode()
   end
 
   # For each trial recorded in this one experimentresult, ensure the proper key order is used to extract values.

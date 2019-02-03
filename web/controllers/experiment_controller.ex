@@ -232,8 +232,11 @@ defmodule BABE.ExperimentController do
         orig_name = "results_#{id}_#{name}_#{author}.csv"
         file_path = "results/#{orig_name}"
         file = File.open!(file_path, [:write, :utf8])
-        # This method actually processes the submissions retrieved and write them to the CSV file.
-        write_submissions(file, experiment_submissions)
+
+        prepare_submissions_for_csv_download(experiment_submissions)
+        # Enum.each because the CSV library returns a stream, with each row being an entry. We need to make the stream concrete with this step.
+        |> Enum.each(&IO.write(file, &1))
+
         File.close(file)
 
         conn
@@ -305,7 +308,10 @@ defmodule BABE.ExperimentController do
           _ ->
             file_path = "results/" <> "results_" <> id <> "_" <> name <> "_" <> author <> ".csv"
             file = File.open!(file_path, [:write, :utf8])
-            write_submissions(file, experiment_submissions)
+
+            prepare_submissions_for_csv_download(experiment_submissions)
+            |> Enum.each(&IO.write(file, &1))
+
             File.close(file)
 
             # :zip is an Erlang function. We need to convert Elixir string to Erlang charlist.

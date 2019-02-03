@@ -1,5 +1,7 @@
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
+[![Build Status](https://travis-ci.com/babe-project/BABE.svg?branch=master)](https://travis-ci.com/babe-project/BABE)
+
 **Table of Contents**
 
 - [Server Documentation](#server-documentation)

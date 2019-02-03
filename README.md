@@ -32,8 +32,8 @@
 
 <!-- markdown-toc end -->
 
-This is a server backend to run simple psychological experiments in the browser and online. It
-helps receive, store and retrieve data.
+This is a server backend to run psychological experiments in the browser. It
+helps receive, store and retrieve data. It also provides communication channels for multi-participant interactive experiments.
 
 A [live demo](https://babe-demo.herokuapp.com/) of the app is available. Note that this demo doesn't require user authentication.
 

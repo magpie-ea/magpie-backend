@@ -1,2 +1,14 @@
 language: elixir
-elixir: '1.6.4'
+elixir: "1.6.4"
+otp_release: "20.1"
+dist: xenial
+addons:
+  - postgresql: "9.6"
+services:
+  - postgresql
+env:
+  - MIX_ENV=test
+before_script:
+  - psql -c "create user babe_dev with password 'babe';" -U postgres
+  - psql -c "alter user babe_dev createdb" -U postgres
+  - mix do ecto.create, ecto.migrate

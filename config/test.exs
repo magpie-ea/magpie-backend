@@ -6,9 +6,6 @@ config :babe, BABE.Endpoint,
   http: [port: 4001],
   server: false
 
-# Print only warnings and errors during test
-config :logger, level: :warn
-
 # Configure your database
 config :babe, BABE.Repo,
   adapter: Ecto.Adapters.Postgres,
@@ -17,6 +14,9 @@ config :babe, BABE.Repo,
   database: "babe_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+# Print only warnings and errors during test
+config :logger, level: :warn
 
 # Used for basic_auth
 config :babe, :authentication,

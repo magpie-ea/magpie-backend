@@ -80,6 +80,7 @@ defmodule BABE.ExperimentHelper do
     Multi.new()
     |> Multi.insert(:experiment, changeset_experiment)
     |> Multi.merge(fn %{experiment: experiment} ->
+      # Just use reduce for everything. Jose's favorite anyways.
       Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
         Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
           Enum.reduce(1..experiment.num_realizations, multi, fn realization, multi ->

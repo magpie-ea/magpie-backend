@@ -35,7 +35,6 @@ defmodule BABE.ExperimentController do
   """
   def create(conn, %{"experiment" => experiment_params}) do
     case create_experiment(experiment_params) do
-      # We can just pattern match on one of the keys in the map. It's fine.
       {:ok, %{experiment: experiment}} ->
         conn
         |> put_flash(:info, "#{experiment.name} created!")
@@ -43,13 +42,11 @@ defmodule BABE.ExperimentController do
 
       {:error, :experiment, failed_value, _changes_so_far} ->
         conn
-        # |> put_flash(:error, "Sorry, something went wrong.")
         |> render("new.html", changeset: failed_value)
 
       # The failure doesn't lie in experiment creation
       {:error, _, _failed_value, _changes_so_far} ->
         conn
-        # |> put_flash(:error, "Sorry, something went wrong.")
         |> render("new.html")
     end
   end
@@ -68,12 +65,6 @@ defmodule BABE.ExperimentController do
 
     case Repo.update(changeset) do
       {:ok, experiment} ->
-        # TODO: Now we need to decide what to do to the experiment status trackers.
-        # It will be pretty weird. Sounds a kind of like some strange 3-D algebra, in that I'll have to remove excessive ExperimentStatus and add previously nonexistent ExperimentStatus
-        # Is that a reasonable approach after all? Not sure.
-        # OK I think the case of increasing any number in the trituple is easier to handle: Just create new ExperimentStatus entries and that will be it
-        # But the case of reducing any number will be really annoying.
-        # Now let me just make the trituple uneditable after experiment creation anyways.
         conn
         |> put_flash(:info, "Experiment #{experiment.name} updated successfully.")
         |> redirect(to: experiment_path(conn, :index))
@@ -220,10 +211,8 @@ defmodule BABE.ExperimentController do
     experiment_submissions = Repo.all(assoc(experiment, :experiment_results))
 
     case experiment_submissions do
-      # In this case nothing could be found in the DB.
       [] ->
         conn
-        # Render the error message.
         |> put_flash(:error, "No submissions for this experiment yet!")
         |> redirect(to: experiment_path(conn, :index))
 
@@ -248,7 +237,6 @@ defmodule BABE.ExperimentController do
   Retrieves the results up to now for an experiment.
   """
   def retrieve_as_json(conn, %{"id" => id}) do
-    # This is the "Experiment" object that's supposed to be associated with this request.
     experiment = Repo.get(Experiment, id)
 
     case experiment do

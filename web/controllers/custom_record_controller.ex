@@ -158,7 +158,6 @@ defmodule BABE.CustomRecordController do
     orig_name = "record_#{id}_#{name}.csv"
     file_path = "results/#{orig_name}"
     file = File.open!(file_path, [:write, :utf8])
-    # This method actually processes the submissions retrieved and write them to the CSV file.
     write_record(file, custom_record.record)
     File.close(file)
 
@@ -167,7 +166,6 @@ defmodule BABE.CustomRecordController do
   end
 
   def retrieve_as_json(conn, %{"id" => id}) do
-    # This is the "CustomRecord" object that's supposed to be associated with this request.
     custom_record = Repo.get(CustomRecord, id)
 
     case custom_record do

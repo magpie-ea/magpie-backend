@@ -46,7 +46,6 @@ defmodule BABE.ParticipantSocket do
 
     case {String.length(participant_id), experiment} do
       {0, _} ->
-        # The `connect/2` function is supposed to just return :error without the reason: part. If we want to log the reason we might want to use an extra logging service or whatnot.
         :error
 
       {_, nil} ->

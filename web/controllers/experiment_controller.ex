@@ -237,10 +237,17 @@ defmodule BABE.ExperimentController do
   Retrieves the results up to now for an experiment.
   """
   def retrieve_as_json(conn, %{"id" => id}) do
-    experiment = Repo.get(Experiment, id)
-
-    case experiment do
-      nil ->
+    with experiment <- Repo.get(Experiment, id),
+         {:nil_experiment, false} <- {:nil_experiment, is_nil(experiment)},
+         {:nil_keys, false} <- {:nil_keys, is_nil(experiment.dynamic_retrieval_keys)},
+         experiment_results <- Repo.all(assoc(experiment, :experiment_results)),
+         {:empty_results, false} <- {:empty_results, Enum.empty?(experiment_results)} do
+      render(conn, "retrieval.json",
+        keys: experiment.dynamic_retrieval_keys,
+        submissions: experiment_results
+      )
+    else
+      {:nil_experiment, true} ->
         conn
         |> put_resp_content_type("text/plain")
         |> send_resp(
@@ -248,29 +255,20 @@ defmodule BABE.ExperimentController do
           "No experiment with the author and name combination found. Please check your configuration."
         )
 
+      {:nil_keys, true} ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(403, "Please specify the keys for retrieval (in the user interface)!")
+
+      {:empty_results, true} ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(404, "No submissions for this experiment recorded yet.")
+
       _ ->
-        case experiment.dynamic_retrieval_keys do
-          nil ->
-            conn
-            |> put_resp_content_type("text/plain")
-            |> send_resp(403, "Please specify the keys for retrieval (in the user interface)!")
-
-          _ ->
-            experiment_results = Repo.all(assoc(experiment, :experiment_results))
-
-            case experiment_results do
-              [] ->
-                conn
-                |> put_resp_content_type("text/plain")
-                |> send_resp(404, "No submissions for this experiment recorded yet.")
-
-              _ ->
-                render(conn, "retrieval.json",
-                  keys: experiment.dynamic_retrieval_keys,
-                  submissions: experiment_results
-                )
-            end
-        end
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(403, "Unknown error")
     end
   end
 

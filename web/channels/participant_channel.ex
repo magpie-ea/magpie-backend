@@ -15,6 +15,14 @@ defmodule BABE.ParticipantChannel do
     # The participant_id should have been stored in the socket assigns already, and should match what the client tries to send us.
     if socket.assigns.participant_id == participant_id do
       send(self(), :after_participant_join)
+
+      :ok =
+        BABE.ChannelWatcher.monitor(
+          :participants,
+          self(),
+          {__MODULE__, :handle_leave, [socket]}
+        )
+
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -26,7 +34,7 @@ defmodule BABE.ParticipantChannel do
 
   N.B.: This callback might not catch situations where the connection times out, etc. A GenServer as mentioned in https://stackoverflow.com/questions/33934029/how-to-detect-if-a-user-left-a-phoenix-channel-due-to-a-network-disconnect could be useful.
   """
-  def terminate(_reason, socket) do
+  def handle_leave(socket) do
     experiment_status =
       ChannelHelper.get_experiment_status(
         socket.assigns.experiment_id,
@@ -94,6 +102,9 @@ defmodule BABE.ParticipantChannel do
 
     case Repo.transaction(operation) do
       {:ok, _} ->
+        # No need to monitor this participant anymore
+        BABE.ChannelWatcher.demonitor(:participants, self())
+
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
         BABE.Endpoint.broadcast!(
           "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",

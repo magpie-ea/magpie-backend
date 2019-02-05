@@ -21,7 +21,8 @@ defmodule BABE do
       # worker(BABE.Worker, [arg1, arg2, arg3]),
       worker(Task, [&BABE.ExperimentHelper.reset_in_progress_experiment_statuses/0],
         restart: :temporary
-      )
+      ),
+      worker(BABE.ChannelWatcher, [:participants])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

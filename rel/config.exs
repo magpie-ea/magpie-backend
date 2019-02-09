@@ -41,23 +41,6 @@ environment :prod do
   set(vm_args: "rel/vm.args")
 end
 
-# Generate one-click executables for local deployments
-environment :local do
-  set(include_erts: true)
-  set(include_src: false)
-
-  # For local releases the node will always be run locally, similar to dev mode. Just put the cookie out there anyways.
-  set(cookie: :":D8TsLc/vh!6giVr]uT(lg<r4ZrYcL%P]M1@dy%Dz2q.=*/d(c`.@1v2u6GN*]@6")
-  set(vm_args: "rel/vm.args")
-
-  # Include the fully migrated DB file for a fullproof user experience...
-  set(
-    overlays: [
-      {:copy, "babe_db.sqlite3", "babe_db.sqlite3"}
-    ]
-  )
-end
-
 # You may define one or more releases in this file.
 # If you have not set a default release, or selected one
 # when running `mix release`, the first release in the file

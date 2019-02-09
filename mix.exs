@@ -27,23 +27,15 @@ defmodule BABE.Mixfile do
     :csv,
     :basic_auth,
     :calendar,
-    :logger
+    :logger,
+    :postgrex
   ]
-
-  # Configuration for the OTP application.
-  defp applications(:local) do
-    @applications ++ [:sqlite_ecto2]
-  end
-
-  defp applications(_) do
-    @applications ++ [:postgrex]
-  end
 
   # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {BABE, []},
-      applications: applications(Mix.env())
+      applications: @applications
     ]
   end
 
@@ -61,7 +53,7 @@ defmodule BABE.Mixfile do
       # Have to keep Ecto at version 2.x because of the need to use sqlite for the local deployment.
       # phoenix_ecto 3.x corresponds to Ecto 2.x. phoenix_ecto 4.x corresponds to Ecto 3.x
       {:phoenix_ecto, "~> 3.0"},
-      {:postgrex, ">= 0.0.0", except: :local},
+      {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
@@ -72,7 +64,6 @@ defmodule BABE.Mixfile do
       {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 0.17.2"},
       {:distillery, "~> 2.0"},
-      {:sqlite_ecto2, "~> 2.3", only: :local},
       # Error checking and linting
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]}

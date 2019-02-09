@@ -284,14 +284,17 @@ Note that the database for storing experiment results is stored at `/var/lib/doc
 (This is generally not needed for the end users.)
 
 1. Make sure you have [elixir](https://elixir-lang.org/) and [nodejs](https://nodejs.org/en/) installed
-2. Clone the repo
-3. npm install
-4. `node_modules/brunch/bin/brunch build --production`
+2. Clone the repo and `cd` into the directory
+3. `git checkout sqlite`
+4. `npm install`
+5. `node_modules/brunch/bin/brunch build --production`
    (or on Windows: `npm install -g brunch` and then `brunch build --production`)
-5. MIX_ENV=local mix deps.get
-6. MIX_ENV=local mix deps.compile
-7. MIX_ENV=local mix phx.digest
-8. MIX_ENV=local mix release
+6. MIX_ENV=prod mix deps.get
+7. MIX_ENV=prod mix deps.compile
+8. MIX_ENV=prod mix phx.digest
+9. MIX_ENV=prod mix release
+
+The release will be generated at `_build/prod/rel/babe/bin/babe`.
 
 # Experiments (Frontend)
 

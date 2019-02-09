@@ -34,23 +34,12 @@ config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 config :babe, BABE.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "babe_dev",
-  password: "babe",
-  # This is the current workaround. "db" is the host name for the Docker postgres container. "localhost" when you actually run it with your system's postgres instead of through Docker.
-  hostname:
-    (if System.get_env("DOCKER") == "true" do
-       "db"
-     else
-       "localhost"
-     end),
-  database: "babe_dev",
-  pool_size: 10
+  adapter: Sqlite.Ecto2,
+  database: "babe_db.sqlite3",
+  priv: "priv/local_repo"
 
 # Used for basic_auth
-config :babe, :authentication,
-  username: "default",
-  password: "password"
+config :babe, :no_basic_auth, true
 
 config :babe, :environment, :dev
 

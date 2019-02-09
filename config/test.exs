@@ -8,11 +8,9 @@ config :babe, BABE.Endpoint,
 
 # Configure your database
 config :babe, BABE.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "babe_dev",
-  password: "babe",
-  database: "babe_test",
-  hostname: "localhost",
+  adapter: Sqlite.Ecto2,
+  database: "babe_db.sqlite3",
+  priv: "priv/local_repo",
   pool: Ecto.Adapters.SQL.Sandbox
 
 # Print only warnings and errors during test

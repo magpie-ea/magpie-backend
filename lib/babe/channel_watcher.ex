@@ -50,7 +50,7 @@ defmodule BABE.ChannelWatcher do
         {:noreply, state}
 
       {:ok, {mod, func, args}} ->
-        Task.start_link(fn -> apply(mod, func, args) end)
+        Task.start_link(mod, func, args)
         {:noreply, drop_participant(state, pid)}
     end
   end

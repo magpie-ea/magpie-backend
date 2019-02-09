@@ -60,7 +60,7 @@ defmodule BABE.ExperimentStatusTest do
         Map.put(@valid_attrs, :variant, 0)
       )
 
-    assert {:variant, {"must be greater than %{number}", [validation: :number, number: 0]}} in changeset.errors
+    assert {:variant, {"must be greater than %{number}", [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
   end
 
   test "chain must be greater than 0" do
@@ -70,7 +70,9 @@ defmodule BABE.ExperimentStatusTest do
         Map.put(@valid_attrs, :chain, 0)
       )
 
-    assert {:chain, {"must be greater than %{number}", [validation: :number, number: 0]}} in changeset.errors
+    assert {:chain,
+            {"must be greater than %{number}",
+             [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
   end
 
   test "realization must be greater than 0" do
@@ -80,7 +82,9 @@ defmodule BABE.ExperimentStatusTest do
         Map.put(@valid_attrs, :realization, 0)
       )
 
-    assert {:realization, {"must be greater than %{number}", [validation: :number, number: 0]}} in changeset.errors
+    assert {:realization,
+            {"must be greater than %{number}",
+             [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
   end
 
   test "status must be greater than or equal to 0" do

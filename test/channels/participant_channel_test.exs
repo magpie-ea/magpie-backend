@@ -2,7 +2,7 @@ defmodule BABE.ParticipantChannelTest do
   @moduledoc """
   Module for tests on the participant channel.
   """
-  use BABE.ChannelCase
+  use BABE.ChannelCase, async: false
 
   # alias BABE.ParticipantChannel
   alias BABE.ParticipantSocket
@@ -38,27 +38,27 @@ defmodule BABE.ParticipantChannelTest do
 
   # Unfortunately this test suffers from this issue: https://stackoverflow.com/questions/38335635/ecto-2-0-sql-sandbox-error-on-tests, which doesn't seem to have an easy solution.
   # Also see https://elixirforum.com/t/problem-asynchronizing-ecto-calls/19796/
-  # test "The experiment status is reset to 0 if a participant quits halfway through", %{
-  #   socket: socket,
-  #   experiment: _experiment,
-  #   participant_id: participant_id
-  # } do
-  #   {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+  test "The experiment status is reset to 0 if a participant quits halfway through", %{
+    socket: socket,
+    experiment: _experiment,
+    participant_id: participant_id
+  } do
+    {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-  #   experiment_id = socket.assigns.experiment_id
-  #   variant = socket.assigns.variant
-  #   chain = socket.assigns.chain
-  #   realization = socket.assigns.realization
+    experiment_id = socket.assigns.experiment_id
+    variant = socket.assigns.variant
+    chain = socket.assigns.chain
+    realization = socket.assigns.realization
 
-  #   close(socket)
+    close(socket)
 
-  #   Process.sleep(1000)
+    Process.sleep(1000)
 
-  #   experiment_status =
-  #     BABE.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
+    experiment_status =
+      BABE.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
 
-  #   assert experiment_status.status === 0
-  # end
+    assert experiment_status.status === 0
+  end
 
   describe "submit_results" do
     test "Successfully stores experiment results", %{

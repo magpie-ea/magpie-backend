@@ -28,6 +28,7 @@ defmodule BABE.Mixfile do
     :basic_auth,
     :calendar,
     :logger,
+    :ecto_sql,
     :postgrex
   ]
 
@@ -50,9 +51,9 @@ defmodule BABE.Mixfile do
     [
       {:phoenix, "~> 1.3.0"},
       {:phoenix_pubsub, "~> 1.0"},
-      # Have to keep Ecto at version 2.x because of the need to use sqlite for the local deployment.
       # phoenix_ecto 3.x corresponds to Ecto 2.x. phoenix_ecto 4.x corresponds to Ecto 3.x
-      {:phoenix_ecto, "~> 3.0"},
+      {:phoenix_ecto, "~> 4.0"},
+      {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.6"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},

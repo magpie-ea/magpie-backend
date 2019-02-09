@@ -124,7 +124,9 @@ defmodule BABE.ExperimentTest do
           Map.put(@complex_experiment_attrs, :num_variants, 0)
         )
 
-      assert {:num_variants, {"must be greater than %{number}", [validation: :number, number: 0]}} in changeset.errors
+      assert {:num_variants,
+              {"must be greater than %{number}",
+               [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
     end
 
     test "num_chains must be greater than 0" do
@@ -134,7 +136,9 @@ defmodule BABE.ExperimentTest do
           Map.put(@complex_experiment_attrs, :num_chains, 0)
         )
 
-      assert {:num_chains, {"must be greater than %{number}", [validation: :number, number: 0]}} in changeset.errors
+      assert {:num_chains,
+              {"must be greater than %{number}",
+               [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
     end
 
     test "num_realizations must be greater than 0" do
@@ -145,7 +149,8 @@ defmodule BABE.ExperimentTest do
         )
 
       assert {:num_realizations,
-              {"must be greater than %{number}", [validation: :number, number: 0]}} in changeset.errors
+              {"must be greater than %{number}",
+               [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
     end
 
     test "non-complex experiments cannot have num_variants" do

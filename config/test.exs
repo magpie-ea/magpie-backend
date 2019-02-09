@@ -8,7 +8,6 @@ config :babe, BABE.Endpoint,
 
 # Configure your database
 config :babe, BABE.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: "babe_dev",
   password: "babe",
   database: "babe_test",

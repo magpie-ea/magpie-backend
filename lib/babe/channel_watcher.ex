@@ -44,14 +44,23 @@ defmodule BABE.ChannelWatcher do
   end
 
   # If we receive an exit signal from the participant channel, we run the callback.
-  def handle_info({:EXIT, pid, _reason}, state) do
-    case Map.fetch(state.participants, pid) do
-      :error ->
-        {:noreply, state}
+  def handle_info({:EXIT, pid, reason}, state) do
+    # This is ugly though I don't think there is any better solution currently
+    # Whenever a test ends the following path happens
+    # Whenever the following path doesn't match, a genuine exit in the production environment happened, so we can use the `else` clause for our real code.
+    with :test <- Application.get_env(:babe, :environment),
+         :shutdown <- reason do
+      {:noreply, drop_participant(state, pid)}
+    else
+      _ ->
+        case Map.fetch(state.participants, pid) do
+          :error ->
+            {:noreply, state}
 
-      {:ok, {mod, func, args}} ->
-        Task.start_link(mod, func, args)
-        {:noreply, drop_participant(state, pid)}
+          {:ok, {mod, func, args}} ->
+            Task.start_link(mod, func, args)
+            {:noreply, drop_participant(state, pid)}
+        end
     end
   end
 

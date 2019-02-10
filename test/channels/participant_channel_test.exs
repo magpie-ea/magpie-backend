@@ -52,7 +52,7 @@ defmodule BABE.ParticipantChannelTest do
 
     close(socket)
 
-    Process.sleep(1000)
+    Process.sleep(100)
 
     experiment_status =
       BABE.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)

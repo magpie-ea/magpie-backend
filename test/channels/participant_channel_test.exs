@@ -36,8 +36,7 @@ defmodule BABE.ParticipantChannelTest do
     assert_broadcast("experiment_available", ^expected_message)
   end
 
-  # Unfortunately this test suffers from this issue: https://stackoverflow.com/questions/38335635/ecto-2-0-sql-sandbox-error-on-tests, which doesn't seem to have an easy solution.
-  # Also see https://elixirforum.com/t/problem-asynchronizing-ecto-calls/19796/
+  # The issue with SQL Sandbox is solved with Elixir 1.8.0+ and DBConnection 2.0.4+
   test "The experiment status is reset to 0 if a participant quits halfway through", %{
     socket: socket,
     experiment: _experiment,

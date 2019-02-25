@@ -22,7 +22,9 @@ config :babe, BABE.Endpoint,
   # Needed for Distillery releases
   server: true,
   # Allow clients from anywhere to connect to use the interactive experiment facilities. We can't constrain where the user chooses to host the frontend anyways.
-  check_origin: false
+  check_origin: false,
+  root: ".",
+  version: Application.spec(:babe, :vsn)
 
 # Configure the database
 config :babe, BABE.Repo,

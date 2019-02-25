@@ -14,26 +14,28 @@ defmodule BABE.ExperimentHelper do
   """
   def prepare_submissions_for_csv_download(submissions) do
     # Fetch the keys from the first submission.
-    [submission | _] = submissions
-    [trial | _] = submission.results
-    keys = Map.keys(trial)
+    with [submission | _] <- submissions,
+         [trial | _] <- submission.results,
+         keys <- Map.keys(trial) do
+      # We need to prepend an additional column which contains uid in the output
+      keys = ["submission_id" | keys]
 
-    # We need to prepend an additional column which contains uid in the output
-    keys = ["submission_id" | keys]
+      # The list `outputs` contains all rows of the resulting CSV file.
+      # The first row will be the keys, i.e. headers
+      outputs = [keys]
 
-    # The list `outputs` contains all rows of the resulting CSV file.
-    # The first row will be the keys, i.e. headers
-    outputs = [keys]
+      # For each submission, get the results and concatenate it to the `outputs` list.
+      outputs =
+        outputs ++
+          List.foldl(submissions, [], fn submission, acc ->
+            acc ++ format_submission(submission, keys)
+          end)
 
-    # For each submission, get the results and concatenate it to the `outputs` list.
-    outputs =
-      outputs ++
-        List.foldl(submissions, [], fn submission, acc ->
-          acc ++ format_submission(submission, keys)
-        end)
-
-    # Note that the separator defaults to \r\n just to be safe
-    outputs |> CSV.encode()
+      # Note that the separator defaults to \r\n just to be safe
+      outputs |> CSV.encode()
+    else
+      _ -> []
+    end
   end
 
   # For each trial recorded in this one experimentresult, ensure the proper key order is used to extract values.

@@ -304,7 +304,7 @@ For detailed documentation on the structure and deployment of experiments, pleas
 
 # Additional Notes
 
-- When submitting experiment results, it is expected that each trial record does not contain any object/array among its values. The reason is that it would then be hard for the CSV writer to correctly format and produce a CSV file. In such cases, it is best to split experiment results into different keys containing simple values, e.g.
+- When submitting experiment results, it is expected that each trial record does not contain any object among its values. The reason is that it would then be hard for the CSV writer to correctly format and produce a CSV file. In such cases, it is best to split experiment results into different keys containing simple values, e.g.
 
   ```js
   {
@@ -323,6 +323,26 @@ For detailed documentation on the structure and deployment of experiments, pleas
     // ...
   }
   ```
+
+- N.B.: While objects are not allowed, moment arrays are valid at the moment. In the CSV output, the array entries would then be separated by a `|` symbol. For example:
+
+  ```js
+  {
+    "response": ["a", "b", "c"],
+    // ...
+  }
+  ```
+
+  would produce
+
+  ```csv
+  response
+  a|b|c
+  ```
+
+  Separate simple entries should still be preferred to arrays, though.
+
+  <!-- since if any entry contains `|` itself, it would be hard for a data analysis script to read the array correctly. -->
 
 - There is limited guarantee on database reliability on Heroku's Hobby grade. The experiment authors are expected to take responsibility of the results. They should retrieve them and perform backups as soon as possible.
 

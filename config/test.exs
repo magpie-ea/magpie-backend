@@ -1,10 +1,9 @@
 use Mix.Config
 
-# We don't run a server during test. If one is required,
-# you can enable the server option below.
 config :babe, BABE.Endpoint,
   http: [port: 4001],
-  server: false
+  # Enable the server during tests
+  server: true
 
 # Configure your database
 config :babe, BABE.Repo,
@@ -14,6 +13,8 @@ config :babe, BABE.Repo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
+config :babe, :sql_sandbox, true
+
 # Print only warnings and errors during test
 config :logger, level: :warn
 
@@ -21,5 +22,9 @@ config :logger, level: :warn
 config :babe, :authentication,
   username: "default",
   password: "password"
+
+config :wallaby,
+  screenshot_on_failure: true,
+  driver: Wallaby.Experimental.Chrome
 
 config :babe, :environment, :test

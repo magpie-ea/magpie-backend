@@ -1,6 +1,11 @@
 defmodule BABE.Endpoint do
   use Phoenix.Endpoint, otp_app: :babe
 
+  # Enable concurrent testing.
+  if Application.get_env(:babe, :sql_sandbox) do
+    plug(Phoenix.Ecto.SQL.Sandbox)
+  end
+
   # This is needed since the experiments are likely to be hosted on external domains.
   plug(CORSPlug)
 

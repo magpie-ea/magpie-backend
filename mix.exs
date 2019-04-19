@@ -71,6 +71,7 @@ defmodule BABE.Mixfile do
       {:calendar, "~> 0.17.2"},
       {:distillery, "~> 2.0"},
       {:sentry, "~> 6.4"},
+      {:wallaby, "~> 0.22.0", [runtime: false, only: :test]},
       # Error checking and linting
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]}

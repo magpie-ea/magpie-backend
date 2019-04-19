@@ -4,7 +4,7 @@ defmodule BABE.Mixfile do
   def project do
     [
       app: :babe,
-      version: "0.2.2",
+      version: "0.2.3",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -31,7 +31,8 @@ defmodule BABE.Mixfile do
     :calendar,
     :logger,
     :ecto_sql,
-    :postgrex
+    :postgrex,
+    :sentry
   ]
 
   # Type `mix help compile.app` for more information.
@@ -69,6 +70,7 @@ defmodule BABE.Mixfile do
       {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 0.17.2"},
       {:distillery, "~> 2.0"},
+      {:sentry, "~> 6.4"},
       # Error checking and linting
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]}

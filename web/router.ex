@@ -1,5 +1,7 @@
 defmodule BABE.Router do
   use BABE.Web, :router
+  use Plug.ErrorHandler
+  use Sentry.Plug
 
   pipeline :browser do
     plug(:accepts, ["html"])

@@ -1,9 +1,10 @@
 language: elixir
-elixir: "1.6.4"
-otp_release: "20.1"
+elixir: '1.6.4'
+otp_release: '20.1'
 dist: xenial
 addons:
-  - postgresql: "9.6"
+  - postgresql: '9.6'
+  - chrome: beta
 services:
   - postgresql
 env:

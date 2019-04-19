@@ -29,7 +29,7 @@ before_script:
   # - sudo apt-get install libstdc++6-4.7-dev
   # - MIX_ENV=test mix compile --warnings-as-errors
   # - if [ -z ${WALLABY_DRIVER} ]; then travis_wait mix dialyzer --plt; fi # only run dialyzer for the env without drivers
-  - bash $TRAVIS_BUILD_DIR/test/tools/start_webdriver.sh
+  # - bash $TRAVIS_BUILD_DIR/test/tools/start_webdriver.sh # This is only useful if Selenium is being used.
   - psql -c "create user babe_dev with password 'babe';" -U postgres
   - psql -c "alter user babe_dev createdb" -U postgres
   - mix do ecto.create, ecto.migrate

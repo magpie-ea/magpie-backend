@@ -1,6 +1,6 @@
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-[![Build Status](https://travis-ci.com/babe-project/BABE.svg?branch=master)](https://travis-ci.com/babe-project/BABE)
+[![Build Status](https://travis-ci.com/magpie-ea/magpie-backend.svg?branch=master)](https://travis-ci.com/magpie-ea/magpie-backend)
 
 **Table of Contents**
 
@@ -35,11 +35,11 @@
 This is a server backend to run psychological experiments in the browser. It
 helps receive, store and retrieve data. It also provides communication channels for multi-participant interactive experiments.
 
-A [live demo](https://babe-demo.herokuapp.com/) of the app is available. Note that this demo doesn't require user authentication.
+A [live demo](https://magpie-demo.herokuapp.com/) of the app is available. Note that this demo doesn't require user authentication.
 
-If you encounter any bugs during your experiments please [submit an issue](https://github.com/babe-project/BABE/issues).
+If you encounter any bugs during your experiments please [submit an issue](https://github.com/magpie-ea/magpie-backend/issues).
 
-Please also refer to the [\_babe project site](https://babe-project.github.io/babe_site) and its [section on the server app](https://babe-project.github.io/babe_site/serverapp/overview.html) for additional documentation.
+Please also refer to the [\_magpie project site](https://magpie-ea.github.io/magpie_site) and its [section on the server app](https://magpie-ea.github.io/magpie_site/serverapp/overview.html) for additional documentation.
 
 Work on this project was funded via the project
 [Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research
@@ -51,7 +51,7 @@ This section documents the server program.
 
 ## Username and password for authentication
 
-The app now comes with [Basic access Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). The username and password are set under `config :babe, :authentication`.
+The app now comes with [Basic access Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). The username and password are set under `config :magpie, :authentication`.
 
 For local development, the default username is `default` and the default password is `password`. You may change it in `dev.exs`.
 
@@ -73,7 +73,7 @@ In a complex experiment, there is some sort of dependency between different real
 
 Each participant will be assigned a unique `<variant-nr, chain-nr, realization-nr>` identifier, so that such dependencies could be made explicit.
 
-The server is responsible for broadcasting messages between the participants. To make the backend as generic as possible, the specific interpretation and handling of the messages depend on the frontend client. For examples of frontends of complex experiments, please refer to: [1](https://github.com/babe-project/color-reference/) and [2](https://github.com/babe-project/iterated-experiment-example).
+The server is responsible for broadcasting messages between the participants. To make the backend as generic as possible, the specific interpretation and handling of the messages depend on the frontend client. For examples of frontends of complex experiments, please refer to: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
 
 To create such an experiment, you need to specify the total number of variants, chains and realizations. Any positive integer is allowed.
 
@@ -102,7 +102,7 @@ All objects of the array should contain a set of identical keys. Each object nor
 <!-- Additionally, an optional array named `trial_keys_order`, which specifies the order in which the trial data should be -->
 <!--  printed in the CSV output, can be included. If this array is not included, the trial data will be printed in alphabetical order, which might not be ideal. -->
 
-[Here](https://jsfiddle.net/SZJX/Lg3vmk41/) you can find a minimal working example. The [Minimal Template](https://github.com/babe-project/MinimalTemplate) contains a full example experiment.
+[Here](https://jsfiddle.net/SZJX/Lg3vmk41/) you can find a minimal working example. The [Minimal Template](https://github.com/magpie-ea/MinimalTemplate) contains a full example experiment.
 
 Note that to [POST a JSON object correctly](https://stackoverflow.com/questions/12693947/jquery-ajax-how-to-send-json-instead-of-querystring),
 one needs to specify the `Content-Type` header as `application/json`, and use `JSON.stringify` to encode the data first.
@@ -111,7 +111,7 @@ Note that `crossDomain: true` is needed since the server domain will likely be d
 
 ### Experiment results submission via Phoenix Channels
 
-Since the client maintains a socket connection with the server in complex experiments, the submissions in such experiments are also expected to be performed via the socket. The server expects a `"submit_results"` message with a payload containing the `"results"` key. Examples: [1](https://github.com/babe-project/color-reference/) and [2](https://github.com/babe-project/iterated-experiment-example).
+Since the client maintains a socket connection with the server in complex experiments, the submissions in such experiments are also expected to be performed via the socket. The server expects a `"submit_results"` message with a payload containing the `"results"` key. Examples: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
 
 ### Experiment results retrieval as CSV
 
@@ -119,7 +119,7 @@ Just press the button to the right of each row in the user interface.
 
 ### Experiment results retrieval as JSON
 
-For some experiments, it might helpful to fetch and use data collected from previous experiment submissions in order to dynamically generate future trials. The \_babe backend now provides this functionality.
+For some experiments, it might helpful to fetch and use data collected from previous experiment submissions in order to dynamically generate future trials. The \_magpie backend now provides this functionality.
 
 For each experiment, you can specify the keys that should be fetched in the "Edit Experiment" user interface on the server app. Then, with a HTTP GET call to the `retrieve_experiment` endpoint, specifying the experiment ID, you will be able to get a JSON object that contains the results of that experiment so far.
 
@@ -130,7 +130,7 @@ A [minimal example](https://jsfiddle.net/SZJX/dp8ewnfx/) of frontend code using 
 ```javascript
 $.ajax({
   type: 'GET',
-  url: 'https://babe-demo.herokuapp.com/api/retrieve_experiment/1',
+  url: 'https://magpie-demo.herokuapp.com/api/retrieve_experiment/1',
   crossDomain: true,
   success: function(responseData, textStatus, jqXHR) {
     console.table(responseData);
@@ -177,7 +177,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 2. Ensure that you have a [Heroku account](https://signup.heroku.com/) already, and have the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed and working on your computer.
 
-3. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/babe-project/BABE` or `git clone git@github.com:babe-project/BABE.git`.
+3. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone this git repo with `git clone https://github.com/magpie-ea/magpie-backend` or `git clone git@github.com:magpie-ea/magpie-backend.git`.
 
 4. `cd` into the project directory just cloned from your Terminal (or cmd.exe on Windows).
 
@@ -189,7 +189,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 7. You may want to change the application name instead of using the default name. In that case, run `heroku apps:rename newname`.
 
-8. Edit line 17 of the file `config/prod.exs`. Replace the part `babe-backend.herokuapp.com` after `host` with the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277.herokuapp.com`, or the app name that you set at step 6, e.g. `newname.herokuapp.com`). You shouldn't need to modify anything else.
+8. Edit line 17 of the file `config/prod.exs`. Replace the part `magpie-demo.herokuapp.com` after `host` with the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277.herokuapp.com`, or the app name that you set at step 6, e.g. `newname.herokuapp.com`). You shouldn't need to modify anything else.
 
 9. Ensure that you're at the top-level project directory. Run
 
@@ -219,22 +219,22 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 ### Local (Offline) Deployment
 
-From now on, the _\_babe_ backend is available as a one-click executable to be run locally. Just download the archive corresponding to your platform under the Releases tab](https://github.com/babe-project/BABE/releases). Then:
+From now on, the _\_magpie_ backend is available as a one-click executable to be run locally. Just download the archive corresponding to your platform under the Releases tab](https://github.com/magpie-ea/magpie-backend/releases). Then:
 
 - Extract the archive
 - Go to the folder `bin/`
-- In your terminal, run `./babe console`
+- In your terminal, run `./magpie console`
 - Open `localhost:4000` in your browser
 
-Note that the experiment database lives in the file `babe_db.sqlite3`.
+Note that the experiment database lives in the file `magpie_db.sqlite3`.
 
 For now, since the database file is bundled with the release itself, whenever you download a new release, it will contain no previous experiment results. For dynamic retrieval, you can manually upload relevant experiment results as custom records. If you want to keep all previous experiments, you may:
 
-- Copy the old `babe_db.sqlite3` file from the old release to the old release. However, please note that this method wouldn't work whenever the database schema changes between releases, since [Sqlite doesn't support removing columns in migrations](https://stackoverflow.com/questions/8442147/how-to-delete-or-add-column-in-sqlite).
+- Copy the old `magpie_db.sqlite3` file from the old release to the old release. However, please note that this method wouldn't work whenever the database schema changes between releases, since [Sqlite doesn't support removing columns in migrations](https://stackoverflow.com/questions/8442147/how-to-delete-or-add-column-in-sqlite).
 
 ### Local (Offline) Deployment with Docker (Old method)
 
-If, for whatever reason, the downloaded release fails to run on your system, you may run the _\_babe_ backend via Docker instead. The following are the instructions.
+If, for whatever reason, the downloaded release fails to run on your system, you may run the _\_magpie_ backend via Docker instead. The following are the instructions.
 
 #### First-time installation (requires internet connection)
 
@@ -247,15 +247,15 @@ The following steps require an internet connection. After they are finished, the
    - Although the Docker app on Windows and Mac asks for login credentials to Docker Hub, they are not needed for local deployment . You can proceed without creating any Docker account/logging in.
    - Linux users would need to install `docker-compose` separately. See relevant instructions at https://docs.docker.com/compose/install/.
 
-2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone the server repo with `git clone https://github.com/babe-project/BABE.git` or `git clone git@github.com:babe-project/BABE.git`.
+2. Ensure you have [Git](https://git-scm.com/downloads) installed. Clone the server repo with `git clone https://github.com/magpie-ea/magpie-backend.git` or `git clone git@github.com:magpie-ea/magpie-backend.git`.
 
 3. Open a terminal (e.g., the Terminal app on MacOS or cmd.exe on Windows), `cd` into the project directory just cloned via git.
 
 4. For the first-time setup, run in the terminal
 
    ```sh
-   docker volume create --name babe-app-volume -d local
-   docker volume create --name babe-db-volume -d local
+   docker volume create --name magpie-app-volume -d local
+   docker volume create --name magpie-db-volume -d local
    docker-compose run --rm web bash -c "mix deps.get && npm install && node node_modules/brunch/bin/brunch build && mix ecto.migrate"
    ```
 
@@ -263,7 +263,7 @@ The following steps require an internet connection. After they are finished, the
 
 After first-time installation, you can launch a local server instance which sets up the experiment in your browser and stores the results.
 
-1. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1 | [info] Running BABE.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
+1. Run `docker-compose up` to launch the application every time you want to run the server. Wait until the line `web_1 | [info] Running MAGPIE.Endpoint with Cowboy using http://0.0.0.0:4000` appears in the terminal.
 
 2. Visit `localhost:4000` in your browser. You should see the server up and running.
 
@@ -271,7 +271,7 @@ After first-time installation, you can launch a local server instance which sets
 
 3. Use <kbd>Ctrl + C</kbd> to shut down the server.
 
-Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/babe-db-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
+Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/magpie-db-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
 
 ## Upgrading a deployed instance of the server
 
@@ -294,13 +294,13 @@ Note that the database for storing experiment results is stored at `/var/lib/doc
 8. MIX_ENV=prod mix phx.digest
 9. MIX_ENV=prod mix release
 
-The release will be generated at `_build/prod/rel/babe/bin/babe`.
+The release will be generated at `_build/prod/rel/magpie/bin/magpie`.
 
 # Experiments (Frontend)
 
 This program is intended to serve as the backend which stores and returns experiment results. An experiment frontend is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Github Pages](https://pages.github.com/)) and loaded in the participant's browser.
 
-For detailed documentation on the structure and deployment of experiments, please refer to the [departure point repo](https://github.com/babe-project/departure-point) and the [\_babe documentation](https://babe-project.github.io/babe_site/).
+For detailed documentation on the structure and deployment of experiments, please refer to the [departure point repo](https://github.com/magpie-ea/departure-point) and the [\_magpie documentation](https://magpie-ea.github.io/magpie_site/).
 
 # Additional Notes
 
@@ -360,23 +360,23 @@ To run the server app locally with `dev` environment, the following instructions
 1. Install Postgres. Ensure that you have version 9.2 or greater (for its JSON data type). You can check the version with the command `psql --version`.
 2. Make sure that Postgres is correctly initialized as a service. If you installed it via Homebrew, the instructions should be shown on the command line. If you're on Linux, [the guide on Arch Linux Wiki](https://wiki.archlinux.org/index.php/PostgreSQL#Initial_configuration) could help.
 3. Start a postgres interactive terminal. On Linux you could do it with `sudo su - postgres` followed by `psql`. On MacOS you might be able to run `psql postgres` directly without using `sudo`.
-4. Create the database user for dev environment. The username and password is specified in `dev.exs`. By default it's `babe_dev` and `babe`:
+4. Create the database user for dev environment. The username and password is specified in `dev.exs`. By default it's `magpie_dev` and `magpie`:
 
    ```sql
-   CREATE USER babe_dev WITH PASSWORD 'babe';
+   CREATE USER magpie_dev WITH PASSWORD 'magpie';
    ```
 
-5. Then, create the `babe_dev` DB and grant all privileges on this DB to the user.
+5. Then, create the `magpie_dev` DB and grant all privileges on this DB to the user.
 
    ```sql
-   CREATE DATABASE babe_dev;
-   GRANT ALL PRIVILEGES ON DATABASE babe_dev TO babe_dev;
+   CREATE DATABASE magpie_dev;
+   GRANT ALL PRIVILEGES ON DATABASE magpie_dev TO magpie_dev;
    ```
 
    Or, alternatively, allow the user to create DBs by itself:
 
    ```sql
-   ALTER USER babe_dev CREATEDB;
+   ALTER USER magpie_dev CREATEDB;
    ```
 
 6. Run `mix deps.get; mix ecto.create; mix ecto.migrate` in the app folder.

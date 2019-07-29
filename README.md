@@ -39,7 +39,7 @@ A [live demo](https://magpie-demo.herokuapp.com/) of the app is available. Note 
 
 If you encounter any bugs during your experiments please [submit an issue](https://github.com/magpie-ea/magpie-backend/issues).
 
-Please also refer to the [\_magpie project site](https://magpie-ea.github.io/magpie_site) and its [section on the server app](https://magpie-ea.github.io/magpie_site/serverapp/overview.html) for additional documentation.
+Please also refer to the [\_magpie project site](https://magpie-ea.github.io/magpie-site) and its [section on the server app](https://magpie-ea.github.io/magpie-site/serverapp/overview.html) for additional documentation.
 
 Work on this project was funded via the project
 [Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research
@@ -300,7 +300,7 @@ The release will be generated at `_build/prod/rel/magpie/bin/magpie`.
 
 This program is intended to serve as the backend which stores and returns experiment results. An experiment frontend is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Github Pages](https://pages.github.com/)) and loaded in the participant's browser.
 
-For detailed documentation on the structure and deployment of experiments, please refer to the [departure point repo](https://github.com/magpie-ea/departure-point) and the [\_magpie documentation](https://magpie-ea.github.io/magpie_site/).
+For detailed documentation on the structure and deployment of experiments, please refer to the [departure point repo](https://github.com/magpie-ea/departure-point) and the [\_magpie documentation](https://magpie-ea.github.io/magpie-site/).
 
 # Additional Notes
 

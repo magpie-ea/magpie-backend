@@ -1,20 +1,20 @@
-defmodule BABE.ExperimentController do
+defmodule Magpie.ExperimentController do
   @moduledoc false
-  use BABE.Web, :controller
+  use Magpie.Web, :controller
 
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
-  unless Application.get_env(:babe, :no_basic_auth) do
+  unless Application.get_env(:magpie, :no_basic_auth) do
     plug(
       BasicAuth,
-      [use_config: {:babe, :authentication}]
+      [use_config: {:magpie, :authentication}]
       when not (action in [:submit, :retrieve_as_json, :check_valid])
     )
   end
 
-  alias BABE.{Experiment, ExperimentResult}
+  alias Magpie.{Experiment, ExperimentResult}
   alias Ecto.Multi
 
-  import BABE.ExperimentHelper
+  import Magpie.ExperimentHelper
 
   def index(conn, _params) do
     # Repo.all takes a query argument.
@@ -90,7 +90,7 @@ defmodule BABE.ExperimentController do
     changeset = Ecto.Changeset.change(experiment, active: new_status)
 
     if new_status == false do
-      BABE.ExperimentHelper.reset_in_progress_experiment_statuses()
+      Magpie.ExperimentHelper.reset_in_progress_experiment_statuses()
     end
 
     case Repo.update(changeset) do
@@ -122,7 +122,7 @@ defmodule BABE.ExperimentController do
         set: [status: 0]
       )
 
-    case BABE.Repo.transaction(multi) do
+    case Magpie.Repo.transaction(multi) do
       {:ok, _} ->
         conn
         |> put_flash(:info, "The experiment has been reset!")

@@ -1,11 +1,11 @@
 defmodule CustomRecordControllerTest do
   @moduledoc false
 
-  use BABE.ConnCase
-  alias BABE.{Repo, CustomRecord}
+  use Magpie.ConnCase
+  alias Magpie.{Repo, CustomRecord}
 
-  @username Application.get_env(:babe, :authentication)[:username]
-  @password Application.get_env(:babe, :authentication)[:password]
+  @username Application.get_env(:magpie, :authentication)[:username]
+  @password Application.get_env(:magpie, :authentication)[:password]
 
   @simple_record [%{"a" => "1", "b" => "2"}, %{"a" => "11", "b" => "22"}]
 

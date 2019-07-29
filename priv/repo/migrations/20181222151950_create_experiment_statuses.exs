@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.CreateExperimentStatuses do
+defmodule Magpie.Repo.Migrations.CreateExperimentStatuses do
   use Ecto.Migration
 
   def change do

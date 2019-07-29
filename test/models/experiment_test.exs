@@ -1,11 +1,11 @@
-defmodule BABE.ExperimentTest do
+defmodule Magpie.ExperimentTest do
   @moduledoc """
   Tests for the Experiment model
   """
-  use BABE.ModelCase
+  use Magpie.ModelCase
 
-  alias BABE.Experiment
-  alias BABE.Repo
+  alias Magpie.Experiment
+  alias Magpie.Repo
 
   @non_complex_experiment_attrs %{
     name: "some name",

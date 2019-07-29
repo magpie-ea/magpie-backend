@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.RenameExperimentIdToName do
+defmodule Magpie.Repo.Migrations.RenameExperimentIdToName do
   use Ecto.Migration
 
   def change do

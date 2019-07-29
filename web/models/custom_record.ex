@@ -1,13 +1,13 @@
-defmodule BABE.CustomRecord do
+defmodule Magpie.CustomRecord do
   @moduledoc """
   A custom record is a flexible data record (map) which is intended to be retrieved as JSON by experiments on the fly, to provide support for dynamic experiments. There are multiple ways to create/modify it:
   - Manual upload of a CSV file
   - Manual upload of a JSON file
   - Generation from a set of experiment results via some rules.
   """
-  use BABE.Web, :model
+  use Magpie.Web, :model
 
-  import BABE.ModelHelper
+  import Magpie.ModelHelper
 
   schema "custom_records" do
     field(:name, :string)

@@ -1,4 +1,4 @@
-defmodule BABE.CustomRecordHelper do
+defmodule Magpie.CustomRecordHelper do
   @moduledoc """
   Stores the helper functions for custom records.
   """

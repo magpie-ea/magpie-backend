@@ -1,10 +1,10 @@
-defmodule BABE.PageController do
+defmodule Magpie.PageController do
   @moduledoc false
-  use BABE.Web, :controller
+  use Magpie.Web, :controller
 
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
-  unless Application.get_env(:babe, :no_basic_auth) do
-    plug(BasicAuth, use_config: {:babe, :authentication})
+  unless Application.get_env(:magpie, :no_basic_auth) do
+    plug(BasicAuth, use_config: {:magpie, :authentication})
   end
 
   def index(conn, _params) do

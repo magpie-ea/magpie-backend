@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.ChangeResultsFromMapToArrayOfMaps do
+defmodule Magpie.Repo.Migrations.ChangeResultsFromMapToArrayOfMaps do
   use Ecto.Migration
 
   def change do

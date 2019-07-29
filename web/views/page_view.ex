@@ -1,3 +1,3 @@
-defmodule BABE.PageView do
-  use BABE.Web, :view
+defmodule Magpie.PageView do
+  use Magpie.Web, :view
 end

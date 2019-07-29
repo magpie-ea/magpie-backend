@@ -1,4 +1,4 @@
-defmodule BABE.ErrorHelpers do
+defmodule Magpie.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """
@@ -32,9 +32,9 @@ defmodule BABE.ErrorHelpers do
     #     dgettext "errors", "is invalid"
     #
     if count = opts[:count] do
-      Gettext.dngettext(BABE.Gettext, "errors", msg, msg, count, opts)
+      Gettext.dngettext(Magpie.Gettext, "errors", msg, msg, count, opts)
     else
-      Gettext.dgettext(BABE.Gettext, "errors", msg, opts)
+      Gettext.dgettext(Magpie.Gettext, "errors", msg, opts)
     end
   end
 end

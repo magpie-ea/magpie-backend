@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.AddUniqueIndexToExperiment do
+defmodule Magpie.Repo.Migrations.AddUniqueIndexToExperiment do
   use Ecto.Migration
 
   def change do

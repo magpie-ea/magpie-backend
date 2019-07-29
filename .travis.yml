@@ -24,6 +24,6 @@ before_script:
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
   - sudo apt-get update
   - sudo apt-get --only-upgrade install google-chrome-stable
-  - psql -c "create user babe_dev with password 'babe';" -U postgres
-  - psql -c "alter user babe_dev createdb" -U postgres
+  - psql -c "create user magpie_dev with password 'magpie';" -U postgres
+  - psql -c "alter user magpie_dev createdb" -U postgres
   - mix do ecto.create, ecto.migrate

@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.AddSubmissionCountToExperiment do
+defmodule Magpie.Repo.Migrations.AddSubmissionCountToExperiment do
   use Ecto.Migration
 
   def change do

@@ -1,8 +1,8 @@
-defmodule BABE.LandingPageTest do
+defmodule Magpie.LandingPageTest do
   @moduledoc """
   Feature tests on the landing page
   """
-  use BABE.FeatureCase, async: true
+  use Magpie.FeatureCase, async: true
 
   import Wallaby.Query
 

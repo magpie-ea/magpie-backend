@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.RemoveOldInteractiveExperimentFieldsFromExperiment do
+defmodule Magpie.Repo.Migrations.RemoveOldInteractiveExperimentFieldsFromExperiment do
   use Ecto.Migration
 
   def change do

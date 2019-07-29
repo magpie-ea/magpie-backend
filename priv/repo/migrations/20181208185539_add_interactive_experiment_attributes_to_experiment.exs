@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.AddInteractiveExperimentAttributesToExperiment do
+defmodule Magpie.Repo.Migrations.AddInteractiveExperimentAttributesToExperiment do
   use Ecto.Migration
 
   def change do

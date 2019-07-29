@@ -1,5 +1,5 @@
-defmodule BABE.ExperimentView do
-  use BABE.Web, :view
+defmodule Magpie.ExperimentView do
+  use Magpie.Web, :view
   import Ecto.Query, only: [from: 2]
 
   # From https://medium.com/@chipdean/phoenix-array-input-field-implementation-7ec0fe0949d
@@ -93,21 +93,21 @@ defmodule BABE.ExperimentView do
   Get the total number of submissions for a particular experiment
   """
   def get_current_submissions(experiment) do
-    query = from(r in BABE.ExperimentResult, where: r.experiment_id == ^experiment.id)
-    BABE.Repo.aggregate(query, :count, :id)
+    query = from(r in Magpie.ExperimentResult, where: r.experiment_id == ^experiment.id)
+    Magpie.Repo.aggregate(query, :count, :id)
   end
 
   # TODO: Optimize the query a bit, or use some sort of caching
   def get_last_submission_time(experiment) do
     query =
-      from(r in BABE.ExperimentResult,
+      from(r in Magpie.ExperimentResult,
         where: r.experiment_id == ^experiment.id,
         order_by: [desc: r.updated_at],
         select: r.updated_at,
         limit: 1
       )
 
-    case BABE.Repo.one(query) do
+    case Magpie.Repo.one(query) do
       # No submissions whatsoever. Use the experiment itself.
       nil -> experiment.updated_at
       t -> t
@@ -115,8 +115,8 @@ defmodule BABE.ExperimentView do
   end
 
   def get_endpoint_url(type, id) do
-    base_url = Application.get_env(:babe, :real_url, BABE.Endpoint.url())
-    path = BABE.Router.Helpers.experiment_path(BABE.Endpoint, type, id)
+    base_url = Application.get_env(:magpie, :real_url, Magpie.Endpoint.url())
+    path = Magpie.Router.Helpers.experiment_path(Magpie.Endpoint, type, id)
     base_url <> path
   end
 
@@ -127,7 +127,7 @@ defmodule BABE.ExperimentView do
   end
 
   def format_timestamp(timestamp) do
-    timezone = Application.get_env(:babe, :timezone, "Etc/UTC")
+    timezone = Application.get_env(:magpie, :timezone, "Etc/UTC")
     format_timestamp(timestamp, timezone)
   end
 end

@@ -1,12 +1,12 @@
-defmodule BABE.Web do
+defmodule Magpie.Web do
   @moduledoc """
   A module that keeps using definitions for controllers,
   views and so on.
 
   This can be used in your application as:
 
-      use BABE.Web, :controller
-      use BABE.Web, :view
+      use Magpie.Web, :controller
+      use Magpie.Web, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -30,12 +30,12 @@ defmodule BABE.Web do
     quote do
       use Phoenix.Controller
 
-      alias BABE.Repo
+      alias Magpie.Repo
       import Ecto
       import Ecto.Query
 
-      import BABE.Router.Helpers
-      import BABE.Gettext
+      import Magpie.Router.Helpers
+      import Magpie.Gettext
     end
   end
 
@@ -49,9 +49,9 @@ defmodule BABE.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import BABE.Router.Helpers
-      import BABE.ErrorHelpers
-      import BABE.Gettext
+      import Magpie.Router.Helpers
+      import Magpie.ErrorHelpers
+      import Magpie.Gettext
     end
   end
 
@@ -65,10 +65,10 @@ defmodule BABE.Web do
     quote do
       use Phoenix.Channel
 
-      alias BABE.Repo
+      alias Magpie.Repo
       import Ecto
       import Ecto.Query
-      import BABE.Gettext
+      import Magpie.Gettext
     end
   end
 

@@ -1,18 +1,18 @@
-defmodule BABE.CustomRecordController do
+defmodule Magpie.CustomRecordController do
   @moduledoc false
-  use BABE.Web, :controller
+  use Magpie.Web, :controller
 
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
-  unless Application.get_env(:babe, :no_basic_auth) do
+  unless Application.get_env(:magpie, :no_basic_auth) do
     plug(
       BasicAuth,
-      [use_config: {:babe, :authentication}] when not (action in [:retrieve_as_json])
+      [use_config: {:magpie, :authentication}] when not (action in [:retrieve_as_json])
     )
   end
 
-  alias BABE.CustomRecord
+  alias Magpie.CustomRecord
 
-  import BABE.CustomRecordHelper
+  import Magpie.CustomRecordHelper
 
   def index(conn, _params) do
     custom_records = Repo.all(CustomRecord |> order_by(asc: :id))

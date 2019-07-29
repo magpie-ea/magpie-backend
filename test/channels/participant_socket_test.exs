@@ -1,10 +1,10 @@
-defmodule BABE.ParticipantSocketTest do
+defmodule Magpie.ParticipantSocketTest do
   @moduledoc """
   Module for tests on the socket connection.
   """
-  use BABE.ChannelCase, async: true
+  use Magpie.ChannelCase, async: true
 
-  alias BABE.{ParticipantSocket, ChannelHelper}
+  alias Magpie.{ParticipantSocket, ChannelHelper}
 
   test "connect with a valid experiment_id" do
     experiment = insert_complex_experiment()

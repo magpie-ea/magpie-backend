@@ -1,12 +1,12 @@
-defmodule BABE.InteractiveRoomChannel do
+defmodule Magpie.InteractiveRoomChannel do
   @moduledoc """
   Channel for maintaining lobbies in experiments which require multiple participants to interact with each other.
 
   The client should make use of the presence_diff event to decide if a game can be started.
   """
 
-  use BABE.Web, :channel
-  alias BABE.Presence
+  use Magpie.Web, :channel
+  alias Magpie.Presence
 
   @doc """
   Let the participant join the lobby and wait in there.

@@ -1,20 +1,20 @@
-defmodule BABE.ParticipantSocket do
+defmodule Magpie.ParticipantSocket do
   use Phoenix.Socket
   require Ecto.Query
-  alias BABE.{Repo, Experiment, ExperimentStatus, ChannelHelper}
+  alias Magpie.{Repo, Experiment, ExperimentStatus, ChannelHelper}
 
   ## Channels
   # The ":*" part just means that any event with `participant` topic will be sent to the Participant channel.
 
   # Participant Channel is responsible for holding 1-to-1 connections with each participant.
-  channel("participant:*", BABE.ParticipantChannel)
-  channel("experiment_lobby:*", BABE.ParticipantChannel)
+  channel("participant:*", Magpie.ParticipantChannel)
+  channel("experiment_lobby:*", Magpie.ParticipantChannel)
 
   # Interactive room is for interactive experiments where multiple participants are present.
-  channel("interactive_room:*", BABE.InteractiveRoomChannel)
+  channel("interactive_room:*", Magpie.InteractiveRoomChannel)
 
   # Iterated lobby is for iterated experiments where future generations need to wait on results from previous generations.
-  channel("iterated_lobby:*", BABE.IteratedLobbyChannel)
+  channel("iterated_lobby:*", Magpie.IteratedLobbyChannel)
 
   ## Transports
   transport(:websocket, Phoenix.Transports.WebSocket,
@@ -85,7 +85,7 @@ defmodule BABE.ParticipantSocket do
   # Would allow you to broadcast a "disconnect" event and terminate
   # all active sockets and channels for a given participant:
   #
-  #     BABE.Endpoint.broadcast("participants_socket:#{participant.id}", "disconnect", %{})
+  #     Magpie.Endpoint.broadcast("participants_socket:#{participant.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil

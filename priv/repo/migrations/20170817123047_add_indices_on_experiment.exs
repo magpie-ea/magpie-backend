@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.AddIndexOnExperimentId do
+defmodule Magpie.Repo.Migrations.AddIndexOnExperimentId do
   use Ecto.Migration
 
   def change do

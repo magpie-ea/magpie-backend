@@ -1,9 +1,9 @@
-defmodule BABE.Mixfile do
+defmodule Magpie.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :babe,
+      app: :magpie,
       version: "0.2.3",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -38,7 +38,7 @@ defmodule BABE.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {BABE, []},
+      mod: {Magpie, []},
       applications: @applications
     ]
   end

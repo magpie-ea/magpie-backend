@@ -1,11 +1,11 @@
-defmodule BABE.ParticipantChannel do
+defmodule Magpie.ParticipantChannel do
   @moduledoc """
   Channel dedicated to keeping individual connections with each participant
   """
 
-  use BABE.Web, :channel
-  alias BABE.ChannelHelper
-  alias BABE.{Repo, ExperimentStatus, ExperimentResult}
+  use Magpie.Web, :channel
+  alias Magpie.ChannelHelper
+  alias Magpie.{Repo, ExperimentStatus, ExperimentResult}
   alias Ecto.Multi
 
   @doc """
@@ -17,7 +17,7 @@ defmodule BABE.ParticipantChannel do
       send(self(), :after_participant_join)
 
       :ok =
-        BABE.ChannelWatcher.monitor(
+        Magpie.ChannelWatcher.monitor(
           :participants,
           self(),
           {__MODULE__, :handle_leave, [socket]}
@@ -103,10 +103,10 @@ defmodule BABE.ParticipantChannel do
     case Repo.transaction(operation) do
       {:ok, _} ->
         # No need to monitor this participant anymore
-        BABE.ChannelWatcher.demonitor(:participants, self())
+        Magpie.ChannelWatcher.demonitor(:participants, self())
 
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
-        BABE.Endpoint.broadcast!(
+        Magpie.Endpoint.broadcast!(
           "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",
           "finished",
           %{results: results}

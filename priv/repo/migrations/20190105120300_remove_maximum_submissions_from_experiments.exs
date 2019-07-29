@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.RemoveMaximumSubmissionsFromExperiments do
+defmodule Magpie.Repo.Migrations.RemoveMaximumSubmissionsFromExperiments do
   use Ecto.Migration
 
   def change do

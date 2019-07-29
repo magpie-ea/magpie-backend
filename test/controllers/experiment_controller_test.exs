@@ -1,11 +1,11 @@
 defmodule ExperimentControllerTest do
   @moduledoc false
 
-  use BABE.ConnCase
-  alias BABE.{Repo, ExperimentResult, ExperimentStatus}
+  use Magpie.ConnCase
+  alias Magpie.{Repo, ExperimentResult, ExperimentStatus}
 
-  @username Application.get_env(:babe, :authentication)[:username]
-  @password Application.get_env(:babe, :authentication)[:password]
+  @username Application.get_env(:magpie, :authentication)[:username]
+  @password Application.get_env(:magpie, :authentication)[:password]
   @results_simple_experiment [%{"a" => "1", "b" => "2"}, %{"a" => "11", "b" => "22"}]
 
   defp using_basic_auth(conn, username \\ @username, password \\ @password) do
@@ -109,7 +109,7 @@ defmodule ExperimentControllerTest do
     test "Corresponding ExperimentStatus entries are created together with complex experiments" do
       experiment = insert_complex_experiment()
 
-      all_experiment_statuses = BABE.Repo.all(ExperimentStatus, experiment_id: experiment.id)
+      all_experiment_statuses = Magpie.Repo.all(ExperimentStatus, experiment_id: experiment.id)
 
       assert length(all_experiment_statuses) ==
                experiment.num_variants * experiment.num_realizations * experiment.num_chains
@@ -155,7 +155,7 @@ defmodule ExperimentControllerTest do
       insert_experiment_result(%{"experiment_id" => experiment.id})
       insert_experiment_result(%{"experiment_id" => experiment.id})
 
-      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+      all_experiment_results = Magpie.Repo.all(ExperimentResult, experiment_id: experiment.id)
 
       assert length(all_experiment_results) == 2
 
@@ -163,7 +163,7 @@ defmodule ExperimentControllerTest do
       |> using_basic_auth()
       |> delete("/experiments/#{experiment.id}")
 
-      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+      all_experiment_results = Magpie.Repo.all(ExperimentResult, experiment_id: experiment.id)
 
       assert Enum.empty?(all_experiment_results)
     end
@@ -171,7 +171,7 @@ defmodule ExperimentControllerTest do
     test "Related ExperimentStatus entries are also deleted after deleting a complex experiment",
          %{conn: conn} do
       experiment = insert_complex_experiment()
-      all_experiment_statuses = BABE.Repo.all(ExperimentStatus, experiment_id: experiment.id)
+      all_experiment_statuses = Magpie.Repo.all(ExperimentStatus, experiment_id: experiment.id)
 
       assert length(all_experiment_statuses) ==
                experiment.num_variants * experiment.num_realizations * experiment.num_chains
@@ -180,7 +180,7 @@ defmodule ExperimentControllerTest do
       |> using_basic_auth()
       |> delete("/experiments/#{experiment.id}")
 
-      all_experiment_statuses = BABE.Repo.all(ExperimentStatus, experiment_id: experiment.id)
+      all_experiment_statuses = Magpie.Repo.all(ExperimentStatus, experiment_id: experiment.id)
 
       assert Enum.empty?(all_experiment_statuses)
     end
@@ -196,7 +196,7 @@ defmodule ExperimentControllerTest do
       |> using_basic_auth()
       |> get("/experiments/#{experiment.id}/toggle")
 
-      experiment = BABE.Repo.get!(BABE.Experiment, experiment.id)
+      experiment = Magpie.Repo.get!(Magpie.Experiment, experiment.id)
       assert experiment.active == false
     end
 
@@ -207,7 +207,7 @@ defmodule ExperimentControllerTest do
       |> using_basic_auth()
       |> get("/experiments/#{experiment.id}/toggle")
 
-      experiment = BABE.Repo.get!(BABE.Experiment, experiment.id)
+      experiment = Magpie.Repo.get!(Magpie.Experiment, experiment.id)
       assert experiment.active == true
     end
 
@@ -266,7 +266,7 @@ defmodule ExperimentControllerTest do
       insert_experiment_result(%{"experiment_id" => experiment.id})
       insert_experiment_result(%{"experiment_id" => experiment.id})
 
-      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+      all_experiment_results = Magpie.Repo.all(ExperimentResult, experiment_id: experiment.id)
 
       assert length(all_experiment_results) == 2
 
@@ -274,7 +274,7 @@ defmodule ExperimentControllerTest do
       |> using_basic_auth()
       |> delete("/experiments/#{experiment.id}/reset")
 
-      all_experiment_results = BABE.Repo.all(ExperimentResult, experiment_id: experiment.id)
+      all_experiment_results = Magpie.Repo.all(ExperimentResult, experiment_id: experiment.id)
 
       assert Enum.empty?(all_experiment_results)
     end

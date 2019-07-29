@@ -1,10 +1,10 @@
-defmodule BABE.CustomRecordTest do
+defmodule Magpie.CustomRecordTest do
   @moduledoc """
   Tests for the CustomRecord model
   """
-  use BABE.ModelCase
+  use Magpie.ModelCase
 
-  alias BABE.CustomRecord
+  alias Magpie.CustomRecord
 
   @valid_attrs %{
     name: "some name",

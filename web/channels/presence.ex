@@ -1,3 +1,3 @@
-defmodule BABE.Presence do
-  use Phoenix.Presence, otp_app: :babe, pubsub_server: BABE.PubSub
+defmodule Magpie.Presence do
+  use Phoenix.Presence, otp_app: :magpie, pubsub_server: Magpie.PubSub
 end

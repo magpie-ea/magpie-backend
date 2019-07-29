@@ -1,5 +1,5 @@
 # This is the creation of the true "Experiment" table used to manage experiments now
-defmodule BABE.Repo.Migrations.CreateExperimentNew do
+defmodule Magpie.Repo.Migrations.CreateExperimentNew do
   use Ecto.Migration
 
   def change do

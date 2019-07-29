@@ -1,4 +1,4 @@
-defmodule BABE.ModelCase do
+defmodule Magpie.ModelCase do
   @moduledoc """
   This module defines the test case to be used by
   model tests.
@@ -16,20 +16,20 @@ defmodule BABE.ModelCase do
 
   using do
     quote do
-      alias BABE.Repo
+      alias Magpie.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import BABE.ModelCase
+      import Magpie.ModelCase
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(BABE.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Magpie.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(BABE.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Magpie.Repo, {:shared, self()})
     end
 
     :ok
@@ -59,7 +59,7 @@ defmodule BABE.ModelCase do
   """
   def errors_on(struct, data) do
     struct.__struct__.changeset(struct, data)
-    |> Ecto.Changeset.traverse_errors(&BABE.ErrorHelpers.translate_error/1)
+    |> Ecto.Changeset.traverse_errors(&Magpie.ErrorHelpers.translate_error/1)
     |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
   end
 end

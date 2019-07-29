@@ -1,10 +1,10 @@
-defmodule BABE.ExperimentResultTest do
+defmodule Magpie.ExperimentResultTest do
   @moduledoc """
   Tests for the ExperimentResult model
   """
-  use BABE.ModelCase
+  use Magpie.ModelCase
 
-  alias BABE.ExperimentResult
+  alias Magpie.ExperimentResult
 
   @valid_attrs %{
     experiment_id: 1,

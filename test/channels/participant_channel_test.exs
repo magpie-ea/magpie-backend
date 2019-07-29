@@ -1,11 +1,11 @@
-defmodule BABE.ParticipantChannelTest do
+defmodule Magpie.ParticipantChannelTest do
   @moduledoc """
   Module for tests on the participant channel.
   """
-  use BABE.ChannelCase, async: false
+  use Magpie.ChannelCase, async: false
 
-  # alias BABE.ParticipantChannel
-  alias BABE.ParticipantSocket
+  # alias Magpie.ParticipantChannel
+  alias Magpie.ParticipantSocket
 
   setup do
     experiment = insert_complex_experiment()
@@ -54,7 +54,7 @@ defmodule BABE.ParticipantChannelTest do
     Process.sleep(100)
 
     experiment_status =
-      BABE.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
+      Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
 
     assert experiment_status.status === 0
   end

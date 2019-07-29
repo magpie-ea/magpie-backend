@@ -1,4 +1,4 @@
-defmodule BABE.TestHelpers do
+defmodule Magpie.TestHelpers do
   @moduledoc """
   Helper functions for tests
   """
@@ -41,7 +41,7 @@ defmodule BABE.TestHelpers do
         attrs
       )
 
-    {:ok, %{experiment: experiment}} = BABE.ExperimentHelper.create_experiment(changes)
+    {:ok, %{experiment: experiment}} = Magpie.ExperimentHelper.create_experiment(changes)
     experiment
   end
 
@@ -52,7 +52,7 @@ defmodule BABE.TestHelpers do
         attrs
       )
 
-    {:ok, %{experiment: experiment}} = BABE.ExperimentHelper.create_experiment(changes)
+    {:ok, %{experiment: experiment}} = Magpie.ExperimentHelper.create_experiment(changes)
     experiment
   end
 
@@ -63,9 +63,9 @@ defmodule BABE.TestHelpers do
         attrs
       )
 
-    changeset = BABE.CustomRecord.changeset(%BABE.CustomRecord{}, changes)
+    changeset = Magpie.CustomRecord.changeset(%Magpie.CustomRecord{}, changes)
 
-    {:ok, custom_record} = BABE.Repo.insert(changeset)
+    {:ok, custom_record} = Magpie.Repo.insert(changeset)
     custom_record
   end
 
@@ -76,9 +76,9 @@ defmodule BABE.TestHelpers do
         attrs
       )
 
-    %BABE.ExperimentResult{}
-    |> BABE.ExperimentResult.changeset(changes)
-    |> BABE.Repo.insert!()
+    %Magpie.ExperimentResult{}
+    |> Magpie.ExperimentResult.changeset(changes)
+    |> Magpie.Repo.insert!()
   end
 
   # Functions to expose those attributes to actual test modules.

@@ -1,11 +1,11 @@
-defmodule BABE.ExperimentResult do
+defmodule Magpie.ExperimentResult do
   @moduledoc """
   An ExperimentResult corresponds to a set of results obtained from one participant finishing one complete experiment, which usually consists of several trials.
   """
 
-  use BABE.Web, :model
+  use Magpie.Web, :model
 
-  import BABE.ModelHelper
+  import Magpie.ModelHelper
 
   schema "experiment_results" do
     # A map represents the whole JSON object received when the experiment was first submitted.
@@ -19,7 +19,7 @@ defmodule BABE.ExperimentResult do
     field(:chain, :integer, null: true)
     field(:realization, :integer, null: true)
 
-    belongs_to(:experiment, BABE.Experiment)
+    belongs_to(:experiment, Magpie.Experiment)
 
     timestamps(type: :utc_datetime)
   end

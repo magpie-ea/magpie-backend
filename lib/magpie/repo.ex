@@ -1,5 +1,5 @@
-defmodule BABE.Repo do
+defmodule Magpie.Repo do
   use Ecto.Repo,
-    otp_app: :babe,
+    otp_app: :magpie,
     adapter: Ecto.Adapters.Postgres
 end

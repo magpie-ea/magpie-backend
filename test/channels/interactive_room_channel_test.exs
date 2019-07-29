@@ -1,11 +1,11 @@
-defmodule BABE.InteractiveRoomChannelTest do
+defmodule Magpie.InteractiveRoomChannelTest do
   @moduledoc """
   Tests for the interactive room channel
   """
-  use BABE.ChannelCase
+  use Magpie.ChannelCase
 
-  # alias BABE.InteractiveRoomChannel
-  alias BABE.ParticipantSocket
+  # alias Magpie.InteractiveRoomChannel
+  alias Magpie.ParticipantSocket
 
   setup do
     experiment = insert_complex_experiment()

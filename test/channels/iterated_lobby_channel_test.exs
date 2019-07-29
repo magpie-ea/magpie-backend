@@ -1,13 +1,13 @@
-defmodule BABE.IteratedLobbyChannelTest do
+defmodule Magpie.IteratedLobbyChannelTest do
   @moduledoc """
   Test for the iterated lobby channel
   """
-  use BABE.ChannelCase
+  use Magpie.ChannelCase
 
-  alias BABE.ParticipantSocket
-  # alias BABE.IteratedLobbyChannel
-  alias BABE.ChannelHelper
-  alias BABE.ExperimentStatus
+  alias Magpie.ParticipantSocket
+  # alias Magpie.IteratedLobbyChannel
+  alias Magpie.ChannelHelper
+  alias Magpie.ExperimentStatus
 
   setup do
     experiment = insert_complex_experiment()

@@ -1,10 +1,10 @@
-defmodule BABE.IteratedLobbyChannel do
+defmodule Magpie.IteratedLobbyChannel do
   @moduledoc """
   Channel for participants who need to wait for other participants to finish first.
   """
-  use BABE.Web, :channel
-  alias BABE.ChannelHelper
-  alias BABE.{Repo, ExperimentResult}
+  use Magpie.Web, :channel
+  alias Magpie.ChannelHelper
+  alias Magpie.{Repo, ExperimentResult}
 
   @doc """
   A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.
@@ -47,7 +47,7 @@ defmodule BABE.IteratedLobbyChannel do
         experiment_results = Repo.one!(results_query)
 
         # The same as what we do when the waited-on participant submits their results, send the results to all participants waiting for this participant.
-        BABE.Endpoint.broadcast!(
+        Magpie.Endpoint.broadcast!(
           "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",
           "finished",
           %{results: experiment_results.results}

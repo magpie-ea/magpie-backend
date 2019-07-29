@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.MakeResultsInExperimentResultsNonNullable do
+defmodule Magpie.Repo.Migrations.MakeResultsInExperimentResultsNonNullable do
   use Ecto.Migration
 
   # Actually I'm not even sure if this will stop empty JSONs. Probably will need to perform a check at controller level anyways.

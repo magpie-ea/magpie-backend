@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.SetOnDeleteForExperimentResults do
+defmodule Magpie.Repo.Migrations.SetOnDeleteForExperimentResults do
   use Ecto.Migration
 
   def up do

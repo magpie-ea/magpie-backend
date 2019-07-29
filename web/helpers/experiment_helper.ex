@@ -1,11 +1,11 @@
-defmodule BABE.ExperimentHelper do
+defmodule Magpie.ExperimentHelper do
   @moduledoc """
   Stores the helper functions which help to store and retrieve the experiments.
   """
 
-  alias BABE.{ExperimentStatus, Experiment}
+  alias Magpie.{ExperimentStatus, Experiment}
   alias Ecto.Multi
-  alias BABE.Repo
+  alias Magpie.Repo
   require Ecto.Query
 
   # Note that we have a validation in schemas to ensure that each entry in `results` must have the same set of keys. So the following code take take that as an assumption.

@@ -1,8 +1,8 @@
-defmodule BABE.ExperimentStatus do
+defmodule Magpie.ExperimentStatus do
   @moduledoc """
   Keeps track of the experiment status, where it can be available/abandoned (0), in progress (1), or submitted (2). Used for complex experiments.
   """
-  use BABE.Web, :model
+  use Magpie.Web, :model
 
   schema "experiment_statuses" do
     field(:variant, :integer, null: false)
@@ -11,7 +11,7 @@ defmodule BABE.ExperimentStatus do
     # 0 means not taken up/dropped. 1 means in progress. 2 means submitted
     field(:status, :integer, default: 0, null: false)
 
-    belongs_to(:experiment, BABE.Experiment)
+    belongs_to(:experiment, Magpie.Experiment)
 
     timestamps(type: :utc_datetime)
   end

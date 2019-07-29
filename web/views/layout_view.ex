@@ -1,3 +1,3 @@
-defmodule BABE.LayoutView do
-  use BABE.Web, :view
+defmodule Magpie.LayoutView do
+  use Magpie.Web, :view
 end

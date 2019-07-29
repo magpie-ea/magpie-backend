@@ -15,7 +15,7 @@
 
 ### Fixed
 
-- Allow socket connection from any host, since we don't constrain where the user hosts the frontend \_babe experiment.
+- Allow socket connection from any host, since we don't constrain where the user hosts the frontend \_magpie experiment.
 - Use `Multi.insert` instead of `Multi.insert_all` in `ExperimentController.create/2`, since the latter seems to fail with SQLite in local deployment. See https://github.com/elixir-sqlite/sqlite_ecto2/issues/231
 
 ## [0.2.0] - 2018-01-05

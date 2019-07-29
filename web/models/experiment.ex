@@ -1,8 +1,8 @@
-defmodule BABE.Experiment do
+defmodule Magpie.Experiment do
   @moduledoc """
   An Experiment corresponds to an experiment that the author plans to run. Each ExperimentResult and each ExperimentStatus must belong to an Experiment.
   """
-  use BABE.Web, :model
+  use Magpie.Web, :model
 
   schema "experiments" do
     field(:name, :string, null: false)
@@ -20,8 +20,8 @@ defmodule BABE.Experiment do
     field(:num_chains, :integer, null: true)
     field(:num_realizations, :integer, null: true)
 
-    has_many(:experiment_results, BABE.ExperimentResult, on_delete: :delete_all)
-    has_many(:experiment_statuses, BABE.ExperimentStatus, on_delete: :delete_all)
+    has_many(:experiment_results, Magpie.ExperimentResult, on_delete: :delete_all)
+    has_many(:experiment_statuses, Magpie.ExperimentStatus, on_delete: :delete_all)
 
     timestamps(type: :utc_datetime)
   end

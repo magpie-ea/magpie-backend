@@ -1,8 +1,8 @@
-defmodule BABE.ChannelHelper do
+defmodule Magpie.ChannelHelper do
   @moduledoc """
   Helper module for functionalities common to all channels.
   """
-  alias BABE.{Repo, ExperimentStatus}
+  alias Magpie.{Repo, ExperimentStatus}
   require Ecto.Query
 
   @doc """

@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.CreateCustomRecords do
+defmodule Magpie.Repo.Migrations.CreateCustomRecords do
   use Ecto.Migration
 
   def change do

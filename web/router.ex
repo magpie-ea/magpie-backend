@@ -1,5 +1,5 @@
-defmodule BABE.Router do
-  use BABE.Web, :router
+defmodule Magpie.Router do
+  use Magpie.Web, :router
   use Plug.ErrorHandler
   use Sentry.Plug
 
@@ -15,7 +15,7 @@ defmodule BABE.Router do
     plug(:accepts, ["json"])
   end
 
-  scope "/", BABE do
+  scope "/", Magpie do
     # Use the default browser stack
     pipe_through(:browser)
 
@@ -38,7 +38,7 @@ defmodule BABE.Router do
     get("/custom_records/retrieve_all", CustomRecordController, :retrieve_all)
   end
 
-  scope "/api", BABE do
+  scope "/api", Magpie do
     pipe_through(:api)
 
     # Maybe it would have been better to also follow the POST naming conventions in the API, but now that the frontend code is already out there, better not change it I guess.

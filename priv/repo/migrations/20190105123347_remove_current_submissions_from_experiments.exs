@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.RemoveCurrentSubmissionsFromExperiments do
+defmodule Magpie.Repo.Migrations.RemoveCurrentSubmissionsFromExperiments do
   use Ecto.Migration
 
   def change do

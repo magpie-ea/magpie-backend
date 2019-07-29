@@ -1,4 +1,4 @@
-defmodule BABE.ConnCase do
+defmodule Magpie.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -20,24 +20,24 @@ defmodule BABE.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias BABE.Repo
+      alias Magpie.Repo
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
 
-      import BABE.Router.Helpers
-      import BABE.TestHelpers
+      import Magpie.Router.Helpers
+      import Magpie.TestHelpers
 
       # The default endpoint for testing
-      @endpoint BABE.Endpoint
+      @endpoint Magpie.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(BABE.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Magpie.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(BABE.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Magpie.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

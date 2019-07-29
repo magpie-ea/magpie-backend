@@ -1,4 +1,4 @@
-defmodule BABE.Repo.Migrations.AddForeignKeyToExperimentResult do
+defmodule Magpie.Repo.Migrations.AddForeignKeyToExperimentResult do
   use Ecto.Migration
 
   def change do

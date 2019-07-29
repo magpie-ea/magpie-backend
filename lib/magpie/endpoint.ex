@@ -1,8 +1,8 @@
-defmodule BABE.Endpoint do
-  use Phoenix.Endpoint, otp_app: :babe
+defmodule Magpie.Endpoint do
+  use Phoenix.Endpoint, otp_app: :magpie
 
   # Enable concurrent testing.
-  if Application.get_env(:babe, :sql_sandbox) do
+  if Application.get_env(:magpie, :sql_sandbox) do
     plug(Phoenix.Ecto.SQL.Sandbox)
   end
 
@@ -10,7 +10,7 @@ defmodule BABE.Endpoint do
   plug(CORSPlug)
 
   # By default we have one socket handler, which should suffice.
-  socket("/socket", BABE.ParticipantSocket)
+  socket("/socket", Magpie.ParticipantSocket)
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -18,7 +18,7 @@ defmodule BABE.Endpoint do
   # when deploying your static files in production.
   plug(Plug.Static,
     at: "/",
-    from: :babe,
+    from: :magpie,
     gzip: false,
     only: ~w(css fonts images js favicon.ico robots.txt)
   )
@@ -48,9 +48,9 @@ defmodule BABE.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   plug(Plug.Session,
     store: :cookie,
-    key: "_babe_key",
+    key: "_magpie_key",
     signing_salt: "MmqUE5bg"
   )
 
-  plug(BABE.Router)
+  plug(Magpie.Router)
 end

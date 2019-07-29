@@ -1,4 +1,4 @@
-defmodule BABE do
+defmodule Magpie do
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
@@ -12,29 +12,29 @@ defmodule BABE do
     # Define workers and child supervisors to be supervised
     children = [
       # Start the Ecto repository
-      BABE.Repo,
+      Magpie.Repo,
       # Start the endpoint when the application starts
-      BABE.Endpoint,
+      Magpie.Endpoint,
       # The presence supervisor
-      BABE.Presence,
-      # Start your own worker by calling: BABE.Worker.start_link(arg1, arg2, arg3)
-      # worker(BABE.Worker, [arg1, arg2, arg3]),
-      worker(Task, [&BABE.ExperimentHelper.reset_in_progress_experiment_statuses/0],
+      Magpie.Presence,
+      # Start your own worker by calling: Magpie.Worker.start_link(arg1, arg2, arg3)
+      # worker(Magpie.Worker, [arg1, arg2, arg3]),
+      worker(Task, [&Magpie.ExperimentHelper.reset_in_progress_experiment_statuses/0],
         restart: :temporary
       ),
-      worker(BABE.ChannelWatcher, [:participants])
+      worker(Magpie.ChannelWatcher, [:participants])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: BABE.Supervisor]
+    opts = [strategy: :one_for_one, name: Magpie.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    BABE.Endpoint.config_change(changed, removed)
+    Magpie.Endpoint.config_change(changed, removed)
     :ok
   end
 end

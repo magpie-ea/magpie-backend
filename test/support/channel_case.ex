@@ -1,4 +1,4 @@
-defmodule BABE.ChannelCase do
+defmodule Magpie.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -20,16 +20,16 @@ defmodule BABE.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
 
-      alias BABE.Repo
-      alias BABE.ParticipantSocket
+      alias Magpie.Repo
+      alias Magpie.ParticipantSocket
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
 
-      import BABE.TestHelpers
+      import Magpie.TestHelpers
 
       # The default endpoint for testing
-      @endpoint BABE.Endpoint
+      @endpoint Magpie.Endpoint
 
       def create_and_subscribe_participant(experiment) do
         participant_id = Ecto.UUID.generate()
@@ -48,10 +48,10 @@ defmodule BABE.ChannelCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(BABE.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Magpie.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(BABE.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Magpie.Repo, {:shared, self()})
     end
 
     :ok

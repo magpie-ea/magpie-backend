@@ -1,4 +1,4 @@
-defmodule BABE.ModelHelper do
+defmodule Magpie.ModelHelper do
   @moduledoc """
   Helper functions for models
   """

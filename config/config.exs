@@ -6,15 +6,15 @@
 use Mix.Config
 
 # General application configuration
-config :babe,
-  ecto_repos: [BABE.Repo]
+config :magpie,
+  ecto_repos: [Magpie.Repo]
 
 # Configures the endpoint
-config :babe, BABE.Endpoint,
+config :magpie, Magpie.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
-  render_errors: [view: BABE.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: BABE.PubSub, adapter: Phoenix.PubSub.PG2]
+  render_errors: [view: Magpie.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: Magpie.PubSub, adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -22,12 +22,12 @@ config :logger, :console,
   metadata: [:request_id]
 
 # The local timezone where the app is deployed.
-config :babe, :timezone, "Europe/Berlin"
+config :magpie, :timezone, "Europe/Berlin"
 
 no_basic_auth =
-  config :babe,
+  config :magpie,
          :no_basic_auth,
-         (if Map.has_key?(System.get_env(), "BABE_NO_BASIC_AUTH") do
+         (if Map.has_key?(System.get_env(), "MAGPIE_NO_BASIC_AUTH") do
             true
           else
             false

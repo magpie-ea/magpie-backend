@@ -12,7 +12,7 @@ services:
       - PORT=4000
       - DOCKER=true
     volumes:
-      - babe-app-volume:/app
+      - magpie-app-volume:/app
     # Ensures that the postgres service is started first.
     depends_on:
       - db
@@ -20,14 +20,14 @@ services:
     image: postgres:10
     volumes:
       # Just preserve the postgresql data in the local folder.
-      - babe-db-volume:/var/lib/postgresql/data
+      - magpie-db-volume:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: babe
-      POSTGRES_USER: babe_dev
-      POSTGRES_DB: babe_dev
+      POSTGRES_PASSWORD: magpie
+      POSTGRES_USER: magpie_dev
+      POSTGRES_DB: magpie_dev
 
 volumes:
-  babe-app-volume:
+  magpie-app-volume:
     external: true
-  babe-db-volume:
+  magpie-db-volume:
     external: true

@@ -1,6 +1,6 @@
-defmodule BABE.ChannelWatcher do
+defmodule Magpie.ChannelWatcher do
   @moduledoc """
-  A module to watch out for participant disconnections. Phoenix.Presence and the terminate/2 callback might not be foolproof. See: https://github.com/babe-project/BABE/issues/51
+  A module to watch out for participant disconnections. Phoenix.Presence and the terminate/2 callback might not be foolproof. See: https://github.com/magpie-project/Magpie/issues/51
   """
   use GenServer
 
@@ -48,7 +48,7 @@ defmodule BABE.ChannelWatcher do
     # This is ugly though I don't think there is any better solution currently
     # Whenever a test ends the following path happens
     # Whenever the following path doesn't match, a genuine exit in the production environment happened, so we can use the `else` clause for our real code.
-    with :test <- Application.get_env(:babe, :environment),
+    with :test <- Application.get_env(:magpie, :environment),
          :shutdown <- reason do
       {:noreply, drop_participant(state, pid)}
     else

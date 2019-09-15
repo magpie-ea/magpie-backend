@@ -48,15 +48,24 @@ defmodule Magpie.ExperimentHelper do
       keys
       |> Enum.map(fn k -> trial[k] end)
       # This is processing done when one of fields is an array. Though this type of submission should be discouraged.
-      # Now I dont' think this should ever happen with the schema validations in place.
-      |> Enum.map(fn v ->
-        if is_list(v) do
-          Enum.join(v, "|")
-        else
-          v
-        end
-      end)
+      |> Enum.map(fn v -> format_value(v) end)
     end)
+  end
+
+  # This special processing has always been there and let's keep it this way.
+  defp format_value(value) when is_list(value) do
+    Enum.join(value, "|")
+  end
+
+  defp format_value(value) do
+    case String.Chars.impl_for(value) do
+      # e.g. maps. Then we just return it as it is.
+      nil ->
+        Kernel.inspect(value)
+
+      _ ->
+        to_string(value)
+    end
   end
 
   @doc """

@@ -53,11 +53,11 @@ defmodule Magpie.ExperimentHelper do
   end
 
   # This special processing has always been there and let's keep it this way.
-  defp format_value(value) when is_list(value) do
+  def format_value(value) when is_list(value) do
     Enum.join(value, "|")
   end
 
-  defp format_value(value) do
+  def format_value(value) do
     case String.Chars.impl_for(value) do
       # e.g. maps. Then we just return it as it is.
       nil ->

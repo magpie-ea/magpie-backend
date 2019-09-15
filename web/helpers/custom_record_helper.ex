@@ -8,6 +8,7 @@ defmodule Magpie.CustomRecordHelper do
       # For each entry, use the order specified by keys
       keys
       |> Enum.map(fn k -> entry[k] end)
+      |> Enum.map(fn v -> Magpie.ExperimentHelper.format_value(v) end)
     end)
   end
 

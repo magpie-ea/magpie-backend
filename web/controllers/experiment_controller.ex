@@ -187,8 +187,6 @@ defmodule Magpie.ExperimentController do
     case Repo.insert(changeset) do
       # Update the submission count
       {:ok, _} ->
-        # Currently I don't think there's a need to send the created resource back. Just acknowledge that the information is received.
-        # created is 201
         send_resp(conn, :created, "")
 
       {:error, _changeset} ->

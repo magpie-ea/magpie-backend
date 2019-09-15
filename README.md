@@ -304,7 +304,7 @@ For detailed documentation on the structure and deployment of experiments, pleas
 
 # Additional Notes
 
-- When submitting experiment results, it is expected that each trial record does not contain any object among its values. The reason is that it would then be hard for the CSV writer to correctly format and produce a CSV file. In such cases, it is best to split experiment results into different keys containing simple values, e.g.
+- When submitting experiment results, it is expected that each trial record does not contain any object or array among its **values**. The reason is that it would then be hard for the CSV writer to correctly format and produce a CSV file. In such cases, it is best to split experiment results into different keys containing simple values, e.g.
 
   ```js
   {
@@ -320,31 +320,15 @@ For detailed documentation on the structure and deployment of experiments, pleas
   ```js
   {
     "response": {"1": "a", "2": "b", "3": "c"},
+    // or
+    "response": ["a", "b", "c"]
     // ...
   }
   ```
 
-- N.B.: While objects are not allowed, moment arrays are valid at the moment. In the CSV output, the array entries would then be separated by a `|` symbol. For example:
+  (However, currently if you actually submitted an object or array, the backend will still print it out, as it is. Good luck trying to parse that in your CSV output though!)
 
-  ```js
-  {
-    "response": ["a", "b", "c"],
-    // ...
-  }
-  ```
-
-  would produce
-
-  ```csv
-  response
-  a|b|c
-  ```
-
-  Separate simple entries should still be preferred to arrays, though.
-
-  <!-- since if any entry contains `|` itself, it would be hard for a data analysis script to read the array correctly. -->
-
-- There is limited guarantee on database reliability on Heroku's Hobby grade. The experiment authors are expected to take responsibility of the results. They should retrieve them and perform backups as soon as possible.
+- There is limited guarantee on database reliability on Heroku's Hobby (free) grade. If the magpie-demo site for your experiments, you should retrieve the experiment results and perform backups as soon as possible.
 
 # Development
 

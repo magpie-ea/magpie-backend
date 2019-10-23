@@ -27,3 +27,5 @@ before_script:
   - psql -c "create user magpie_dev with password 'magpie';" -U postgres
   - psql -c "alter user magpie_dev createdb" -U postgres
   - mix do ecto.create, ecto.migrate
+  - mix test
+  - mix coveralls.travis

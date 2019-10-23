@@ -11,6 +11,8 @@ defmodule Magpie.Mixfile do
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [coveralls: :test],
       deps: deps()
     ]
   end
@@ -72,6 +74,7 @@ defmodule Magpie.Mixfile do
       {:distillery, "~> 2.0"},
       {:sentry, "~> 6.4"},
       {:wallaby, "~> 0.22.0", [runtime: false, only: :test]},
+      {:excoveralls, "~> 0.12.0", only: :test},
       # Error checking and linting
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]}

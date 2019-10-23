@@ -1,6 +1,6 @@
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 
-[![Build Status](https://travis-ci.com/magpie-ea/magpie-backend.svg?branch=master)](https://travis-ci.com/magpie-ea/magpie-backend)
+[![Build Status](https://travis-ci.com/magpie-ea/magpie-backend.svg?branch=master)](https://travis-ci.com/magpie-ea/magpie-backend) [![Coverage Status](https://coveralls.io/repos/github/magpie-ea/magpie-backend/badge.svg?branch=master)](https://coveralls.io/github/magpie-ea/magpie-backend?branch=master)
 
 **Table of Contents**
 

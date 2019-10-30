@@ -1,0 +1,18 @@
+{
+ "coverage_options": {
+   "treat_no_relevant_lines_as_covered": true
+ },
+ "custom_stop_words": [
+   "defenum",
+   "defmodule",
+   "use"
+ ],
+ "skip_files": [
+    "test/",
+    "lib/magpie.ex",
+    "lib/repo.ex",
+    "lib/magpie/endpoint.ex",
+   "web/views/error_helpers.ex",
+   "web/web.ex"
+  ]
+}

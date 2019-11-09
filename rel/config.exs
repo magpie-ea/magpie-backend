@@ -37,7 +37,7 @@ end
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: :"Zm%&[jE:nHWym0dQ~w;8f?>}N7!;=gK5W3Ev67iEy?i%{CBU|:hY58M[q9s[co)8"
+  set cookie: "${PROD_COOKIE}"
   set vm_args: "rel/vm.args"
 end
 
@@ -52,4 +52,3 @@ release :magpie do
     :runtime_tools
   ]
 end
-

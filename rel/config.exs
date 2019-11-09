@@ -34,10 +34,11 @@ environment :dev do
   set(cookie: :"Iz^@CU&TG~_mpi![Ra~sxP[69Hc{4MA*;`kt/1Hr5@B&S8T::TY8e~[Y$z9O.~)*")
 end
 
-# We generate new cookie on the prod machine.
 environment :prod do
   set(include_erts: true)
   set(include_src: false)
+  # Set a default cookie anyways.
+  set(cookie: :"<_7Aws;~}M^$|k=fO>f)%lG!.>22V,2z9inM7WuXWc}MB1(3!nvJFndij.t}`$uL"
   set(vm_args: "rel/vm.args")
 end
 

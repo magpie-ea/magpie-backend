@@ -29,6 +29,7 @@ config :magpie, Magpie.Endpoint,
 
 # Configure the database
 config :magpie, Magpie.Repo,
+  adapter: Ecto.Adapters.Postgres,
   url: "${DATABASE_URL}",
   database: "",
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "2"),

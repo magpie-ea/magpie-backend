@@ -71,7 +71,7 @@ defmodule Magpie.Mixfile do
       {:csv, "~> 2.1"},
       {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 0.17.2"},
-      {:distillery, "~> 2.0"},
+      {:distillery, "~> 2.1"},
       {:sentry, "~> 6.4"},
       {:wallaby, "~> 0.22.0", [runtime: false, only: :test]},
       {:excoveralls, "~> 0.12.0", only: :test},

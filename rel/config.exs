@@ -38,7 +38,7 @@ environment :prod do
   set(include_erts: true)
   set(include_src: false)
   # Set a default cookie anyways.
-  set(cookie: :"<_7Aws;~}M^$|k=fO>f)%lG!.>22V,2z9inM7WuXWc}MB1(3!nvJFndij.t}`$uL"
+  set(cookie: :"<_7Aws;~}M^$|k=fO>f)%lG!.>22V,2z9inM7WuXWc}MB1(3!nvJFndij.t}`$uL")
   set(vm_args: "rel/vm.args")
 end
 

@@ -60,7 +60,9 @@ defmodule Magpie.ExperimentStatusTest do
         Map.put(@valid_attrs, :variant, 0)
       )
 
-    assert {:variant, {"must be greater than %{number}", [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
+    assert {:variant,
+            {"must be greater than %{number}",
+             [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
   end
 
   test "chain must be greater than 0" do
@@ -94,7 +96,7 @@ defmodule Magpie.ExperimentStatusTest do
         Map.put(@valid_attrs, :status, -1)
       )
 
-    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion]}} in changeset.errors
+    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion, enum: 0..2]}} in changeset.errors
   end
 
   test "status must be less than or equal to 2" do
@@ -104,6 +106,6 @@ defmodule Magpie.ExperimentStatusTest do
         Map.put(@valid_attrs, :status, 3)
       )
 
-    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion]}} in changeset.errors
+    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion, enum: 0..2]}} in changeset.errors
   end
 end

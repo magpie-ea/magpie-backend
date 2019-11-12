@@ -235,7 +235,7 @@ defmodule CustomRecordControllerTest do
         |> using_basic_auth()
         |> get(custom_record_path(conn, :retrieve_as_json, custom_record.id))
 
-      data = response(conn, 200) |> Poison.decode!()
+      data = response(conn, 200) |> Jason.decode!()
 
       assert(data == [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}])
     end

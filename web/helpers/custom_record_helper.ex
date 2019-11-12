@@ -30,7 +30,7 @@ defmodule Magpie.CustomRecordHelper do
         data =
           upload.path
           |> File.read!()
-          |> Poison.decode!()
+          |> Jason.decode!()
 
         {:ok, data}
 

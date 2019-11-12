@@ -388,7 +388,7 @@ defmodule ExperimentControllerTest do
         |> using_basic_auth()
         |> get(experiment_path(conn, :retrieve_as_json, experiment.id))
 
-      data = response(conn, 200) |> Poison.decode!()
+      data = response(conn, 200) |> Jason.decode!()
 
       # List of lists, each inner list being one participant's responses
       assert(data == [[%{"a" => 1}, %{"a" => 11}], [%{"a" => 1}, %{"a" => 11}]])

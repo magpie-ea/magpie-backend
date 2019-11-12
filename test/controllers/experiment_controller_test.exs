@@ -2,7 +2,7 @@ defmodule ExperimentControllerTest do
   @moduledoc false
 
   use Magpie.ConnCase
-  alias Magpie.{Repo, ExperimentResult, ExperimentStatus}
+  alias Magpie.{Repo, Experiment, ExperimentResult, ExperimentStatus}
 
   @username Application.get_env(:magpie, :authentication)[:username]
   @password Application.get_env(:magpie, :authentication)[:password]
@@ -131,7 +131,19 @@ defmodule ExperimentControllerTest do
   end
 
   describe "update/2" do
-    test "update/2 correctly updates the experiment name" do
+    test "update/2 correctly updates the experiment name", %{conn: conn} do
+      experiment = insert_experiment()
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> put(experiment_path(conn, :update, "#{experiment.id}"), %{
+          "experiment" => %{name: "New Name"}
+        })
+
+      assert redirected_to(conn) == experiment_path(conn, :index)
+      updated_experiment = Magpie.Repo.get(Experiment, experiment.id)
+      assert updated_experiment.name == "New Name"
     end
   end
 
@@ -145,6 +157,7 @@ defmodule ExperimentControllerTest do
         |> delete("/experiments/#{experiment.id}")
 
       assert redirected_to(conn) == experiment_path(conn, :index)
+      assert nil == Magpie.Repo.get(Experiment, experiment.id)
     end
 
     # TODO: These two tests should also be refactored and put into a "context test" module.

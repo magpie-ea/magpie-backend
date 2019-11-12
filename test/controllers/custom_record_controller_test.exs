@@ -182,4 +182,71 @@ defmodule CustomRecordControllerTest do
       assert html_response(conn, 200) =~ "alert"
     end
   end
+
+  describe "edit/2" do
+    test "edit/2 responds with the custom records edit page", %{conn: conn} do
+      custom_record = insert_custom_record()
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get("/custom_records/#{custom_record.id}/edit")
+
+      assert html_response(conn, 200) =~ "Edit Custom Record"
+      assert html_response(conn, 200) =~ "Submit"
+    end
+  end
+
+  describe "delete/2" do
+    test "delete/2 succeeds and redirects to the experiment index page", %{conn: conn} do
+      custom_record = insert_custom_record()
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> delete("/custom_records/#{custom_record.id}")
+
+      assert redirected_to(conn) == custom_record_path(conn, :index)
+      assert nil == Magpie.Repo.get(CustomRecord, custom_record.id)
+    end
+  end
+
+  describe "retrieve_as_csv/2" do
+    test "retrieve_as_csv/2 produces a CSV file with expected contents", %{conn: conn} do
+      custom_record = insert_custom_record()
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(custom_record_path(conn, :retrieve_as_csv, custom_record.id))
+
+      file = response(conn, 200)
+
+      assert(file == "a,b\r\n1,2\r\n11,22\r\n")
+    end
+  end
+
+  describe "retrieve_as_json/2" do
+    test "Dynamic retrieval returns exactly the data specified", %{conn: conn} do
+      custom_record = insert_custom_record(%{dynamic_retrieval_keys: ["a"]})
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(custom_record_path(conn, :retrieve_as_json, custom_record.id))
+
+      data = response(conn, 200) |> Poison.decode!()
+
+      assert(data == [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}])
+    end
+
+    test "Dynamic retrieval returns 404 for a nonexisting custom_record", %{conn: conn} do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(custom_record_path(conn, :retrieve_as_json, 1234))
+
+      assert(response(conn, 404))
+    end
+  end
 end

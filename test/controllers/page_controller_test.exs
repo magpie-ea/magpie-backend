@@ -2,7 +2,6 @@ defmodule PageControllerTest do
   @moduledoc false
 
   use Magpie.ConnCase
-  alias Magpie.{Repo, ExperimentResult, ExperimentStatus}
 
   @username Application.get_env(:magpie, :authentication)[:username]
   @password Application.get_env(:magpie, :authentication)[:password]
@@ -18,5 +17,17 @@ defmodule PageControllerTest do
 
     assert text_response(conn, 401)
     assert conn.halted
+  end
+
+  describe "index/2" do
+    test "index/2 shows the landing page", %{conn: conn} do
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get("/")
+
+      assert html_response(conn, 200) =~
+               "Minimal Architecture for the Generation of Portable Interactive Experiments"
+    end
   end
 end

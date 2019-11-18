@@ -1,31 +1,32 @@
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
-
 [![Build Status](https://travis-ci.com/magpie-ea/magpie-backend.svg?branch=master)](https://travis-ci.com/magpie-ea/magpie-backend) [![Coverage Status](https://coveralls.io/repos/github/magpie-ea/magpie-backend/badge.svg?branch=master)](https://coveralls.io/github/magpie-ea/magpie-backend?branch=master)
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [Server Documentation](#server-documentation)
-  - [Username and password for authentication](#username-and-password-for-authentication)
-  - [Experiments](#experiments)
-    - [Experiment creation](#experiment-creation)
-    - [Complex experiments](#complex-experiments)
-    - [Editing an experiment](#editing-an-experiment)
-    - [Deactivating an experiment](#deactivating-an-experiment)
-    - [Experiment Result submission via HTTP POST](#experiment-result-submission-via-http-post)
-    - [Experiment results submission via Phoenix Channels](#experiment-results-submission-via-phoenix-channels)
-    - [Experiment results retrieval as CSV](#experiment-results-retrieval-as-csv)
-    - [Experiment results retrieval as JSON](#experiment-results-retrieval-as-json)
-  - [Custom Data Records](#custom-data-records)
-    - [Uploading a data record](#uploading-a-data-record)
-    - [Retrieval of data records](#retrieval-of-data-records)
-  - [Deploying the Server](#deploying-the-server)
-    - [Deployment with Heroku](#deployment-with-heroku)
-    - [Local (Offline) Deployment](#local-offline-deployment)
-    - [Local (Offline) Deployment with Docker (Old method)](#local-offline-deployment-with-docker-old-method)
-      - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
-      - [Deployment](#deployment)
-  - [Upgrading a deployed instance of the server](#upgrading-a-deployed-instance-of-the-server)
-  - [Creating a new local release](#creating-a-new-local-release)
+    - [Username and password for authentication](#username-and-password-for-authentication)
+    - [Experiments](#experiments)
+        - [Experiment creation](#experiment-creation)
+        - [Complex experiments](#complex-experiments)
+        - [Editing an experiment](#editing-an-experiment)
+        - [Deactivating an experiment](#deactivating-an-experiment)
+        - [Experiment Result submission via HTTP POST](#experiment-result-submission-via-http-post)
+        - [Experiment results submission via Phoenix Channels](#experiment-results-submission-via-phoenix-channels)
+        - [Experiment results retrieval as CSV](#experiment-results-retrieval-as-csv)
+        - [Experiment results retrieval as JSON](#experiment-results-retrieval-as-json)
+    - [Custom Data Records](#custom-data-records)
+        - [Uploading a data record](#uploading-a-data-record)
+        - [Retrieval of data records](#retrieval-of-data-records)
+    - [Deploying the Server](#deploying-the-server)
+        - [Deployment with Gigalixir](#deployment-with-gigalixir)
+        - [Deployment with Heroku (Deprecated)](#deployment-with-heroku-deprecated)
+        - [Local (Offline) Deployment](#local-offline-deployment)
+        - [Local (Offline) Deployment with Docker (Old method)](#local-offline-deployment-with-docker-old-method)
+            - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
+            - [Deployment](#deployment)
+    - [Logging](#logging)
+    - [Upgrading a deployed instance of the server](#upgrading-a-deployed-instance-of-the-server)
+    - [Creating a new local release](#creating-a-new-local-release)
 - [Experiments (Frontend)](#experiments-frontend)
 - [Additional Notes](#additional-notes)
 - [Development](#development)
@@ -262,11 +263,20 @@ After first-time installation, you can launch a local server instance which sets
 
 Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/magpie-db-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
 
+## Logging
+The app has built-in support for [Timber](https://timber.io) as a logging backend. To use it, create an account on Timber, create a new app with type "Elixir", and set the following environment variables:
+
+- `gigalixir config:set USE_TIMBER=true`
+- `gigalixir config:set TIMBER_SOURCE_ID=YOUR_SOURCE_ID`
+- `gigalixir config:set TIMBER_API_KEY=YOUR_API_KEY`
+
+Now logs should start arriving in your Timber account. You can also set up [Alerts](https://docs.timber.io/usage/alerting) for errors in the app.
+
 ## Upgrading a deployed instance of the server
 
 1. `git pull` to pull in the newest changes.
-2. `git push heroku master` to pull the changes to the deployed instance hosted on Heroku.
-3. You may need to run `heroku run "POOL_SIZE=2" mix ecto.migrate` if there are any changes on the database.
+2. `git push gigalixir master` to pull the changes to the deployed instance hosted on Heroku.
+3. You may need to run `gigalixir ps:migrate` if there are any changes on the database.
 
 ## Creating a new local release
 

@@ -6,7 +6,7 @@ defmodule Magpie do
   def start(_type, _args) do
     import Supervisor.Spec
 
-    if Application.get_env(:timber, :use_timber) == "true" do
+    if System.get_env("USE_TIMBER") == "true" do
       :ok = Logger.add_translator({Timber.Exceptions.Translator, :translate})
 
       :ok =

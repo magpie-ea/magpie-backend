@@ -1,7 +1,7 @@
 defmodule Magpie.Endpoint do
   use Phoenix.Endpoint, otp_app: :magpie
 
-  if Application.get_env(:timber, :use_timber) == "true" do
+  if System.get_env("USE_TIMBER") == "true" do
     plug(Timber.Plug.HTTPContext)
     plug(Timber.Plug.Event)
   end

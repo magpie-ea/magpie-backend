@@ -35,23 +35,22 @@ config :magpie, Magpie.Repo,
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "2"),
   ssl: true,
   log:
-    (if Application.get_env(:timber, :use_timber) == "true" do
+    (if System.get_env("USE_TIMBER") == "true" do
        false
      else
-       true
+       :debug
      end)
 
 config :logger,
   level: :info,
   backends:
-    (if Application.get_env(:timber, :use_timber) == "true" do
+    (if System.get_env("USE_TIMBER") == "true" do
        [Timber.LoggerBackends.HTTP, :console]
      else
        [:console]
      end)
 
 config :timber,
-  use_timber: "${USE_TIMBER}",
   api_key: "${TIMBER_API_KEY}",
   source_id: "${TIMBER_SOURCE_ID}"
 

@@ -16,7 +16,7 @@ config :magpie, Magpie.Endpoint,
   render_errors: [view: Magpie.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Magpie.PubSub, adapter: Phoenix.PubSub.PG2],
   instrumenters:
-    (if(Application.get_env(:timber, :use_timber) == "true") do
+    (if System.get_env("USE_TIMBER") == "true" do
        [Timber.Phoenix]
      else
        []
@@ -33,7 +33,7 @@ config :magpie, :timezone, "Europe/Berlin"
 no_basic_auth =
   config :magpie,
          :no_basic_auth,
-         (if Map.has_key?(System.get_env(), "MAGPIE_NO_BASIC_AUTH") do
+         (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
             true
           else
             false

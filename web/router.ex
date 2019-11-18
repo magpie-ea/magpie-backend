@@ -1,7 +1,6 @@
 defmodule Magpie.Router do
   use Magpie.Web, :router
   use Plug.ErrorHandler
-  use Sentry.Plug
 
   pipeline :browser do
     plug(:accepts, ["html"])

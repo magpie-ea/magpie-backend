@@ -17,30 +17,11 @@ defmodule Magpie.Mixfile do
     ]
   end
 
-  @applications [
-    :phoenix,
-    :phoenix_pubsub,
-    :phoenix_ecto,
-    :phoenix_html,
-    :gettext,
-    :cowboy,
-    :plug_cowboy,
-    :jason,
-    :cors_plug,
-    :csv,
-    :basic_auth,
-    :calendar,
-    :logger,
-    :ecto_sql,
-    :postgrex,
-    :sentry
-  ]
-
   # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {Magpie, []},
-      applications: @applications
+      extra_applications: [:logger, :runtime_tools]
     ]
   end
 

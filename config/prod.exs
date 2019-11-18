@@ -33,10 +33,27 @@ config :magpie, Magpie.Repo,
   url: "${DATABASE_URL}",
   database: "",
   pool_size: String.to_integer(System.get_env("POOL_SIZE") || "2"),
-  ssl: true
+  ssl: true,
+  log:
+    (if Application.get_env(:timber, :use_timber) == "true" do
+       false
+     else
+       true
+     end)
 
-# Do not print debug messages in production
-config :logger, level: :info
+config :logger,
+  level: :info,
+  backends:
+    (if Application.get_env(:timber, :use_timber) == "true" do
+       [Timber.LoggerBackends.HTTP, :console]
+     else
+       [:console]
+     end)
+
+config :timber,
+  use_timber: "${USE_TIMBER}",
+  api_key: "${TIMBER_API_KEY}",
+  source_id: "${TIMBER_SOURCE_ID}"
 
 # Used for basic_auth
 config :magpie, :authentication,

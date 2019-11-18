@@ -14,7 +14,13 @@ config :magpie, Magpie.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
   render_errors: [view: Magpie.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Magpie.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Magpie.PubSub, adapter: Phoenix.PubSub.PG2],
+  instrumenters:
+    (if(Application.get_env(:timber, :use_timber) == "true") do
+       [Timber.Phoenix]
+     else
+       []
+     end)
 
 # Configures Elixir's Logger
 config :logger, :console,

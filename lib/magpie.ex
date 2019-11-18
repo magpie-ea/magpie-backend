@@ -6,6 +6,18 @@ defmodule Magpie do
   def start(_type, _args) do
     import Supervisor.Spec
 
+    if Application.get_env(:timber, :use_timber) == "true" do
+      :ok = Logger.add_translator({Timber.Exceptions.Translator, :translate})
+
+      :ok =
+        :telemetry.attach(
+          "timber-ecto-query-handler",
+          [:my_app, :repo, :query],
+          &Timber.Ecto.handle_event/4,
+          []
+        )
+    end
+
     # Create the directory to store the results
     File.mkdir("results/")
 

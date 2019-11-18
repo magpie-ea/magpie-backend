@@ -1,6 +1,11 @@
 defmodule Magpie.Endpoint do
   use Phoenix.Endpoint, otp_app: :magpie
 
+  if Application.get_env(:timber, :use_timber) == "true" do
+    plug(Timber.Plug.HTTPContext)
+    plug(Timber.Plug.Event)
+  end
+
   # Enable concurrent testing.
   if Application.get_env(:magpie, :sql_sandbox) do
     plug(Phoenix.Ecto.SQL.Sandbox)

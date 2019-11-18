@@ -70,12 +70,18 @@ defmodule Magpie.Mixfile do
       {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 0.17.2"},
       {:distillery, "~> 2.1"},
-      {:sentry, "~> 6.4"},
       {:wallaby, "~> 0.22.0", [runtime: false, only: :test]},
       {:excoveralls, "~> 0.12.0", only: :test},
       # Error checking and linting
       {:credo, "~> 0.5", only: [:dev, :test]},
-      {:dogma, "~> 0.1", only: [:dev]}
+      {:dogma, "~> 0.1", only: [:dev]},
+      # Logging
+      {:timber, "~> 3.0"},
+      {:timber_exceptions, "~> 2.0"},
+      {:timber_plug, "~> 1.0"},
+      {:timber_phoenix, "~> 1.0"},
+      {:timber_ecto, "~> 2.0"},
+      {:sentry, "~> 6.4"}
     ]
   end
 

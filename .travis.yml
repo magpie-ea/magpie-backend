@@ -14,18 +14,35 @@ cache:
     - _build
     - deps
 
-before_script:
-  # From https://github.com/keathley/wallaby/blob/master/.travis.yml
-  - export CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE_73.0.3683`
-  - curl -L -O "http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-  - unzip chromedriver_linux64.zip
-  - sudo chmod +x chromedriver
-  - sudo mv chromedriver /usr/local/bin
-  - sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
-  - sudo apt-get update
-  - sudo apt-get --only-upgrade install google-chrome-stable
-  - psql -c "create user magpie_dev with password 'magpie';" -U postgres
-  - psql -c "alter user magpie_dev createdb" -U postgres
-  - mix do ecto.create, ecto.migrate
-  - mix test
-  - mix coveralls.travis
+stages:
+  - tests
+  - name: deploy
+    if: branch = master
+
+jobs:
+  include:
+    - stage: tests
+
+      before_script:
+        # From https://github.com/keathley/wallaby/blob/master/.travis.yml
+        - export CHROMEDRIVER_VERSION=`curl -s http://chromedriver.storage.googleapis.com/LATEST_RELEASE_73.0.3683`
+        - curl -L -O "http://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+        - unzip chromedriver_linux64.zip
+        - sudo chmod +x chromedriver
+        - sudo mv chromedriver /usr/local/bin
+        - sudo add-apt-repository ppa:ubuntu-toolchain-r/test --yes
+        - sudo apt-get update
+        - sudo apt-get --only-upgrade install google-chrome-stable
+        - psql -c "create user magpie_dev with password 'magpie';" -U postgres
+        - psql -c "alter user magpie_dev createdb" -U postgres
+
+      script:
+        - mix do ecto.create, ecto.migrate
+        - mix test
+        - mix coveralls.travis
+
+    - stage: deploy
+
+      script:
+        - git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME.git
+        - git push -f gigalixir HEAD:refs/heads/master

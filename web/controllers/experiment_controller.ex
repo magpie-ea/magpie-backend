@@ -38,7 +38,7 @@ defmodule Magpie.ExperimentController do
       {:ok, %{experiment: experiment}} ->
         conn
         |> put_flash(:info, "#{experiment.name} created!")
-        |> redirect(to: experiment_path(conn, :index))
+        |> redirect(to: experiment_path(conn, :edit, experiment))
 
       {:error, :experiment, failed_value, _changes_so_far} ->
         conn

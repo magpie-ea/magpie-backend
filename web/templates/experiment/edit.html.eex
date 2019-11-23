@@ -7,6 +7,7 @@
 <ul>
   <li>Submission: <code><%= get_endpoint_url(:submit, @experiment.id) %></code></li>
   <li>Dynamic retrieval: <code><%= get_endpoint_url(:retrieve_as_json, @experiment.id) %></code></li>
+  <li>Socket endpoint for interactive experiments: <code><%= get_socket_url() %></code></li>
 </ul>
 
 <%= form_for @changeset, experiment_path(@conn, :update, @experiment), fn f -> %>
@@ -17,7 +18,7 @@
   <% end %>
 
   <%= link "Reset experiment", to: experiment_path(@conn, :reset, @experiment), class: "btn btn-danger", method: :delete, data: [confirm: "You are about to reset #{@experiment.name}. All experiment results will be deleted and the experiment stauses will be reset! Make sure that you have already backed up the experiment results, if necessary."] %>
-  
+
   <br>
   <br>
 

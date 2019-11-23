@@ -120,6 +120,12 @@ defmodule Magpie.ExperimentView do
     base_url <> path
   end
 
+  def get_socket_url() do
+    base_url = Application.get_env(:magpie, :real_url, Magpie.Endpoint.url())
+    ws_url = String.replace_leading(base_url, "http", "ws")
+    ws_url <> "/socket"
+  end
+
   def format_timestamp(timestamp, timezone) do
     timestamp
     |> Calendar.DateTime.shift_zone!(timezone)

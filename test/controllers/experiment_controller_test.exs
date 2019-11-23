@@ -90,10 +90,7 @@ defmodule ExperimentControllerTest do
         |> using_basic_auth()
         |> post("/experiments", %{"experiment" => get_experiment_attrs()})
 
-      # Seems that we can't check this because the first step is a 302 redirect, while only after this redirect do we see the actual page.
-      # assert html_response(conn, 200) =~ "created!"
-      # We can only check whether it is redirecting us to the correct page?
-      assert redirected_to(conn) == experiment_path(conn, :index)
+      assert html_response(conn, 302) =~ "You are being"
     end
 
     test "create/2 fails with invalid attributes and redirects to creation page", %{conn: conn} do

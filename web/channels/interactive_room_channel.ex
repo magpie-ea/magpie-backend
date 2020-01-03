@@ -1,6 +1,6 @@
 defmodule Magpie.InteractiveRoomChannel do
   @moduledoc """
-  Channel for maintaining lobbies in experiments which require multiple participants to interact with each other.
+  Channel for maintaining lobbies in interactive experiments which require multiple participants to with each other.
 
   The client should make use of the presence_diff event to decide if a game can be started.
   """

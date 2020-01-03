@@ -1,6 +1,6 @@
 defmodule Magpie.IteratedLobbyChannel do
   @moduledoc """
-  Channel for participants who need to wait for other participants to finish first.
+  Channel for maintaining lobbies for iterated experiments where new participants need to wait for previous participants to finish first.
   """
   use Magpie.Web, :channel
   alias Magpie.ChannelHelper
@@ -41,7 +41,8 @@ defmodule Magpie.IteratedLobbyChannel do
             where: r.experiment_id == ^experiment_id,
             where: r.variant == ^variant,
             where: r.chain == ^chain,
-            where: r.realization == ^realization
+            where: r.realization == ^realization,
+            where: r.is_intermediate == false
           )
 
         experiment_results = Repo.one!(results_query)

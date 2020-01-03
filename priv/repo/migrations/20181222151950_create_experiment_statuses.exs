@@ -40,6 +40,8 @@ defmodule Magpie.Repo.Migrations.CreateExperimentStatuses do
 
     # When querying particular results, all four pieces of info need to be provided.
     # Make this unique anyways. There should be only one set of canonical experiment results for a given combination overall. If we record temorary results, we should probably use another dedicated table anyways.
+
+    # UPDATE 2020-01-03: Now that we want to record aborted experiment results as well, this should not be unique anymore. It's changed in a new migration.
     create(
       index(:experiment_results, [:experiment_id, :variant, :chain, :realization], unique: true)
     )

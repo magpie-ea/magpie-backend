@@ -11,7 +11,8 @@ defmodule Magpie.ExperimentResultTest do
     variant: 1,
     chain: 2,
     realization: 3,
-    results: [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}]
+    results: [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}],
+    is_intermediate: false
   }
 
   @invalid_attrs %{}
@@ -49,6 +50,13 @@ defmodule Magpie.ExperimentResultTest do
   test "realization is not required" do
     changeset =
       ExperimentResult.changeset(%ExperimentResult{}, Map.delete(@valid_attrs, :realization))
+
+    assert changeset.valid?
+  end
+
+  test "is_intermediate is not required" do
+    changeset =
+      ExperimentResult.changeset(%ExperimentResult{}, Map.delete(@valid_attrs, :is_intermediate))
 
     assert changeset.valid?
   end

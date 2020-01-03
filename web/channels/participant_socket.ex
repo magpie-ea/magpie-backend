@@ -8,7 +8,6 @@ defmodule Magpie.ParticipantSocket do
 
   # Participant Channel is responsible for holding 1-to-1 connections with each participant.
   channel("participant:*", Magpie.ParticipantChannel)
-  channel("experiment_lobby:*", Magpie.ParticipantChannel)
 
   # Interactive room is for interactive experiments where multiple participants are present.
   channel("interactive_room:*", Magpie.InteractiveRoomChannel)

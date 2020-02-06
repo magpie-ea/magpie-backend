@@ -171,6 +171,8 @@ This section documents some methods one can use to deploy the server, for both o
 ### Deployment with Gigalixir
 [Gigalixir](https://www.gigalixir.com) is a hosting service dedicated to Elixir apps. Compared to Heroku, it has the advantage of providing a server that never sleeps, even on the free tier. It also fully supports Elixir features such as unlimited socket connection, which is helpful for interactive experiments. Therefore, Gigalixir is now the recommended deployment method.
 
+(Note: On the free tier, the Gigalixir app would shut down after 30 days if there are no new deployments. You may prevent this by running `git push --force gigalixir master` periodically to re-deploy the app.)
+
 1. Ensure that you have [the Phoenix Framework installed](https://hexdocs.pm/phoenix/installation.html) and working. However, if you just want to deploy this server and do no development work/change on it at all, you may skip this step.
 
 2. Ensure that you have a [Gigalixir account](https://www.gigalixir.com/#/signup) already, and have the [Gigalixir CLI](https://gigalixir.readthedocs.io/en/latest/main.html#install-the-cli) installed and working on your computer.

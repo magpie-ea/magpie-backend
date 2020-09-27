@@ -30,14 +30,13 @@ config :logger, :console,
 # The local timezone where the app is deployed.
 config :magpie, :timezone, "Europe/Berlin"
 
-no_basic_auth =
-  config :magpie,
-         :no_basic_auth,
-         (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-            true
-          else
-            false
-          end)
+config :magpie,
+       :no_basic_auth,
+       (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+          true
+        else
+          false
+        end)
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

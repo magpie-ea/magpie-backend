@@ -216,8 +216,8 @@ defmodule Magpie.ExperimentController do
 
       _ ->
         # Name the CSV file to be returned.
-        orig_name = "results_#{id}_#{name}_#{author}.csv"
-        file_path = "results/#{orig_name}"
+        download_name = "results_#{id}_#{name}_#{author}.csv"
+        {:ok, file_path} = Briefly.create()
         file = File.open!(file_path, [:write, :utf8])
 
         prepare_submissions_for_csv_download(experiment_submissions)
@@ -227,7 +227,10 @@ defmodule Magpie.ExperimentController do
         File.close(file)
 
         conn
-        |> send_download({:file, file_path})
+        |> send_download({:file, file_path},
+          content_type: "application/csv",
+          filename: download_name
+        )
     end
   end
 
@@ -275,6 +278,9 @@ defmodule Magpie.ExperimentController do
   Retrieve all experiment results as a zip of CSVs.
   """
   def retrieve_all(conn, _params) do
+    {:ok, dir_path} = Briefly.create(directory: true)
+    File.mkdir(Path.join(dir_path, "all_results"))
+
     all_files =
       Experiment
       |> Repo.all()
@@ -291,8 +297,8 @@ defmodule Magpie.ExperimentController do
 
           _ ->
             # Name the CSV file to be returned.
-            orig_name = "results_#{id}_#{name}_#{author}.csv"
-            file_path = "results/#{orig_name}"
+            orig_name = Path.join("all_results", "results_#{id}_#{name}_#{author}.csv")
+            file_path = Path.join(dir_path, orig_name)
             file = File.open!(file_path, [:write, :utf8])
 
             prepare_submissions_for_csv_download(experiment_submissions)
@@ -301,14 +307,14 @@ defmodule Magpie.ExperimentController do
             File.close(file)
 
             # :zip is an Erlang function. We need to convert Elixir string to Erlang charlist.
-            [String.to_charlist(file_path) | acc]
+            [String.to_charlist(orig_name) | acc]
         end
       end)
 
-    :zip.create('results/all_results.zip', all_files)
+    :zip.create('#{dir_path}/all_results.zip', all_files, cwd: String.to_charlist(dir_path))
 
     conn
-    |> send_download({:file, "results/all_results.zip"})
+    |> send_download({:file, "#{dir_path}/all_results.zip"}, content_type: "application/zip")
   end
 
   @doc """

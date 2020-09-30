@@ -5,7 +5,7 @@ defmodule Magpie.Mixfile do
     [
       app: :magpie,
       version: "0.2.3",
-      elixir: "~> 1.6",
+      elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
@@ -52,7 +52,6 @@ defmodule Magpie.Mixfile do
       {:csv, "~> 2.1"},
       {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 0.17.2"},
-      {:distillery, "~> 2.1"},
       {:wallaby, "~> 0.22.0", [runtime: false, only: :test]},
       {:excoveralls, "~> 0.12.0", only: :test},
       # Error checking and linting

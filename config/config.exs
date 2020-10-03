@@ -15,12 +15,7 @@ config :magpie, Magpie.Endpoint,
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
   render_errors: [view: Magpie.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Magpie.PubSub, adapter: Phoenix.PubSub.PG2],
-  instrumenters:
-    (if System.get_env("USE_TIMBER") == "true" do
-       [Timber.Phoenix]
-     else
-       []
-     end)
+  instrumenters: []
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -30,13 +25,10 @@ config :logger, :console,
 # The local timezone where the app is deployed.
 config :magpie, :timezone, "Europe/Berlin"
 
+# Define a default. Only override in production where the app is accessible by the others
 config :magpie,
        :no_basic_auth,
-       (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-          true
-        else
-          false
-        end)
+       true
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

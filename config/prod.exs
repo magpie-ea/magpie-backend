@@ -1,6 +1,6 @@
 use Mix.Config
 
 config :logger,
-  level: :info,
+  level: :info
 
 config :magpie, :environment, :prod

@@ -5,7 +5,7 @@ defmodule Magpie.Mixfile do
     [
       app: :magpie,
       version: "0.2.3",
-      elixir: "~> 1.10",
+      elixir: "~> 1.11",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,

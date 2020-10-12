@@ -1,18 +1,19 @@
 import Config
 
 config :magpie, Magpie.Endpoint,
-  http: [port: System.fetch_env!("PORT") |> String.to_integer()],
+  http: [port: System.get_env("PORT", "443") |> String.to_integer()],
   url: [
-    scheme: System.fetch_env!("URL_SCHEME"),
+    scheme: System.get_env("URL_SCHEME", "https"),
     host: System.fetch_env!("HOST"),
-    path: System.fetch_env!("PATH"),
-    port: System.fetch_env!("PORT") |> String.to_integer()
+    path: System.get_env("MAGPIE_PATH", "/"),
+    port: System.get_env("PORT", "443") |> String.to_integer()
   ],
+  # Don't use force_ssl if the URL_SCHEME is http
   force_ssl:
-    (if System.fetch_env!("URL_SCHEME") == "https" do
-       [rewrite_on: [:x_forwarded_proto]]
-     else
+    (if System.get_env("URL_SCHEME") == "http" do
        []
+     else
+       [rewrite_on: [:x_forwarded_proto]]
      end),
   server: true,
   # Allow clients from anywhere to connect to use the interactive experiment facilities. We can't constrain where the user chooses to host the frontend anyways.
@@ -30,12 +31,8 @@ config :magpie, Magpie.Endpoint,
 # Configure the database
 config :magpie, Magpie.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: System.fetch_env!("DATABASE_USERNAME"),
-  password: System.fetch_env!("DATABASE_PASSWORD"),
-  hostname: System.fetch_env!("DATABASE_HOST"),
-  database: System.fetch_env!("DATABASE_NAME"),
+  url: System.fetch_env!("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE", "2")),
-  ssl: true,
   log:
     (if System.get_env("USE_TIMBER") == "true" do
        false
@@ -70,5 +67,5 @@ config :timber,
   api_key: System.get_env("TIMBER_API_KEY"),
   source_id: System.get_env("TIMBER_SOURCE_ID")
 
-# This is useful when the app is behind a reverse proxy and you need to actually use the URL shown to the outside by the reverse proxy, e.g. in template generation in web/templates/experiments/edit.html..ex
+# This is useful when the app is behind a reverse proxy and you need to actually use the URL shown to the outside by the reverse proxy, e.g. in template generation in web/templates/experiments/edit.html.eex
 config :magpie, :real_url, System.get_env("REAL_URL", System.fetch_env!("HOST"))

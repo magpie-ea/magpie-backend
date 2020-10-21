@@ -169,8 +169,7 @@ The JSON retrieval address is
 This section documents some methods one can use to deploy the server, for both online and offline usages.
 
 ### Deployment with Heroku
-
-[Heroku](https://www.heroku.com/) makes it easy to deploy an web app without having to manually manage the infrastructure. It has a free starter tier, which should be sufficient for the purpose of running experiments. However, note that it has some constraints. For example, the server sleeps after a period of inactivity, and the number of concurrent socket connections is limited, which might restrict interactive experiments with a high amount of simultaneous participants. If Heroku doesn't satisfy your needs, it's recommended to deploy the app on your own server. You may also take a look at [Gigalixir](https://www.gigalixir.com/), an alternative free hosting service built for Elixir.
+[Heroku](https://www.heroku.com/) makes it easy to deploy an web app without having to manually manage the infrastructure. It has a free starter tier, which should be sufficient for the purpose of running experiments. If Heroku doesn't satisfy your needs, you may take a look at [Gigalixir](https://www.gigalixir.com/), an alternative free hosting service built for Elixir. Or you may want to to deploy the app on your own server.
 
 There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoenix framework on deploying on Heroku. The deployment procedure is based on this guide, but differs in some places.
 

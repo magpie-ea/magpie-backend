@@ -1,1 +1,1 @@
-web: MIX_ENV=prod mix phx.server
+web: _build/prod/rel/magpie/bin/magpie start

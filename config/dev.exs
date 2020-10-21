@@ -46,10 +46,10 @@ config :magpie, Magpie.Repo,
   database: "magpie_dev",
   pool_size: 10
 
-# Used for basic_auth
-config :magpie, :authentication,
-  username: "default",
-  password: "password"
+# No real need for basic auth in dev
+config :magpie,
+       :no_basic_auth,
+       false
 
 config :magpie, :environment, :dev
 

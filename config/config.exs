@@ -25,11 +25,6 @@ config :logger, :console,
 # The local timezone where the app is deployed.
 config :magpie, :timezone, "Europe/Berlin"
 
-# Define a default. Only override in production where the app is accessible by the others
-config :magpie,
-       :no_basic_auth,
-       true
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

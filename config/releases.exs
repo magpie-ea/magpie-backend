@@ -46,15 +46,6 @@ config :magpie, :authentication,
   username: System.fetch_env!("AUTH_USERNAME"),
   password: System.fetch_env!("AUTH_PASSWORD")
 
-# We don't have a basic auth on the demo app
-config :magpie,
-       :no_basic_auth,
-       (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-          true
-        else
-          false
-        end)
-
 config :logger,
   backends:
     (if System.get_env("USE_TIMBER") == "true" do

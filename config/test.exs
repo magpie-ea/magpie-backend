@@ -18,11 +18,6 @@ config :magpie, :sql_sandbox, true
 # Print only warnings and errors during test
 config :logger, level: :warn
 
-# Need to test it in the test environment.
-config :magpie,
-       :no_basic_auth,
-       false
-
 # Used for basic_auth
 config :magpie, :authentication,
   username: "default",

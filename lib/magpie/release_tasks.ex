@@ -6,6 +6,6 @@ defmodule Magpie.ReleaseTasks do
 
   def db_migrate do
     Application.load(:magpie)
-    {:ok, _, _} = Migrator.with_repo(:magpie, &Migrator.run(&1, :up, all: true))
+    {:ok, _, _} = Migrator.with_repo(Magpie.Repo, &Migrator.run(&1, :up, all: true))
   end
 end

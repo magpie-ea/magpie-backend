@@ -191,13 +191,13 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 7. You may want to change the application name instead of using the default name. In that case, run `heroku apps:rename newname`.
 
-8. Run `heroku config:set HOST="[app_name].herokuapp.com"` where `[app_name]` is the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277`, or the app name that you set at the previous step, e.g. `newname`).
+8. Run `heroku config:set HOST="[app_name].herokuapp.com" PORT=443` where `[app_name]` is the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277`, or the app name that you set at the previous step, e.g. `newname`).
 
 9. Run
 
    ```sh
    heroku addons:create heroku-postgresql:hobby-dev
-   heroku config:set POOL_SIZE=18 PORT=443
+   heroku config:set POOL_SIZE=18
    ```
 
 10. Run `mix deps.get` then `mix phx.gen.secret`. Then run `heroku config:set SECRET_KEY_BASE="OUTPUT"`, where `OUTPUT` should be the output of the `mix phx.gen.secret` step.

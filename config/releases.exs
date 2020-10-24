@@ -41,9 +41,21 @@ config :magpie, Magpie.Repo,
      end)
 
 # Used for basic_auth
+# However, we can't assume they always exist, since in some situations (e.g. demo app) we don't have any authentication.
+# This will look a bit ugly... Will do for now.
 config :magpie, :authentication,
-  username: System.fetch_env!("AUTH_USERNAME"),
-  password: System.fetch_env!("AUTH_PASSWORD")
+  username:
+    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+       nil
+     else
+       System.fetch_env!("AUTH_USERNAME")
+     end),
+  password:
+    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+       nil
+     else
+       System.fetch_env!("AUTH_PASSWORD")
+     end)
 
 config :logger,
   backends:

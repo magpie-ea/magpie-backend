@@ -282,17 +282,17 @@ Note that the database for storing experiment results is stored at `/var/lib/doc
 ## Logging
 The app has built-in support for [Timber](https://timber.io) as a logging backend. To use it, create an account on Timber, create a new app with type "Elixir", and set the following environment variables:
 
-- `gigalixir config:set USE_TIMBER=true`
-- `gigalixir config:set TIMBER_SOURCE_ID=YOUR_SOURCE_ID`
-- `gigalixir config:set TIMBER_API_KEY=YOUR_API_KEY`
+- `heroku config:set USE_TIMBER=true`
+- `heroku config:set TIMBER_SOURCE_ID=YOUR_SOURCE_ID`
+- `heroku config:set TIMBER_API_KEY=YOUR_API_KEY`
 
 Now logs should start arriving in your Timber account. You can also set up [Alerts](https://docs.timber.io/usage/alerting) for errors in the app.
 
 ## Upgrading a deployed instance of the server
 
 1. `git pull` to pull in the newest changes.
-2. `git push gigalixir master` to pull the changes to the deployed instance hosted on Heroku.
-3. You may need to run `gigalixir ps:migrate` if there are any changes on the database.
+2. `git push heroku master` to pull the changes to the deployed instance hosted on Heroku.
+3. You may need to run `heroku run "_build/prod/rel/magpie/bin/magpie eval 'Magpie.ReleaseTasks.db_migrate()'"` again, if there are any changes to the database.
 
 ## Creating a new local release
 

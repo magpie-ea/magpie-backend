@@ -21,7 +21,7 @@ defmodule Magpie.Mixfile do
   def application do
     [
       mod: {Magpie, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ssl]
     ]
   end
 

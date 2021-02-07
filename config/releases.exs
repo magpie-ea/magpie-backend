@@ -33,12 +33,13 @@ config :magpie, Magpie.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.fetch_env!("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE", "2")),
+  ssl: true,
   log:
     (if System.get_env("USE_TIMBER") == "true" do
        false
      else
        :debug
-     end)
+    end)
 
 # Used for basic_auth
 # However, we can't assume they always exist, since in some situations (e.g. demo app) we don't have any authentication.

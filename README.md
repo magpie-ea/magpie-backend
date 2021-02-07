@@ -204,10 +204,17 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
     Note: If you don't have Phoenix framework installed on your computer, you may choose to use some other random generator for this step, which essentially asks for a random 64-character secret. On Mac and Linux, you may run `openssl rand -base64 64`. Or you may use an online password generator [such as the one offered by LastPass](https://lastpass.com/generatepassword.php).
 
-11. By default, the app is accessible without authentication. If you want to protect the app with basic auth, first run ``. Set the environment variables `AUTH_USERNAME` and `AUTH_PASSWORD` for authentication, either in the Heroku web interface or via the command line, i.e.
+11. Set the environment variables `AUTH_USERNAME` and `AUTH_PASSWORD` for authentication, either in the Heroku web interface or via the command line, i.e.
 
     ```sh
-    heroku config:set AUTH_USERNAME="your_username" AUTH_PASSWORD="your_password"
+    heroku config:set AUTH_USERNAME="your_username"
+    heroku config:set AUTH_PASSWORD="your_password"
+    ```
+
+    Note: You can also completely disable the basic auth with
+
+    ```sh
+    heroku config:set MAGPIE_NO_BASIC_AUTH="true"
     ```
 
 12. Run `git push heroku master`. This will push the `master` branch of the repo to the git remote at Heroku, and deploy the app.

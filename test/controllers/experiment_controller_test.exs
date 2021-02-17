@@ -421,12 +421,6 @@ defmodule ExperimentControllerTest do
     # end
   end
 
-  describe "retrieve_all/2" do
-    # Maybe just compare binaries with a pre-produced fixture.
-    test "retrieve_all/2 produces the expected archive (for multiple existing experiments)" do
-    end
-  end
-
   describe "submit/2" do
     test "Submission of active experiment succeeds with 201 (created) and successfully stores the results in the DB",
          %{conn: conn} do

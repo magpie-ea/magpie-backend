@@ -273,50 +273,6 @@ defmodule Magpie.ExperimentController do
     end
   end
 
-  # By default the second argument is _params even though it might not be used in a controller function.
-  @doc """
-  Retrieve all experiment results as a zip of CSVs.
-  """
-  def retrieve_all(conn, _params) do
-    {:ok, dir_path} = Briefly.create(directory: true)
-    File.mkdir(Path.join(dir_path, "all_results"))
-
-    all_files =
-      Experiment
-      |> Repo.all()
-      |> Enum.reduce([], fn experiment, acc ->
-        id = experiment.id
-        name = experiment.name
-        author = experiment.author
-        experiment_submissions = Repo.all(assoc(experiment, :experiment_results))
-
-        case experiment_submissions do
-          # If the experiment still has no submissions, just skip it.
-          [] ->
-            acc
-
-          _ ->
-            # Name the CSV file to be returned.
-            orig_name = Path.join("all_results", "results_#{id}_#{name}_#{author}.csv")
-            file_path = Path.join(dir_path, orig_name)
-            file = File.open!(file_path, [:write, :utf8])
-
-            prepare_submissions_for_csv_download(experiment_submissions)
-            |> Enum.each(&IO.write(file, &1))
-
-            File.close(file)
-
-            # :zip is an Erlang function. We need to convert Elixir string to Erlang charlist.
-            [String.to_charlist(orig_name) | acc]
-        end
-      end)
-
-    :zip.create('#{dir_path}/all_results.zip', all_files, cwd: String.to_charlist(dir_path))
-
-    conn
-    |> send_download({:file, "#{dir_path}/all_results.zip"}, content_type: "application/zip")
-  end
-
   @doc """
   Check whether the given experiment_id is valid before the participant ever starts.
   """

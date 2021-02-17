@@ -29,12 +29,10 @@ defmodule Magpie.Router do
     delete("/experiments/:id/reset", ExperimentController, :reset)
 
     get("/experiments/:id/retrieve", ExperimentController, :retrieve_as_csv)
-    get("/experiments/retrieve_all", ExperimentController, :retrieve_all)
 
     # get "/custom_records", CustomRecordController, :index
     resources("/custom_records", CustomRecordController, except: [:show])
     get("/custom_records/:id/retrieve", CustomRecordController, :retrieve_as_csv)
-    get("/custom_records/retrieve_all", CustomRecordController, :retrieve_all)
   end
 
   scope "/api", Magpie do

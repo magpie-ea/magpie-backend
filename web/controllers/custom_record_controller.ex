@@ -186,32 +186,4 @@ defmodule Magpie.CustomRecordController do
         |> json(custom_record.record)
     end
   end
-
-  def retrieve_all(conn, _params) do
-    {:ok, dir_path} = Briefly.create(directory: true)
-    File.mkdir(Path.join(dir_path, "all_results"))
-
-    all_files =
-      CustomRecord
-      |> Repo.all()
-      |> Enum.reduce([], fn custom_record, acc ->
-        id = custom_record.id
-        name = custom_record.name
-
-        orig_name = Path.join("all_results", "record_#{id}_#{name}.csv")
-        file_path = Path.join(dir_path, orig_name)
-
-        file = File.open!(file_path, [:write, :utf8])
-        write_record(file, custom_record.record)
-        File.close(file)
-
-        # :zip is an Erlang function. We need to convert Elixir string to Erlang charlist.
-        [String.to_charlist(orig_name) | acc]
-      end)
-
-    :zip.create('#{dir_path}/all_results.zip', all_files, cwd: String.to_charlist(dir_path))
-
-    conn
-    |> send_download({:file, "#{dir_path}/all_results.zip"}, content_type: "application/zip")
-  end
 end

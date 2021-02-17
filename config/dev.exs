@@ -49,7 +49,7 @@ config :magpie, Magpie.Repo,
 # No real need for basic auth in dev
 config :magpie,
        :no_basic_auth,
-       false
+       true
 
 config :magpie, :environment, :dev
 

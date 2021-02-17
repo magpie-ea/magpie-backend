@@ -380,6 +380,8 @@ To run the server app locally with `dev` environment, the following instructions
 
 6. Run `mix deps.get; mix ecto.create; mix ecto.migrate` in the app folder.
 
-7. Run `mix phx.server` to run the server on `localhost:4000`.
+7. Run `npm install` to install the frontend dependencies.
 
-8. Every time a database change is introduced with new migration files, run `mix ecto.migrate` again before starting the server.
+8. Run `mix phx.server` to run the server on `localhost:4000`.
+
+9. Every time a database change is introduced with new migration files, run `mix ecto.migrate` again before starting the server.

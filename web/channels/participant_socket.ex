@@ -64,6 +64,13 @@ defmodule Magpie.ParticipantSocket do
       case Repo.update(changeset) do
         {:ok, _} ->
           # The second item to return is the socket. We need to add assigns to the socket before returning it.
+          Logger.log(
+            :info,
+            "The assignment with chain #{next_assignment.chain}, realization #{
+              next_assignment.realization
+            }, variant #{next_assignment.variant} is now updated in DB and is marked as in progress."
+          )
+
           {:ok,
            socket
            |> assign(:participant_id, participant_id)

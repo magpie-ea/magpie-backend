@@ -124,7 +124,10 @@ defmodule Magpie.ParticipantChannel do
       {:error, failed_operation, failed_value, changes_so_far} ->
         Logger.log(
           :error,
-          "#{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{
+          "Saving experiment results failed for participant with chain #{chain}, realization #{
+            realization
+          }, variant #{variant}, operation
+          #{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{
             inspect(changes_so_far)
           }"
         )
@@ -160,10 +163,25 @@ defmodule Magpie.ParticipantChannel do
 
     case Repo.insert(experiment_result_changeset) do
       {:ok, _} ->
+        Logger.log(
+          :info,
+          "Experiment results successfully saved for participant with chain #{chain}, realization #{
+            realization
+          }, variant #{variant}"
+        )
+
         # Send a simple ack reply
         {:reply, :ok, socket}
 
-      {:error, _changeset} ->
+      {:error, changeset} ->
+        Logger.log(
+          :error,
+          "Saving experiment results failed for participant with chain #{chain}, realization #{
+            realization
+          }, variant #{variant} with changeset
+            #{inspect(changeset)}"
+        )
+
         {:reply, :error, socket}
     end
   end

@@ -5,20 +5,21 @@ defmodule Magpie.Experiment do
   use Magpie.Web, :model
 
   schema "experiments" do
-    field(:name, :string, null: false)
-    field(:author, :string, null: false)
+    field :name, :string, null: false
+    field :author, :string, null: false
 
     # Note that the type :text is actually used for Postgres (specified in the migration file). It may not be valid for other databases. The description is potentially longer than varchar(255) limited by the default :string.
-    field(:description, :string)
-    field(:active, :boolean, default: true, null: false)
-    field(:dynamic_retrieval_keys, {:array, :string})
+    field :description, :string
+    field :active, :boolean, default: true, null: false
+    field :dynamic_retrieval_keys, {:array, :string}
 
-    field(:is_complex, :boolean, default: false, null: false)
+    field :is_complex, :boolean, default: false, null: false
 
     # null: true because they can be null for simple experiments.
-    field(:num_variants, :integer, null: true)
-    field(:num_chains, :integer, null: true)
-    field(:num_realizations, :integer, null: true)
+    field :num_variants, :integer, null: true
+    field :num_chains, :integer, null: true
+
+    field :num_realizations, :integer, null: true
 
     has_many(:experiment_results, Magpie.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.ExperimentStatus, on_delete: :delete_all)

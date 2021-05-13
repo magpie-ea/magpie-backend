@@ -1,7 +1,10 @@
 defmodule Magpie.ParticipantSocket do
-  use Phoenix.Socket
-  require Ecto.Query
   alias Magpie.{Repo, Experiment, ExperimentStatus, ChannelHelper}
+
+  require Ecto.Query
+  require Logger
+
+  use Phoenix.Socket
 
   ## Channels
   # The ":*" part just means that any event with `participant` topic will be sent to the Participant channel.
@@ -46,6 +49,13 @@ defmodule Magpie.ParticipantSocket do
          false <- is_nil(experiment),
          true <- experiment.active,
          [next_assignment | _] <- ChannelHelper.get_all_available_assignments(experiment_id) do
+      Logger.log(
+        :info,
+        "participant with id #{participant_id} is joining. They are assigned the assignment with chain #{
+          next_assignment.chain
+        }, realization #{next_assignment.realization}, variant #{next_assignment.variant}"
+      )
+
       # Mark this assignment as "in progress", i.e. allocated to this participant.
       changeset =
         next_assignment

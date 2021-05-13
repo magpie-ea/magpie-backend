@@ -8,6 +8,7 @@ defmodule Magpie.ParticipantChannel do
   alias Magpie.{Repo, ExperimentStatus, ExperimentResult}
   alias Ecto.Multi
   require Ecto.Query
+  require Logger
 
   @doc """
   The first step after establishing connection for any participant is to log in with a (in most cases randomly generated in the frontend) participant_id
@@ -100,6 +101,13 @@ defmodule Magpie.ParticipantChannel do
 
     case Repo.transaction(operation) do
       {:ok, _} ->
+        Logger.log(
+          :info,
+          "Experiment results successfully saved for participant with chain #{chain}, realization #{
+            realization
+          }, variant #{variant}"
+        )
+
         # No need to monitor this participant anymore
         Magpie.ChannelWatcher.demonitor(:participants, self())
 
@@ -113,7 +121,14 @@ defmodule Magpie.ParticipantChannel do
         # Send a simple ack reply to the submitting client.
         {:reply, :ok, socket}
 
-      {:error, _failed_operation, _failed_value, _changes_so_far} ->
+      {:error, failed_operation, failed_value, changes_so_far} ->
+        Logger.log(
+          :error,
+          "#{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{
+            inspect(changes_so_far)
+          }"
+        )
+
         {:reply, :error, socket}
     end
   end

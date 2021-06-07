@@ -170,6 +170,12 @@ This section documents some methods one can use to deploy the server, for both o
 ### Deployment with Heroku
 [Heroku](https://www.heroku.com/) makes it easy to deploy an web app without having to manually manage the infrastructure. It has a free starter tier, which should be sufficient for the purpose of running experiments. If Heroku doesn't satisfy your needs, you may take a look at [Gigalixir](https://www.gigalixir.com/), an alternative free hosting service built for Elixir. Or you may want to to deploy the app on your own server.
 
+We provide a script `deploy.sh` which is tested on MacOS and should also work on Linux. Before running the script, ensure that you have a [Heroku account](https://signup.heroku.com/) already, and have [Git](https://git-scm.com/downloads) and the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed and working on your computer. Then run the script with `sh deploy.sh NAME_OF_YOUR_APP USERNAME PASSWORD`, where
+- `NAME_OF_YOUR_APP` is a unique name for your instance of the app on Heroku. It must start with a letter, end with a letter or digit, and can only contain lowercase letters, digits, and dashes.
+- `USERNAME` and `PASSWORD` are credentials to be used when accessing the admin UI of the app.
+
+The following is a step-by-step guide if you prefer to do the deployment manually instead.
+
 There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoenix framework on deploying on Heroku. The deployment procedure is based on this guide, but differs in some places.
 
 1. Ensure that you have [the Phoenix Framework installed](https://hexdocs.pm/phoenix/installation.html) and working. (However, if you just want to deploy this server and do no development work/change on it at all, you may skip this step.)
@@ -184,7 +190,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 6. Run `heroku buildpacks:add https://github.com/gjaldon/heroku-buildpack-phoenix-static.git`
 
-   (N.B.: Although the command line output tells you to run `git push heroku master`, don't do it yet.)
+   (Note: Although the command line output tells you to run `git push heroku master`, don't do it yet.)
 
 7. Run `heroku buildpacks:add https://github.com/chrismcg/heroku-buildpack-elixir-mix-release`
 
@@ -201,7 +207,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 10. Run `mix deps.get` then `mix phx.gen.secret`. Then run `heroku config:set SECRET_KEY_BASE="OUTPUT"`, where `OUTPUT` should be the output of the `mix phx.gen.secret` step.
 
-    Note: If you don't have Phoenix framework installed on your computer, you may choose to use some other random generator for this step, which essentially asks for a random 64-character secret. On Mac and Linux, you may run `openssl rand -base64 64`. Or you may use an online password generator [such as the one offered by LastPass](https://lastpass.com/generatepassword.php).
+    Note: If you don't have Phoenix framework installed on your computer, you may choose to use some other random generator for this step, which essentially asks for a random 64-character secret. On Mac and Linux, you may run `openssl rand -base64 64 | tr -d '\n'`. Or you may use an online password generator [such as the one offered by LastPass](https://lastpass.com/generatepassword.php).
 
 11. Set the environment variables `AUTH_USERNAME` and `AUTH_PASSWORD` for authentication, either in the Heroku web interface or via the command line, i.e.
 

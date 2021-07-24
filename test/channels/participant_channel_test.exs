@@ -57,27 +57,28 @@ defmodule Magpie.ParticipantChannelTest do
   end
 
   # The issue with SQL Sandbox is solved with Elixir 1.8.0+ and DBConnection 2.0.4+
-  test "The experiment status is reset to 0 if a participant quits halfway through", %{
-    socket: socket,
-    experiment: _experiment,
-    participant_id: participant_id
-  } do
-    {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+  # TODO: This method of resetting the experiment status will be obsolete once we implement the polling.
+  # test "The experiment status is reset to 0 if a participant quits halfway through", %{
+  #   socket: socket,
+  #   experiment: _experiment,
+  #   participant_id: participant_id
+  # } do
+  #   {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-    experiment_id = socket.assigns.experiment_id
-    variant = socket.assigns.variant
-    chain = socket.assigns.chain
-    realization = socket.assigns.realization
+  #   experiment_id = socket.assigns.experiment_id
+  #   variant = socket.assigns.variant
+  #   chain = socket.assigns.chain
+  #   realization = socket.assigns.realization
 
-    close(socket)
+  #   close(socket)
 
-    Process.sleep(100)
+  #   Process.sleep(100)
 
-    experiment_status =
-      Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
+  #   experiment_status =
+  #     Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
 
-    assert experiment_status.status === 0
-  end
+  #   assert experiment_status.status === 0
+  # end
 
   describe "submit_results" do
     test "Successfully stores experiment results", %{

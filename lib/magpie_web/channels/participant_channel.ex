@@ -3,9 +3,9 @@ defmodule Magpie.ParticipantChannel do
   Channel dedicated to keeping individual connections with each participant
   """
 
-  use Magpie.Web, :channel
-  alias Magpie.ChannelHelper
-  alias Magpie.{Repo, ExperimentStatus, ExperimentResult}
+  use MagpieWeb, :channel
+  alias Magpie.Experiments.{ExperimentStatus, ExperimentResult}
+  alias Magpie.Repo
   alias Ecto.Multi
   require Ecto.Query
   require Logger
@@ -103,9 +103,7 @@ defmodule Magpie.ParticipantChannel do
       {:ok, _} ->
         Logger.log(
           :info,
-          "Experiment results successfully saved for participant with chain #{chain}, realization #{
-            realization
-          }, variant #{variant}"
+          "Experiment results successfully saved for participant with chain #{chain}, realization #{realization}, variant #{variant}"
         )
 
         # No need to monitor this participant anymore
@@ -124,12 +122,8 @@ defmodule Magpie.ParticipantChannel do
       {:error, failed_operation, failed_value, changes_so_far} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant with chain #{chain}, realization #{
-            realization
-          }, variant #{variant}, operation
-          #{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{
-            inspect(changes_so_far)
-          }"
+          "Saving experiment results failed for participant with chain #{chain}, realization #{realization}, variant #{variant}, operation
+          #{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{inspect(changes_so_far)}"
         )
 
         {:reply, :error, socket}
@@ -165,9 +159,7 @@ defmodule Magpie.ParticipantChannel do
       {:ok, _} ->
         Logger.log(
           :info,
-          "Experiment results successfully saved for participant with chain #{chain}, realization #{
-            realization
-          }, variant #{variant}"
+          "Experiment results successfully saved for participant with chain #{chain}, realization #{realization}, variant #{variant}"
         )
 
         # Send a simple ack reply
@@ -176,9 +168,7 @@ defmodule Magpie.ParticipantChannel do
       {:error, changeset} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant with chain #{chain}, realization #{
-            realization
-          }, variant #{variant} with changeset
+          "Saving experiment results failed for participant with chain #{chain}, realization #{realization}, variant #{variant} with changeset
             #{inspect(changeset)}"
         )
 

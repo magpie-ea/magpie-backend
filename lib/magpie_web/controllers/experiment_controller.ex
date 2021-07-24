@@ -1,17 +1,17 @@
 defmodule Magpie.ExperimentController do
   @moduledoc false
-  use Magpie.Web, :controller
+  use MagpieWeb, :controller
 
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
   unless Application.get_env(:magpie, :no_basic_auth) do
     plug(
       BasicAuth,
       [use_config: {:magpie, :authentication}]
-      when not (action in [:submit, :retrieve_as_json, :check_valid])
+      when action not in [:submit, :retrieve_as_json, :check_valid]
     )
   end
 
-  alias Magpie.{Experiment, ExperimentResult}
+  alias Magpie.Experiments.{Experiment, ExperimentResult}
   alias Ecto.Multi
 
   import Magpie.ExperimentHelper

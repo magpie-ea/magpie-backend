@@ -1,5 +1,7 @@
 defmodule Magpie.ParticipantSocket do
-  alias Magpie.{Repo, Experiment, ExperimentStatus, ChannelHelper}
+  alias Magpie.ChannelHelper
+  alias Magpie.Repo
+  alias Magpie.Experiments.{Experiment, ExperimentStatus}
 
   require Ecto.Query
   require Logger
@@ -51,9 +53,7 @@ defmodule Magpie.ParticipantSocket do
          [next_assignment | _] <- ChannelHelper.get_all_available_assignments(experiment_id) do
       Logger.log(
         :info,
-        "participant with id #{participant_id} is joining. They are assigned the assignment with chain #{
-          next_assignment.chain
-        }, realization #{next_assignment.realization}, variant #{next_assignment.variant}"
+        "participant with id #{participant_id} is joining. They are assigned the assignment with chain #{next_assignment.chain}, realization #{next_assignment.realization}, variant #{next_assignment.variant}"
       )
 
       # Mark this assignment as "in progress", i.e. allocated to this participant.
@@ -66,9 +66,7 @@ defmodule Magpie.ParticipantSocket do
           # The second item to return is the socket. We need to add assigns to the socket before returning it.
           Logger.log(
             :info,
-            "The assignment with chain #{next_assignment.chain}, realization #{
-              next_assignment.realization
-            }, variant #{next_assignment.variant} is now updated in DB and is marked as in progress."
+            "The assignment with chain #{next_assignment.chain}, realization #{next_assignment.realization}, variant #{next_assignment.variant} is now updated in DB and is marked as in progress."
           )
 
           {:ok,

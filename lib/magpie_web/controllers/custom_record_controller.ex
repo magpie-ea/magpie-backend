@@ -1,16 +1,16 @@
 defmodule Magpie.CustomRecordController do
   @moduledoc false
-  use Magpie.Web, :controller
+  use MagpieWeb, :controller
 
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
   unless Application.get_env(:magpie, :no_basic_auth) do
     plug(
       BasicAuth,
-      [use_config: {:magpie, :authentication}] when not (action in [:retrieve_as_json])
+      [use_config: {:magpie, :authentication}] when action not in [:retrieve_as_json]
     )
   end
 
-  alias Magpie.CustomRecord
+  alias Magpie.Experiments.CustomRecord
 
   import Magpie.CustomRecordHelper
 

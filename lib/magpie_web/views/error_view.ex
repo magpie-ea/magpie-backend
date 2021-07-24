@@ -1,5 +1,5 @@
 defmodule Magpie.ErrorView do
-  use Magpie.Web, :view
+  use MagpieWeb, :view
 
   def render("404.html", _assigns) do
     "Page not found"

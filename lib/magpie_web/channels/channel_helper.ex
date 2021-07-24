@@ -2,7 +2,8 @@ defmodule Magpie.ChannelHelper do
   @moduledoc """
   Helper module for functionalities common to all channels.
   """
-  alias Magpie.{Repo, ExperimentStatus}
+  alias Magpie.Experiments.ExperimentStatus
+  alias Magpie.Repo
   require Ecto.Query
 
   @doc """

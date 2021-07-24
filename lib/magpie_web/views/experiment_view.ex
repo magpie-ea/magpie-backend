@@ -1,5 +1,5 @@
 defmodule Magpie.ExperimentView do
-  use Magpie.Web, :view
+  use MagpieWeb, :view
   import Ecto.Query, only: [from: 2]
 
   # From https://medium.com/@chipdean/phoenix-array-input-field-implementation-7ec0fe0949d
@@ -93,14 +93,16 @@ defmodule Magpie.ExperimentView do
   Get the total number of submissions for a particular experiment
   """
   def get_current_submissions(experiment) do
-    query = from(r in Magpie.ExperimentResult, where: r.experiment_id == ^experiment.id)
+    query =
+      from(r in Magpie.Experiments.ExperimentResult, where: r.experiment_id == ^experiment.id)
+
     Magpie.Repo.aggregate(query, :count, :id)
   end
 
   # TODO: Optimize the query a bit, or use some sort of caching
   def get_last_submission_time(experiment) do
     query =
-      from(r in Magpie.ExperimentResult,
+      from(r in Magpie.Experiments.ExperimentResult,
         where: r.experiment_id == ^experiment.id,
         order_by: [desc: r.updated_at],
         select: r.updated_at,

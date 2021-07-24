@@ -1,5 +1,5 @@
 defmodule Magpie.Router do
-  use Magpie.Web, :router
+  use MagpieWeb, :router
   use Plug.ErrorHandler
 
   pipeline :browser do

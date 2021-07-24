@@ -1,3 +1,3 @@
 defmodule Magpie.LayoutView do
-  use Magpie.Web, :view
+  use MagpieWeb, :view
 end

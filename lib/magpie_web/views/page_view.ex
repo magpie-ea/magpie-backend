@@ -1,3 +1,3 @@
 defmodule Magpie.PageView do
-  use Magpie.Web, :view
+  use MagpieWeb, :view
 end

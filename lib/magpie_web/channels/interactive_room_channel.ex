@@ -5,7 +5,7 @@ defmodule Magpie.InteractiveRoomChannel do
   The client should make use of the presence_diff event to decide if a game can be started.
   """
 
-  use Magpie.Web, :channel
+  use MagpieWeb, :channel
   alias Magpie.Presence
 
   @doc """

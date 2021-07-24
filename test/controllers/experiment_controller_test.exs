@@ -2,7 +2,8 @@ defmodule ExperimentControllerTest do
   @moduledoc false
 
   use Magpie.ConnCase
-  alias Magpie.{Repo, Experiment, ExperimentResult, ExperimentStatus}
+  alias Magpie.Experiments.{Experiment, ExperimentResult, ExperimentStatus}
+  alias Magpie.Repo
 
   @username Application.get_env(:magpie, :authentication)[:username]
   @password Application.get_env(:magpie, :authentication)[:password]
@@ -206,7 +207,7 @@ defmodule ExperimentControllerTest do
       |> using_basic_auth()
       |> get("/experiments/#{experiment.id}/toggle")
 
-      experiment = Magpie.Repo.get!(Magpie.Experiment, experiment.id)
+      experiment = Magpie.Repo.get!(Magpie.Experiments.Experiment, experiment.id)
       assert experiment.active == false
     end
 
@@ -217,7 +218,7 @@ defmodule ExperimentControllerTest do
       |> using_basic_auth()
       |> get("/experiments/#{experiment.id}/toggle")
 
-      experiment = Magpie.Repo.get!(Magpie.Experiment, experiment.id)
+      experiment = Magpie.Repo.get!(Magpie.Experiments.Experiment, experiment.id)
       assert experiment.active == true
     end
 

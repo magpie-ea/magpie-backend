@@ -4,7 +4,7 @@ defmodule Magpie.ExperimentResultTest do
   """
   use Magpie.ModelCase
 
-  alias Magpie.ExperimentResult
+  alias Magpie.Experiments.ExperimentResult
 
   @valid_attrs %{
     experiment_id: 1,

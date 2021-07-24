@@ -3,7 +3,7 @@ defmodule Magpie.ExperimentHelper do
   Stores the helper functions which help to store and retrieve the experiments.
   """
 
-  alias Magpie.{ExperimentStatus, Experiment}
+  alias Magpie.Experiments.{ExperimentStatus, Experiment}
   alias Ecto.Multi
   alias Magpie.Repo
   require Ecto.Query

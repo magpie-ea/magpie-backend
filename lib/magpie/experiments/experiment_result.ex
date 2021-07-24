@@ -1,9 +1,9 @@
-defmodule Magpie.ExperimentResult do
+defmodule Magpie.Experiments.ExperimentResult do
   @moduledoc """
   An ExperimentResult corresponds to a set of results obtained from one participant finishing one complete experiment, which usually consists of several trials.
   """
 
-  use Magpie.Web, :model
+  use MagpieWeb, :model
 
   import Magpie.ModelHelper
 
@@ -16,7 +16,7 @@ defmodule Magpie.ExperimentResult do
     field(:realization, :integer, null: true)
     field(:is_intermediate, :boolean, default: false)
 
-    belongs_to(:experiment, Magpie.Experiment)
+    belongs_to(:experiment, Magpie.Experiments.Experiment)
 
     timestamps(type: :utc_datetime)
   end

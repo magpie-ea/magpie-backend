@@ -1,5 +1,5 @@
 defmodule Magpie.CustomRecordView do
-  use Magpie.Web, :view
+  use MagpieWeb, :view
 
   def get_endpoint_url(type, id) do
     base_url = Application.get_env(:magpie, :real_url, Magpie.Endpoint.url())

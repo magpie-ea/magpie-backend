@@ -63,7 +63,8 @@ defmodule Magpie.TestHelpers do
         attrs
       )
 
-    changeset = Magpie.CustomRecord.changeset(%Magpie.CustomRecord{}, changes)
+    changeset =
+      Magpie.Experiments.CustomRecord.changeset(%Magpie.Experiments.CustomRecord{}, changes)
 
     {:ok, custom_record} = Magpie.Repo.insert(changeset)
     custom_record
@@ -76,8 +77,8 @@ defmodule Magpie.TestHelpers do
         attrs
       )
 
-    %Magpie.ExperimentResult{}
-    |> Magpie.ExperimentResult.changeset(changes)
+    %Magpie.Experiments.ExperimentResult{}
+    |> Magpie.Experiments.ExperimentResult.changeset(changes)
     |> Magpie.Repo.insert!()
   end
 

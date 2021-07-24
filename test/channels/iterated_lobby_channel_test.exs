@@ -7,7 +7,7 @@ defmodule Magpie.IteratedLobbyChannelTest do
   alias Magpie.ParticipantSocket
   # alias Magpie.IteratedLobbyChannel
   alias Magpie.ChannelHelper
-  alias Magpie.ExperimentStatus
+  alias Magpie.Experiments.ExperimentStatus
 
   setup do
     experiment = insert_complex_experiment()
@@ -22,9 +22,7 @@ defmodule Magpie.IteratedLobbyChannelTest do
     assert {:ok, _, socket} =
              subscribe_and_join(
                socket,
-               "iterated_lobby:#{experiment.id}:#{socket.assigns.variant}:#{socket.assigns.chain}:#{
-                 socket.assigns.realization
-               }"
+               "iterated_lobby:#{experiment.id}:#{socket.assigns.variant}:#{socket.assigns.chain}:#{socket.assigns.realization}"
              )
   end
 

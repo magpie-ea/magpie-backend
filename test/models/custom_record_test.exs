@@ -4,7 +4,7 @@ defmodule Magpie.CustomRecordTest do
   """
   use Magpie.ModelCase
 
-  alias Magpie.CustomRecord
+  alias Magpie.Experiments.CustomRecord
 
   @valid_attrs %{
     name: "some name",

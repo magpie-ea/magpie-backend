@@ -2,7 +2,7 @@ defmodule Magpie.IteratedLobbyChannel do
   @moduledoc """
   Channel for maintaining lobbies for iterated experiments where new participants need to wait for previous participants to finish first.
   """
-  use Magpie.Web, :channel
+  use MagpieWeb, :channel
   alias Magpie.ChannelHelper
   alias Magpie.{Repo, ExperimentResult}
 

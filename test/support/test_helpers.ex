@@ -41,7 +41,7 @@ defmodule Magpie.TestHelpers do
         attrs
       )
 
-    {:ok, %{experiment: experiment}} = Magpie.ExperimentHelper.create_experiment(changes)
+    {:ok, %{experiment: experiment}} = Magpie.Experiments.create_experiment(changes)
     experiment
   end
 
@@ -52,7 +52,7 @@ defmodule Magpie.TestHelpers do
         attrs
       )
 
-    {:ok, %{experiment: experiment}} = Magpie.ExperimentHelper.create_experiment(changes)
+    {:ok, %{experiment: experiment}} = Magpie.Experiments.create_experiment(changes)
     experiment
   end
 

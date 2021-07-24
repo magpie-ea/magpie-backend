@@ -31,7 +31,7 @@ defmodule Magpie do
       Magpie.Presence,
       # Start your own worker by calling: Magpie.Worker.start_link(arg1, arg2, arg3)
       # worker(Magpie.Worker, [arg1, arg2, arg3]),
-      worker(Task, [&Magpie.ExperimentHelper.reset_in_progress_experiment_statuses/0],
+      worker(Task, [&Magpie.Experiments.reset_in_progress_experiment_statuses/0],
         restart: :temporary
       ),
       worker(Magpie.ChannelWatcher, [:participants])

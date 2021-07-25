@@ -1,4 +1,4 @@
-defmodule Magpie.Experiments.CustomRecord do
+defmodule Magpie.CustomRecords.CustomRecord do
   @moduledoc """
   A custom record is a flexible data record (map) which is intended to be retrieved as JSON by experiments on the fly, to provide support for dynamic experiments. There are multiple ways to create/modify it:
   - Manual upload of a CSV file

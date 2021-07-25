@@ -11,7 +11,7 @@ defmodule Magpie.CustomRecordController do
     )
   end
 
-  alias Magpie.Experiments.CustomRecord
+  alias Magpie.CustomRecords.CustomRecord
 
   def index(conn, _params) do
     custom_records = Repo.all(CustomRecord |> order_by(asc: :id))

@@ -2,10 +2,9 @@ defmodule Magpie.CustomRecords do
   @moduledoc """
   Context for custom records
   """
-  alias Magpie.Experiments.{CustomRecord, Experiment, ExperimentResult, ExperimentStatus}
+  alias Magpie.CustomRecords.CustomRecord
   alias Magpie.Repo
 
-  import Ecto.Query
   import Magpie.Helpers
 
   def create_or_update_custom_record(custom_record_params, custom_record \\ %CustomRecord{}) do

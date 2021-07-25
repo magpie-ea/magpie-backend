@@ -2,7 +2,7 @@ defmodule CustomRecordControllerTest do
   @moduledoc false
 
   use Magpie.ConnCase
-  alias Magpie.Experiments.CustomRecord
+  alias Magpie.CustomRecords.CustomRecord
   alias Magpie.Repo
 
   @username Application.get_env(:magpie, :authentication)[:username]

@@ -120,7 +120,7 @@ defmodule Magpie.ExperimentController do
     end
   end
 
-  ## Below are the functions related to the API with the frontend.
+  ## Below are the endpoints related to the API with the frontend.
 
   @doc """
   Stores a set of experiment results submitted via the API
@@ -171,33 +171,8 @@ defmodule Magpie.ExperimentController do
     end
   end
 
-  def retrieve_as_csv(conn, %{"id" => id}) do
-    experiment = Experiments.get_experiment!(id)
-
-    case Experiments.retrieve_experiment_results_as_csv(experiment) do
-      {:error, :no_submissions_yet} ->
-        conn
-        |> put_flash(:error, "No submissions for this experiment yet!")
-        |> redirect(to: experiment_path(conn, :index))
-
-      {:ok, file_path} ->
-        download_name = "results_#{experiment.id}_#{experiment.name}_#{experiment.author}.csv"
-
-        conn
-        |> send_download({:file, file_path},
-          content_type: "application/csv",
-          filename: download_name
-        )
-
-      _ ->
-        conn
-        |> put_flash(:error, "Unknown error")
-        |> redirect(to: experiment_path(conn, :index))
-    end
-  end
-
   @doc """
-  Check whether the given experiment_id is valid before the participant ever starts.
+  Check whether the given experiment_id is valid before the participant starts the experiment on the frontend.
   """
   def check_valid(conn, %{"id" => id}) do
     case Experiments.get_experiment(id) do
@@ -228,7 +203,35 @@ defmodule Magpie.ExperimentController do
   end
 
   @doc """
-  Retrieves the results up to now for an experiment.
+  Retrieves the results up to now for an experiment in CSV format.
+  """
+  def retrieve_as_csv(conn, %{"id" => id}) do
+    experiment = Experiments.get_experiment!(id)
+
+    case Experiments.retrieve_experiment_results_as_csv(experiment) do
+      {:error, :no_submissions_yet} ->
+        conn
+        |> put_flash(:error, "No submissions for this experiment yet!")
+        |> redirect(to: experiment_path(conn, :index))
+
+      {:ok, file_path} ->
+        download_name = "results_#{experiment.id}_#{experiment.name}_#{experiment.author}.csv"
+
+        conn
+        |> send_download({:file, file_path},
+          content_type: "application/csv",
+          filename: download_name
+        )
+
+      _ ->
+        conn
+        |> put_flash(:error, "Unknown error")
+        |> redirect(to: experiment_path(conn, :index))
+    end
+  end
+
+  @doc """
+  Retrieves the results up to now for an experiment in JSON format.
   """
   def retrieve_as_json(conn, %{"id" => id}) do
     experiment = Experiments.get_experiment(id)

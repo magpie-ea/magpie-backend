@@ -28,7 +28,7 @@ defmodule CustomRecordControllerTest do
           get(conn, custom_record_path(conn, :retrieve_as_csv, "123"))
         ],
         fn conn ->
-          assert text_response(conn, 401)
+          assert response(conn, 401)
           assert conn.halted
         end
       )

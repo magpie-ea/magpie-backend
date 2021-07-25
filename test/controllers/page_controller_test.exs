@@ -15,7 +15,7 @@ defmodule PageControllerTest do
       conn
       |> get(page_path(conn, :index))
 
-    assert text_response(conn, 401)
+    assert response(conn, 401)
     assert conn.halted
   end
 

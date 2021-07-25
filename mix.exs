@@ -50,7 +50,6 @@ defmodule Magpie.Mixfile do
       # Temporary file download for experiment results
       {:briefly, "~> 0.3"},
       {:csv, "~> 2.4"},
-      {:basic_auth, "~> 2.2.2"},
       {:calendar, "~> 1.0"},
       {:wallaby, "~> 0.28.0", [runtime: false, only: :test]},
       {:excoveralls, "~> 0.14.2", only: :test},

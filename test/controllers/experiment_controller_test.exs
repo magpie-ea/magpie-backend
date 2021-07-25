@@ -29,7 +29,7 @@ defmodule ExperimentControllerTest do
         ],
         fn conn ->
           # Currently it's just a simple 401 text response. But the browser should know to ask the client to authenticate, seeing this situation, anyways.
-          assert text_response(conn, 401)
+          assert response(conn, 401)
           assert conn.halted
         end
       )

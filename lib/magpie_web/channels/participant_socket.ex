@@ -20,14 +20,6 @@ defmodule Magpie.ParticipantSocket do
   # Iterated lobby is for iterated experiments where future generations need to wait on results from previous generations.
   channel("iterated_lobby:*", Magpie.IteratedLobbyChannel)
 
-  ## Transports
-  transport(:websocket, Phoenix.Transports.WebSocket,
-    # Ensures idle connections are closed by the app before the 55 second timeout window of Heroku.
-    timeout: 45_000
-  )
-
-  # transport :longpoll, Phoenix.Transports.LongPoll
-
   # Socket params are passed from the client and can
   # be used to verify and authenticate a participant. After
   # verification, you can put default assigns into

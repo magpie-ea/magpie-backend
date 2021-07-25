@@ -130,11 +130,8 @@ defmodule Magpie.ParticipantChannel do
     end
   end
 
-  @doc """
-  The client could send a "save_intermediate_progress" message even before the experiment finishes, so that experiment progress will not be lost if the client drops out before the end.
-
-  For now this is mainly useful when one participant drops out of an interactive experiment.
-  """
+  # The client could send a "save_intermediate_progress" message even before the experiment finishes, so that experiment progress will not be lost if the client drops out before the end.
+  # For now this is mainly useful when one participant drops out of an interactive experiment.
   def handle_in("save_intermediate_results", payload, socket) do
     experiment_id = socket.assigns.experiment_id
     variant = socket.assigns.variant

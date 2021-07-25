@@ -48,35 +48,26 @@ defmodule Magpie.InteractiveRoomChannel do
     {:noreply, socket}
   end
 
-  @doc """
-  This handles new messages from the clients and broadcast them to everybody susbcribed to the same topic (i.e. who joined the same lounge).
-  """
+  # This handles new messages from the clients and broadcast them to everybody susbcribed to the same topic (i.e. who joined the same lounge).
   def handle_in("new_msg", payload, socket) do
     broadcast(socket, "new_msg", payload)
     {:noreply, socket}
   end
 
-  @doc """
-  In many cases the game initialization needs to be handled by the client, since the server remains as generic as possible and just provides a channel for communication.
-
-  The client can always use `new_msg` for everything, though specialized message types could help ease the job.
-  """
+  # In many cases the game initialization needs to be handled by the client, since the server remains as generic as possible and just provides a channel for communication.
+  # The client can always use `new_msg` for everything, though specialized message types could help ease the job.
   def handle_in("initialize_game", payload, socket) do
     broadcast(socket, "initialize_game", payload)
     {:noreply, socket}
   end
 
-  @doc """
-  Message indicating that the game is to be advanced to the next round.
-  """
+  # Message indicating that the game is to be advanced to the next round.
   def handle_in("next_round", payload, socket) do
     broadcast(socket, "next_round", payload)
     {:noreply, socket}
   end
 
-  @doc """
-  Message indicating that the game has ended.
-  """
+  # Message indicating that the game has ended.
   def handle_in("end_game", payload, socket) do
     broadcast(socket, "end_game", payload)
     {:noreply, socket}

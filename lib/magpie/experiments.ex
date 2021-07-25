@@ -139,10 +139,8 @@ defmodule Magpie.Experiments do
     end
   end
 
+  # Writes the submissions to a CSV file.
   # Note that we have a validation in schemas to ensure that each entry in `results` must have the same set of keys. So the following code take take that as an assumption.
-  @doc """
-  Write the submissions to a CSV file.
-  """
   defp prepare_submissions_for_csv_download(submissions) do
     # Fetch the keys from the first submission.
     with [submission | _] <- submissions,

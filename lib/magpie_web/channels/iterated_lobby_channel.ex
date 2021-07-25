@@ -4,7 +4,8 @@ defmodule Magpie.IteratedLobbyChannel do
   """
   use MagpieWeb, :channel
   alias Magpie.ChannelHelper
-  alias Magpie.{Repo, ExperimentResult}
+  alias Magpie.Repo
+  alias Magpie.Experiments.ExperimentResult
 
   @doc """
   A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.

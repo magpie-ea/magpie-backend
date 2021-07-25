@@ -17,12 +17,10 @@ defmodule Magpie.InteractiveRoomChannelTest do
     experiment: _experiment,
     participant_id: _participant_id
   } do
-    assert {:ok, _, socket} =
+    assert {:ok, _, _socket} =
              subscribe_and_join(
                socket,
-               "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{
-                 socket.assigns.realization
-               }"
+               "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
              )
   end
 
@@ -34,9 +32,7 @@ defmodule Magpie.InteractiveRoomChannelTest do
     {:ok, _, _socket} =
       subscribe_and_join(
         socket,
-        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{
-          socket.assigns.realization
-        }"
+        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
       )
 
     # payload = %{
@@ -53,28 +49,23 @@ defmodule Magpie.InteractiveRoomChannelTest do
 
   test "start_game message is sent after the specified number of participants is reached", %{
     socket: socket,
-    experiment: experiment,
-    participant_id: participant_id
+    experiment: experiment
   } do
     # First we need do join the first created participant to the channel...
     subscribe_and_join(
       socket,
-      "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{
-        socket.assigns.realization
-      }"
+      "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
     )
 
     num_participants = socket.assigns.num_variants
     # Enum.reduce(1..num_participants - 1, , fun)
-    Enum.each(1..(num_participants - 1), fn count ->
-      {:ok, socket: socket, experiment: experiment, participant_id: participant_id} =
+    Enum.each(1..(num_participants - 1), fn _count ->
+      {:ok, socket: socket, experiment: _experiment, participant_id: _participant_id} =
         create_and_subscribe_participant(experiment)
 
       subscribe_and_join(
         socket,
-        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{
-          socket.assigns.realization
-        }"
+        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
       )
     end)
 

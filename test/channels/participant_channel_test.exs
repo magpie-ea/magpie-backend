@@ -17,7 +17,7 @@ defmodule Magpie.ParticipantChannelTest do
     experiment: _experiment,
     participant_id: participant_id
   } do
-    assert {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+    assert {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
   end
 
   test "Receives the trituple denoting the next available experiment slot after joining", %{
@@ -27,13 +27,15 @@ defmodule Magpie.ParticipantChannelTest do
   } do
     {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-    expected_message = %{
-      variant: socket.assigns.variant,
-      chain: socket.assigns.chain,
-      realization: socket.assigns.realization
-    }
+    variant = socket.assigns.variant
+    chain = socket.assigns.chain
+    realization = socket.assigns.realization
 
-    assert_broadcast("experiment_available", expected_message)
+    assert_broadcast("experiment_available", %{
+      variant: ^variant,
+      chain: ^chain,
+      realization: ^realization
+    })
   end
 
   test "The experiment status is set to 1 after a participant joins", %{
@@ -80,27 +82,28 @@ defmodule Magpie.ParticipantChannelTest do
   #   assert experiment_status.status === 0
   # end
 
-  describe "submit_results" do
-    test "Successfully stores experiment results", %{
-      socket: socket,
-      experiment: experiment,
-      participant_id: participant_id
-    } do
-    end
+  # TODO: To fill in.
+  # describe "submit_results" do
+  #   test "Successfully stores experiment results", %{
+  #     socket: socket,
+  #     experiment: experiment,
+  #     participant_id: participant_id
+  #   } do
+  #   end
 
-    test "Successfully sets the ExperimentStatus to 2", %{
-      socket: socket,
-      experiment: experiment,
-      participant_id: participant_id
-    } do
-    end
+  #   test "Successfully sets the ExperimentStatus to 2", %{
+  #     socket: socket,
+  #     experiment: experiment,
+  #     participant_id: participant_id
+  #   } do
+  #   end
 
-    # Probably better to put it in the IteratedLobbyChannelTest module
-    test "Sends experiment results to all potential waiting clients", %{
-      socket: socket,
-      experiment: experiment,
-      participant_id: participant_id
-    } do
-    end
-  end
+  #   # Probably better to put it in the IteratedLobbyChannelTest module
+  #   test "Sends experiment results to all potential waiting clients", %{
+  #     socket: socket,
+  #     experiment: experiment,
+  #     participant_id: participant_id
+  #   } do
+  #   end
+  # end
 end

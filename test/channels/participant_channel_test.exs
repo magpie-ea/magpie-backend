@@ -33,7 +33,7 @@ defmodule Magpie.ParticipantChannelTest do
       realization: socket.assigns.realization
     }
 
-    assert_broadcast("experiment_available", ^expected_message)
+    assert_broadcast("experiment_available", expected_message)
   end
 
   test "The experiment status is set to 1 after a participant joins", %{

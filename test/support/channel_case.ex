@@ -18,7 +18,8 @@ defmodule Magpie.ChannelCase do
   using do
     quote do
       # Import conveniences for testing with channels
-      use Phoenix.ChannelTest
+      import Plug.Conn
+      import Phoenix.ChannelTest
 
       alias Magpie.Repo
       alias Magpie.ParticipantSocket

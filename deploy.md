@@ -13,9 +13,6 @@ Optional:
 - `PORT`: The port at which the app is available. By default 443
 - `MAGPIE_PATH`: The path of the app at the host. By default `/`. Useful for when deploying the app in a multi-tenant way.
 - `URL_SCHEME`: Whether the app is run on `https` or `http`. By default `https`
-- `USE_TIMBER`: Whether to use Timber as a logging backend
 - `MAGPIE_NO_BASIC_AUTH`: Whether to allow accessing the app without basic name (i.e. username + pw)
     Note: Even with this variable set to `true`, the `AUTH_USERNAME` and `AUTH_PASSWORD` environment variables are still needed to start the app.
-- `TIMBER_API_KEY`: The API key for Timber
-- `TIMBER_SOURCE_ID`: The source ID for Timber
 - `REAL_URL`: Useful when the app is behind a reverse proxy and you need to actually use the URL shown to the outside by the reverse proxy, e.g. in template generation in web/templates/experiments/edit.html.eex

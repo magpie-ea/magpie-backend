@@ -57,12 +57,6 @@ defmodule Magpie.Mixfile do
       # Error checking and linting
       {:credo, "~> 1.5", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]},
-      # Logging
-      {:timber, "~> 3.1"},
-      {:timber_exceptions, "~> 2.1"},
-      {:timber_plug, "~> 1.1"},
-      {:timber_phoenix, "~> 1.1"},
-      {:timber_ecto, "~> 2.1"}
     ]
   end
 

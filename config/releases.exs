@@ -20,13 +20,7 @@ config :magpie, Magpie.Endpoint,
   secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),
   check_origin: false,
   root: ".",
-  version: Application.spec(:magpie, :vsn),
-  instrumenters:
-    (if System.get_env("USE_TIMBER") == "true" do
-       [Timber.Phoenix]
-     else
-       []
-     end)
+  version: Application.spec(:magpie, :vsn)
 
 # Configure the database
 config :magpie, Magpie.Repo,
@@ -34,12 +28,7 @@ config :magpie, Magpie.Repo,
   url: System.fetch_env!("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE", "2")),
   ssl: true,
-  log:
-    (if System.get_env("USE_TIMBER") == "true" do
-       false
-     else
-       :debug
-    end)
+  log: :debug
 
 # Used for basic_auth
 # However, we can't assume they always exist, since in some situations (e.g. demo app) we don't have any authentication.
@@ -59,17 +48,7 @@ config :magpie, :authentication,
      end)
 
 config :logger,
-  backends:
-    (if System.get_env("USE_TIMBER") == "true" do
-       [Timber.LoggerBackends.HTTP, :console]
-     else
-       [:console]
-     end)
-
-# Logging
-config :timber,
-  api_key: System.get_env("TIMBER_API_KEY"),
-  source_id: System.get_env("TIMBER_SOURCE_ID")
+  backends: [:console]
 
 # This is useful when the app is behind a reverse proxy and you need to actually use the URL shown to the outside by the reverse proxy, e.g. in template generation in web/templates/experiments/edit.html.eex
 config :magpie, :real_url, System.get_env("REAL_URL", System.fetch_env!("HOST"))

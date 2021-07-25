@@ -284,15 +284,6 @@ After first-time installation, you can launch a local server instance which sets
 
 Note that the database for storing experiment results is stored at `/var/lib/docker/volumes/magpie-db-volume/_data` folder by default. As long as this folder is preserved, experiment results should persist as well.
 
-## Logging
-The app has built-in support for [Timber](https://timber.io) as a logging backend. To use it, create an account on Timber, create a new app with type "Elixir", and set the following environment variables:
-
-- `heroku config:set USE_TIMBER=true`
-- `heroku config:set TIMBER_SOURCE_ID=YOUR_SOURCE_ID`
-- `heroku config:set TIMBER_API_KEY=YOUR_API_KEY`
-
-Now logs should start arriving in your Timber account. You can also set up [Alerts](https://docs.timber.io/usage/alerting) for errors in the app.
-
 ## Upgrading a deployed instance of the server
 
 1. `git pull` to pull in the newest changes.

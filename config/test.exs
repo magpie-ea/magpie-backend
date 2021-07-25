@@ -25,6 +25,6 @@ config :magpie, :authentication,
 
 config :wallaby,
   screenshot_on_failure: true,
-  driver: Wallaby.Experimental.Chrome
+  driver: Wallaby.Chrome
 
 config :magpie, :environment, :test

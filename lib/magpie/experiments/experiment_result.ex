@@ -5,7 +5,7 @@ defmodule Magpie.Experiments.ExperimentResult do
 
   use MagpieWeb, :model
 
-  import Magpie.ModelHelper
+  import Magpie.Helpers
 
   schema "experiment_results" do
     # A map represents the whole JSON object received when the experiment was first submitted.

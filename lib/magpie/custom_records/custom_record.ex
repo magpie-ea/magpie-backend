@@ -7,7 +7,7 @@ defmodule Magpie.CustomRecords.CustomRecord do
   """
   use MagpieWeb, :model
 
-  import Magpie.ModelHelper
+  import Magpie.Helpers
 
   schema "custom_records" do
     field(:name, :string)

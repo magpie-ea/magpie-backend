@@ -2,11 +2,11 @@
     <%= label @f, :is_complex, "Complex experiment", class: "control-label" %>
     <%= checkbox @f, :is_complex%>
     <p>
-      In this experiment, there is some sort of dependency between different realizations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
+      In this experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
       </p>
 
 <p>
-      Each participant will be assigned a unique <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> identifier, so that such dependencies can be made explicit.
+      Each participant will be assigned a unique <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> identifier, so that such dependencies can be made explicit.
     </p>
 
 <p>
@@ -18,7 +18,7 @@
   <div class="form-group">
     <%= label @f, :num_variants, "(Only for complex experiments) Number of variants", class: "control-label" %>
     <p>
-       Specifies the number of variants for an experiment in regard to the <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> tri-tuple.
+       Specifies the number of variants for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
       </p>
 
       <p>
@@ -37,7 +37,7 @@
   <div class="form-group">
     <%= label @f, :num_chains, "(Only for complex experiments) Number of chains", class: "control-label" %>
     <p>
-       Specifies the number of chains for an experiment in regard to the <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> tri-tuple.
+       Specifies the number of chains for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
       </p>
 
       <p>
@@ -53,18 +53,18 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_realizations, "(Only for complex experiments) Number of realizations (per chain)", class: "control-label" %>
+    <%= label @f, :num_generations, "(Only for complex experiments) Number of generations (per chain)", class: "control-label" %>
     <p>
-       Specifies the number of realizations for an experiment in regard to the <code>&lt;variant-nr, chain-nr, realization-nr&gt;</code> tri-tuple.
+       Specifies the number of generations for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
       </p>
 
       <p>
-      A chain will reach its end when all realizations have been submitted. For example, an iterated narration experiment might have 1 variant, 10 chains, with 20 realizations each chain, meaning that a total of 200 participants will be recruited.
+      A chain will reach its end when all generations have been submitted. For example, an iterated narration experiment might have 1 variant, 10 chains, with 20 generations each chain, meaning that a total of 200 participants will be recruited.
 </p>
 
 <p>
   <strong>Please remember that as soon as the total number of participants is reached, the server will stop accepting new connections. Therefore, be sure to specify a sufficiently high participant number when creating a complex experiment.</strong>
 </p>
-    <%= text_input @f, :num_realizations, placeholder: "e.g. 100", class: "form-control" %>
-    <%= error_tag @f, :num_realizations%>
+    <%= text_input @f, :num_generations, placeholder: "e.g. 100", class: "form-control" %>
+    <%= error_tag @f, :num_generations%>
   </div>

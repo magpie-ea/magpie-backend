@@ -10,7 +10,7 @@ defmodule Magpie.ExperimentResultTest do
     experiment_id: 1,
     variant: 1,
     chain: 2,
-    realization: 3,
+    generation: 3,
     results: [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}],
     is_intermediate: false
   }
@@ -47,9 +47,9 @@ defmodule Magpie.ExperimentResultTest do
     assert changeset.valid?
   end
 
-  test "realization is not required" do
+  test "generation is not required" do
     changeset =
-      ExperimentResult.changeset(%ExperimentResult{}, Map.delete(@valid_attrs, :realization))
+      ExperimentResult.changeset(%ExperimentResult{}, Map.delete(@valid_attrs, :generation))
 
     assert changeset.valid?
   end

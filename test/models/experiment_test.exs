@@ -25,7 +25,7 @@ defmodule Magpie.ExperimentTest do
     is_complex: true,
     num_variants: 2,
     num_chains: 5,
-    num_realizations: 3
+    num_generations: 3
   }
 
   @innon_complex_experiment_attrs %{
@@ -107,11 +107,11 @@ defmodule Magpie.ExperimentTest do
       refute changeset.valid?
     end
 
-    test "complex experiments must have num_realizations" do
+    test "complex experiments must have num_generations" do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.delete(@complex_experiment_attrs, :num_realizations)
+          Map.delete(@complex_experiment_attrs, :num_generations)
         )
 
       refute changeset.valid?
@@ -141,14 +141,14 @@ defmodule Magpie.ExperimentTest do
                [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
     end
 
-    test "num_realizations must be greater than 0" do
+    test "num_generations must be greater than 0" do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@complex_experiment_attrs, :num_realizations, 0)
+          Map.put(@complex_experiment_attrs, :num_generations, 0)
         )
 
-      assert {:num_realizations,
+      assert {:num_generations,
               {"must be greater than %{number}",
                [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
     end
@@ -173,11 +173,11 @@ defmodule Magpie.ExperimentTest do
       refute changeset.valid?
     end
 
-    test "non-complex experiments cannot have num_realizations" do
+    test "non-complex experiments cannot have num_generations" do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@non_complex_experiment_attrs, :num_realizations, 2)
+          Map.put(@non_complex_experiment_attrs, :num_generations, 2)
         )
 
       refute changeset.valid?

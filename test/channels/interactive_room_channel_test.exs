@@ -20,7 +20,7 @@ defmodule Magpie.InteractiveRoomChannelTest do
     assert {:ok, _, _socket} =
              subscribe_and_join(
                socket,
-               "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
+               "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
              )
   end
 
@@ -32,13 +32,13 @@ defmodule Magpie.InteractiveRoomChannelTest do
     {:ok, _, _socket} =
       subscribe_and_join(
         socket,
-        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
+        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
       )
 
     # payload = %{
     #   variant: socket.assigns.variant,
     #   chain: socket.assigns.chain,
-    #   realization: socket.assigns.realization
+    #   generation: socket.assigns.generation
     # }
 
     # assert_broadcast("presence_diff", ^payload)
@@ -54,7 +54,7 @@ defmodule Magpie.InteractiveRoomChannelTest do
     # First we need do join the first created participant to the channel...
     subscribe_and_join(
       socket,
-      "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
+      "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
     )
 
     num_participants = socket.assigns.num_variants
@@ -65,7 +65,7 @@ defmodule Magpie.InteractiveRoomChannelTest do
 
       subscribe_and_join(
         socket,
-        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}"
+        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
       )
     end)
 

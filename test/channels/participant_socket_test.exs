@@ -20,7 +20,7 @@ defmodule Magpie.ParticipantSocketTest do
     assert socket.assigns.experiment_id == experiment.id
     assert socket.assigns.num_variants == experiment.num_variants
     assert socket.assigns.num_chains == experiment.num_chains
-    assert socket.assigns.num_realizations == experiment.num_realizations
+    assert socket.assigns.num_generations == experiment.num_generations
   end
 
   test "Assigns ExperimentStatus to 1 upon connection" do
@@ -37,7 +37,7 @@ defmodule Magpie.ParticipantSocketTest do
         experiment.id,
         socket.assigns.variant,
         socket.assigns.chain,
-        socket.assigns.realization
+        socket.assigns.generation
       )
 
     assert assignment.status == 1

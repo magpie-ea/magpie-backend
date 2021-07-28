@@ -16,9 +16,9 @@ defmodule Magpie.IteratedLobbyChannel do
         socket
       ) do
     case String.split(assignment_identifier, ":") do
-      [experiment_id, variant, chain, realization] ->
+      [experiment_id, variant, chain, generation] ->
         # By including `experiment_id` in the identifier we also allow a new participant to wait on the results of a previous experiment. Why not if they want to do so.
-        send(self(), {:after_participant_join, experiment_id, variant, chain, realization})
+        send(self(), {:after_participant_join, experiment_id, variant, chain, generation})
         {:ok, socket}
 
       _ ->
@@ -26,13 +26,13 @@ defmodule Magpie.IteratedLobbyChannel do
     end
   end
 
-  def handle_info({:after_participant_join, experiment_id, variant, chain, realization}, socket) do
+  def handle_info({:after_participant_join, experiment_id, variant, chain, generation}, socket) do
     experiment_status =
       ChannelHelper.get_experiment_status(
         experiment_id,
         variant,
         chain,
-        realization
+        generation
       )
 
     case experiment_status.status do
@@ -42,7 +42,7 @@ defmodule Magpie.IteratedLobbyChannel do
             where: r.experiment_id == ^experiment_id,
             where: r.variant == ^variant,
             where: r.chain == ^chain,
-            where: r.realization == ^realization,
+            where: r.generation == ^generation,
             where: r.is_intermediate == false
           )
 
@@ -50,7 +50,7 @@ defmodule Magpie.IteratedLobbyChannel do
 
         # The same as what we do when the waited-on participant submits their results, send the results to all participants waiting for this participant.
         Magpie.Endpoint.broadcast!(
-          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",
+          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{generation}",
           "finished",
           %{results: experiment_results.results}
         )

@@ -32,12 +32,12 @@ defmodule Magpie.Experiments do
       # Just use reduce for everything. Jose's favorite anyways.
       Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
         Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
-          Enum.reduce(1..experiment.num_realizations, multi, fn realization, multi ->
+          Enum.reduce(1..experiment.num_generations, multi, fn generation, multi ->
             params = %{
               experiment_id: experiment.id,
               variant: variant,
               chain: chain,
-              realization: realization,
+              generation: generation,
               status: 0
             }
 
@@ -45,7 +45,7 @@ defmodule Magpie.Experiments do
 
             multi
             |> Multi.insert(
-              String.to_atom("experiment_status_#{variant}_#{chain}_#{realization}"),
+              String.to_atom("experiment_status_#{variant}_#{chain}_#{generation}"),
               changeset
             )
           end)

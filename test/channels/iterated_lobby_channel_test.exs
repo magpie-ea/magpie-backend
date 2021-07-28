@@ -19,7 +19,7 @@ defmodule Magpie.IteratedLobbyChannelTest do
     assert {:ok, _, _socket} =
              subscribe_and_join(
                socket,
-               "iterated_lobby:#{experiment.id}:#{socket.assigns.variant}:#{socket.assigns.chain}:#{socket.assigns.realization}"
+               "iterated_lobby:#{experiment.id}:#{socket.assigns.variant}:#{socket.assigns.chain}:#{socket.assigns.generation}"
              )
   end
 
@@ -32,7 +32,7 @@ defmodule Magpie.IteratedLobbyChannelTest do
   #     subscribe_and_join(
   #       socket,
   #       "iterated_lobby:#{experiment.id}:#{socket.assigns.variant}:#{socket.assigns.chain}:#{
-  #         socket.assigns.realization
+  #         socket.assigns.generation
   #       }"
   #     )
 
@@ -41,7 +41,7 @@ defmodule Magpie.IteratedLobbyChannelTest do
   #       experiment.id,
   #       socket.assigns.variant,
   #       socket.assigns.chain,
-  #       socket.assigns.realization
+  #       socket.assigns.generation
   #     )
 
   #   insert_experiment_result(%{"experiment_id" => experiment.id})

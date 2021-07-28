@@ -19,7 +19,7 @@ defmodule Magpie.Experiments.Experiment do
     field :num_variants, :integer, null: true
     field :num_chains, :integer, null: true
 
-    field :num_realizations, :integer, null: true
+    field :num_generations, :integer, null: true
 
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)
@@ -40,7 +40,7 @@ defmodule Magpie.Experiments.Experiment do
       :dynamic_retrieval_keys,
       :num_variants,
       :num_chains,
-      :num_realizations,
+      :num_generations,
       :is_complex
     ])
     |> validate_required([:name, :author])
@@ -56,17 +56,17 @@ defmodule Magpie.Experiments.Experiment do
   defp validate_complex_experiment_requirements(changeset) do
     if Map.get(changeset.changes, :is_complex) && changeset.changes.is_complex do
       changeset
-      |> validate_required([:num_variants, :num_chains, :num_realizations])
+      |> validate_required([:num_variants, :num_chains, :num_generations])
       |> validate_number(:num_variants, greater_than: 0)
       |> validate_number(:num_chains, greater_than: 0)
-      |> validate_number(:num_realizations, greater_than: 0)
+      |> validate_number(:num_generations, greater_than: 0)
     else
       if Map.get(changeset.changes, :num_variants) || Map.get(changeset.changes, :num_chains) ||
-           Map.get(changeset.changes, :num_realizations) do
+           Map.get(changeset.changes, :num_generations) do
         changeset
         |> add_error(
           :is_complex,
-          "The num_variant, num_chains and num_realizations attributes are only for complex experiments!"
+          "The num_variant, num_chains and num_generations attributes are only for complex experiments!"
         )
       else
         changeset

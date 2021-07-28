@@ -9,13 +9,13 @@ defmodule Magpie.ChannelHelper do
   @doc """
   Fetch experiment status with the given identifiers.
   """
-  def get_experiment_status(experiment_id, variant, chain, realization) do
+  def get_experiment_status(experiment_id, variant, chain, generation) do
     status_query =
       Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment_id,
         where: s.variant == ^variant,
         where: s.chain == ^chain,
-        where: s.realization == ^realization
+        where: s.generation == ^generation
       )
 
     Repo.one!(status_query)
@@ -27,8 +27,8 @@ defmodule Magpie.ChannelHelper do
       Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment_id,
         where: s.status == 0,
-        # First by realization, then by chain, then by variant. In this way the variant gets incremented first.
-        order_by: [s.realization, s.chain, s.variant]
+        # First by generation, then by chain, then by variant. In this way the variant gets incremented first.
+        order_by: [s.generation, s.chain, s.variant]
         # limit: 1
       )
 

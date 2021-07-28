@@ -10,7 +10,7 @@ defmodule Magpie.ExperimentStatusTest do
     experiment_id: 1,
     variant: 1,
     chain: 2,
-    realization: 3,
+    generation: 3,
     status: 0
   }
 
@@ -46,9 +46,9 @@ defmodule Magpie.ExperimentStatusTest do
     refute changeset.valid?
   end
 
-  test "realization is required" do
+  test "generation is required" do
     changeset =
-      ExperimentStatus.changeset(%ExperimentStatus{}, Map.delete(@valid_attrs, :realization))
+      ExperimentStatus.changeset(%ExperimentStatus{}, Map.delete(@valid_attrs, :generation))
 
     refute changeset.valid?
   end
@@ -77,14 +77,14 @@ defmodule Magpie.ExperimentStatusTest do
              [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
   end
 
-  test "realization must be greater than 0" do
+  test "generation must be greater than 0" do
     changeset =
       ExperimentStatus.changeset(
         %ExperimentStatus{},
-        Map.put(@valid_attrs, :realization, 0)
+        Map.put(@valid_attrs, :generation, 0)
       )
 
-    assert {:realization,
+    assert {:generation,
             {"must be greater than %{number}",
              [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
   end

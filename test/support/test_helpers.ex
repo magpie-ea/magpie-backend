@@ -12,7 +12,7 @@ defmodule Magpie.TestHelpers do
     is_complex: true,
     num_variants: 2,
     num_chains: 5,
-    num_realizations: 3
+    num_generations: 3
   }
 
   @experiment_attrs %{

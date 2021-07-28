@@ -13,7 +13,7 @@ defmodule Magpie.Experiments.ExperimentResult do
     field(:results, {:array, :map}, null: false)
     field(:variant, :integer, null: true)
     field(:chain, :integer, null: true)
-    field(:realization, :integer, null: true)
+    field(:generation, :integer, null: true)
     field(:is_intermediate, :boolean, default: false)
 
     belongs_to(:experiment, Magpie.Experiments.Experiment)
@@ -23,7 +23,7 @@ defmodule Magpie.Experiments.ExperimentResult do
 
   def changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:results, :experiment_id, :variant, :chain, :realization, :is_intermediate])
+    |> cast(params, [:results, :experiment_id, :variant, :chain, :generation, :is_intermediate])
     |> validate_required([:experiment_id, :results])
     |> validate_change(:results, &check_record(&1, &2))
     |> assoc_constraint(:experiment)

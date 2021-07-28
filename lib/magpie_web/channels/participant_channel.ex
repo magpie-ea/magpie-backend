@@ -43,7 +43,7 @@ defmodule Magpie.ParticipantChannel do
       Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^socket.assigns.experiment_id,
         where: s.chain == ^socket.assigns.chain,
-        where: s.realization == ^socket.assigns.realization,
+        where: s.generation == ^socket.assigns.generation,
         where: s.status == 1
       )
 
@@ -51,11 +51,11 @@ defmodule Magpie.ParticipantChannel do
   end
 
   def handle_info(:after_participant_join, socket) do
-    # Broadcast the trituple <variant-nr, chain-nr, realization-nr> to the user.
+    # Broadcast the trituple <variant-nr, chain-nr, generation-nr> to the user.
     broadcast(socket, "experiment_available", %{
       variant: socket.assigns.variant,
       chain: socket.assigns.chain,
-      realization: socket.assigns.realization
+      generation: socket.assigns.generation
     })
 
     {:noreply, socket}
@@ -70,7 +70,7 @@ defmodule Magpie.ParticipantChannel do
     experiment_id = socket.assigns.experiment_id
     variant = socket.assigns.variant
     chain = socket.assigns.chain
-    realization = socket.assigns.realization
+    generation = socket.assigns.generation
     results = payload["results"]
 
     # When one participant finishes, set all relevant experiment statuses to "complete".
@@ -78,7 +78,7 @@ defmodule Magpie.ParticipantChannel do
       Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^socket.assigns.experiment_id,
         where: s.chain == ^socket.assigns.chain,
-        where: s.realization == ^socket.assigns.realization
+        where: s.generation == ^socket.assigns.generation
       )
 
     experiment_result_changeset =
@@ -89,7 +89,7 @@ defmodule Magpie.ParticipantChannel do
           results: results,
           variant: variant,
           chain: chain,
-          realization: realization,
+          generation: generation,
           is_intermediate: false
         }
       )
@@ -103,7 +103,7 @@ defmodule Magpie.ParticipantChannel do
       {:ok, _} ->
         Logger.log(
           :info,
-          "Experiment results successfully saved for participant with chain #{chain}, realization #{realization}, variant #{variant}"
+          "Experiment results successfully saved for participant with chain #{chain}, generation #{generation}, variant #{variant}"
         )
 
         # No need to monitor this participant anymore
@@ -111,7 +111,7 @@ defmodule Magpie.ParticipantChannel do
 
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
         Magpie.Endpoint.broadcast!(
-          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{realization}",
+          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{generation}",
           "finished",
           %{results: results}
         )
@@ -122,7 +122,7 @@ defmodule Magpie.ParticipantChannel do
       {:error, failed_operation, failed_value, changes_so_far} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant with chain #{chain}, realization #{realization}, variant #{variant}, operation
+          "Saving experiment results failed for participant with chain #{chain}, generation #{generation}, variant #{variant}, operation
           #{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{inspect(changes_so_far)}"
         )
 
@@ -136,7 +136,7 @@ defmodule Magpie.ParticipantChannel do
     experiment_id = socket.assigns.experiment_id
     variant = socket.assigns.variant
     chain = socket.assigns.chain
-    realization = socket.assigns.realization
+    generation = socket.assigns.generation
     intermediate_results = payload["results"]
 
     experiment_result_changeset =
@@ -147,7 +147,7 @@ defmodule Magpie.ParticipantChannel do
           results: intermediate_results,
           variant: variant,
           chain: chain,
-          realization: realization,
+          generation: generation,
           is_intermediate: true
         }
       )
@@ -156,7 +156,7 @@ defmodule Magpie.ParticipantChannel do
       {:ok, _} ->
         Logger.log(
           :info,
-          "Experiment results successfully saved for participant with chain #{chain}, realization #{realization}, variant #{variant}"
+          "Experiment results successfully saved for participant with chain #{chain}, generation #{generation}, variant #{variant}"
         )
 
         # Send a simple ack reply
@@ -165,7 +165,7 @@ defmodule Magpie.ParticipantChannel do
       {:error, changeset} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant with chain #{chain}, realization #{realization}, variant #{variant} with changeset
+          "Saving experiment results failed for participant with chain #{chain}, generation #{generation}, variant #{variant} with changeset
             #{inspect(changeset)}"
         )
 

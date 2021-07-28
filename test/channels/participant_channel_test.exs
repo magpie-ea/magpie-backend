@@ -29,12 +29,12 @@ defmodule Magpie.ParticipantChannelTest do
 
     variant = socket.assigns.variant
     chain = socket.assigns.chain
-    realization = socket.assigns.realization
+    generation = socket.assigns.generation
 
     assert_broadcast("experiment_available", %{
       variant: ^variant,
       chain: ^chain,
-      realization: ^realization
+      generation: ^generation
     })
   end
 
@@ -48,12 +48,12 @@ defmodule Magpie.ParticipantChannelTest do
     experiment_id = socket.assigns.experiment_id
     variant = socket.assigns.variant
     chain = socket.assigns.chain
-    realization = socket.assigns.realization
+    generation = socket.assigns.generation
 
     Process.sleep(100)
 
     experiment_status =
-      Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
+      Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, generation)
 
     assert experiment_status.status === 1
   end
@@ -70,14 +70,14 @@ defmodule Magpie.ParticipantChannelTest do
   #   experiment_id = socket.assigns.experiment_id
   #   variant = socket.assigns.variant
   #   chain = socket.assigns.chain
-  #   realization = socket.assigns.realization
+  #   generation = socket.assigns.generation
 
   #   close(socket)
 
   #   Process.sleep(100)
 
   #   experiment_status =
-  #     Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, realization)
+  #     Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, generation)
 
   #   assert experiment_status.status === 0
   # end

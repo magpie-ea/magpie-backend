@@ -17,7 +17,7 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_realizations, "(Only for complex experiments) Number of realizations (per chain)", class: "control-label" %>
-    <%= text_input @f, :num_realizations, class: "form-control", disabled: "disabled" %>
-    <%= error_tag @f, :num_realizations%>
+    <%= label @f, :num_generations, "(Only for complex experiments) Number of generations (per chain)", class: "control-label" %>
+    <%= text_input @f, :num_generations, class: "form-control", disabled: "disabled" %>
+    <%= error_tag @f, :num_generations%>
   </div>

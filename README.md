@@ -69,25 +69,25 @@ After an experiment is created, you can see its ID in the main user interface. U
 
 Complex experiments are now supported via [Phoenix Channels](https://hexdocs.pm/phoenix/channels.html).
 
-In a complex experiment, there is some sort of dependency between different realizations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation (e.g. iterated narration). Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task (e.g. a game of chess).
+In a complex experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation (e.g. iterated narration). Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task (e.g. a game of chess).
 
-Each participant will be assigned a unique `<variant-nr, chain-nr, realization-nr>` identifier, so that such dependencies could be made explicit.
+Each participant will be assigned a unique `<variant-nr, chain-nr, generation-nr>` identifier, so that such dependencies could be made explicit.
 
 The server is responsible for broadcasting messages between the participants. To make the backend as generic as possible, the specific interpretation and handling of the messages depend on the frontend client. For examples of frontends of complex experiments, please refer to: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
 
-To create such an experiment, you need to specify the total number of variants, chains and realizations. Any positive integer is allowed.
+To create such an experiment, you need to specify the total number of variants, chains and generations. Any positive integer is allowed.
 
-The identifiers will be assigned incrementally in the order of `variant-nr` -> `chain-nr` -> `realization-nr`. Assuming the `<num-variants, num-chains, num-realizations>` trituple is specified as `<2, 3, 10>` at experiment creation, the participant who joins after the participant `<1, 1, 1>` will be assigned the identifier `<2, 1, 1>`, the participant who joins after `<2, 1, 3>` will be assigned the identifier `<1, 2, 3>`, etc.
+The identifiers will be assigned incrementally in the order of `variant-nr` -> `chain-nr` -> `generation-nr`. Assuming the `<num-variants, num-chains, num-generations>` trituple is specified as `<2, 3, 10>` at experiment creation, the participant who joins after the participant `<1, 1, 1>` will be assigned the identifier `<2, 1, 1>`, the participant who joins after `<2, 1, 3>` will be assigned the identifier `<1, 2, 3>`, etc.
 
 Normally, an interactive experiment has multiple variants (for example, a speaker and a listener, or player-1 and player-2), while an iterated experiment has multiple chains.
 
-A chain will reach its end when all realizations have been submitted. The total number of expected participants is `num-variants * num-chains * num-realizations`. For example, an iterated narration experiment might have 1 variant, 10 chains, with 20 realizations each chain, meaning that a total of 200 participants will be recruited.
+A chain will reach its end when all generations have been submitted. The total number of expected participants is `num-variants * num-chains * num-generations`. For example, an iterated narration experiment might have 1 variant, 10 chains, with 20 generations each chain, meaning that a total of 200 participants will be recruited.
 
 Detailed descriptions can also be found at the experiment creation page.
 
 ### Editing an experiment
 
-You can edit an experiment after its creation. However, note that at the moment the `<num_variants, num_chains, num_realizations>` trituple of a complex experiment is not editable after experiment creation.
+You can edit an experiment after its creation. However, note that at the moment the `<num_variants, num_chains, num_generations>` trituple of a complex experiment is not editable after experiment creation.
 
 ### Deactivating an experiment
 

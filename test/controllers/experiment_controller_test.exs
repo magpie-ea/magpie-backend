@@ -110,7 +110,7 @@ defmodule ExperimentControllerTest do
       all_experiment_statuses = Magpie.Repo.all(ExperimentStatus, experiment_id: experiment.id)
 
       assert length(all_experiment_statuses) ==
-               experiment.num_variants * experiment.num_realizations * experiment.num_chains
+               experiment.num_variants * experiment.num_generations * experiment.num_chains
     end
   end
 
@@ -185,7 +185,7 @@ defmodule ExperimentControllerTest do
       all_experiment_statuses = Magpie.Repo.all(ExperimentStatus, experiment_id: experiment.id)
 
       assert length(all_experiment_statuses) ==
-               experiment.num_variants * experiment.num_realizations * experiment.num_chains
+               experiment.num_variants * experiment.num_generations * experiment.num_chains
 
       conn
       |> using_basic_auth()

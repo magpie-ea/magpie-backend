@@ -16,7 +16,7 @@ defmodule Magpie.InteractiveRoomChannel do
   def join("interactive_room:" <> assignment_identifier, _payload, socket) do
     # Need to convert the values stored in socket.assigns to strings. Otherwise they cannot be compared to the topic string.
     if assignment_identifier ==
-         "#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.realization}" do
+         "#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}" do
       send(self(), :after_participant_join)
 
       {:ok, socket}
@@ -27,13 +27,13 @@ defmodule Magpie.InteractiveRoomChannel do
 
   def handle_info(:after_participant_join, socket) do
     # Add this participant to the list of all participants waiting in the lobby of this experiment.
-    # Let me just make the following assumption: An interactive experiment must happen between participants of the same chain and realization.
+    # Let me just make the following assumption: An interactive experiment must happen between participants of the same chain and generation.
     # If they need something more complicated in the future, change the structure by then.
     # This Presence can also be helpful in informing participants when one participant drops out.
     Presence.track(socket, "#{socket.assigns.participant_id}", %{
       variant: socket.assigns.variant,
       chain: socket.assigns.chain,
-      realization: socket.assigns.realization,
+      generation: socket.assigns.generation,
       online_at: inspect(System.system_time(:second))
     })
 

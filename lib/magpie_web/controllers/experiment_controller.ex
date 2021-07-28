@@ -5,9 +5,10 @@ defmodule Magpie.ExperimentController do
   alias Magpie.Experiments
   alias Magpie.Experiments.Experiment
 
+  import Plug.BasicAuth
+
   # Don't ask for authentication if it's run on the user's local machine or a system variable is explicitly set (e.g. on the Heroku public demo)
   unless Application.get_env(:magpie, :no_basic_auth) do
-    import Plug.BasicAuth
     username = Application.get_env(:magpie, :authentication)[:username]
     password = Application.get_env(:magpie, :authentication)[:password]
 

@@ -14,8 +14,8 @@ defmodule Magpie.Experiments do
 
     # This check is a bit clunky but currently we can only go this way as we don't have a separate ComplexExperiment model yet.
     multi =
-      if Map.has_key?(changeset_experiment.changes, :is_complex) &&
-           changeset_experiment.changes.is_complex do
+      if Map.has_key?(changeset_experiment.changes, :is_dynamic) &&
+           changeset_experiment.changes.is_dynamic do
         create_experiment_make_multi_with_insert(changeset_experiment)
       else
         Multi.new()

@@ -1,7 +1,7 @@
   <div class="form-group">
-    <%= label @f, :is_complex, "Complex experiment", class: "control-label" %>
-    <%= checkbox @f, :is_complex, disabled: "disabled"%>
-    <%= error_tag @f, :is_complex%>
+    <%= label @f, :is_dynamic, "Complex experiment", class: "control-label" %>
+    <%= checkbox @f, :is_dynamic, disabled: "disabled"%>
+    <%= error_tag @f, :is_dynamic%>
   </div>
 
   <div class="form-group">

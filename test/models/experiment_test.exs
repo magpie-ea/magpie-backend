@@ -13,7 +13,7 @@ defmodule Magpie.ExperimentTest do
     description: "some description",
     active: true,
     dynamic_retrieval_keys: ["a", "b", "c"],
-    is_complex: false
+    is_dynamic: false
   }
 
   @complex_experiment_attrs %{
@@ -22,7 +22,7 @@ defmodule Magpie.ExperimentTest do
     description: "some description",
     active: true,
     dynamic_retrieval_keys: ["a", "b", "c"],
-    is_complex: true,
+    is_dynamic: true,
     num_variants: 2,
     num_chains: 5,
     num_generations: 3
@@ -32,7 +32,7 @@ defmodule Magpie.ExperimentTest do
     name: nil,
     author: nil,
     active: nil,
-    is_complex: nil
+    is_dynamic: nil
   }
 
   test "changeset with valid attributes" do
@@ -67,12 +67,12 @@ defmodule Magpie.ExperimentTest do
     assert experiment.active == true
   end
 
-  test "is_complex is not required and defaults to `false`" do
+  test "is_dynamic is not required and defaults to `false`" do
     changeset =
-      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :is_complex))
+      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :is_dynamic))
 
     {:ok, experiment} = Repo.insert(changeset)
-    assert experiment.is_complex == false
+    assert experiment.is_dynamic == false
   end
 
   test "description is not required" do

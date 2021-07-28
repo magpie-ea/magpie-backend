@@ -13,7 +13,7 @@ defmodule Magpie.Experiments.Experiment do
     field :active, :boolean, default: true, null: false
     field :dynamic_retrieval_keys, {:array, :string}
 
-    field :is_complex, :boolean, default: false, null: false
+    field :is_dynamic, :boolean, default: false, null: false
 
     # null: true because they can be null for simple experiments.
     field :num_variants, :integer, null: true
@@ -41,7 +41,7 @@ defmodule Magpie.Experiments.Experiment do
       :num_variants,
       :num_chains,
       :num_generations,
-      :is_complex
+      :is_dynamic
     ])
     |> validate_required([:name, :author])
     |> validate_complex_experiment_requirements()
@@ -54,7 +54,7 @@ defmodule Magpie.Experiments.Experiment do
   # A cleaner way would be to create a completely separate model for complex experiments, instead of containing everything within one model.
   # For now let's first continue with this I guess.
   defp validate_complex_experiment_requirements(changeset) do
-    if Map.get(changeset.changes, :is_complex) && changeset.changes.is_complex do
+    if Map.get(changeset.changes, :is_dynamic) && changeset.changes.is_dynamic do
       changeset
       |> validate_required([:num_variants, :num_chains, :num_generations])
       |> validate_number(:num_variants, greater_than: 0)
@@ -65,7 +65,7 @@ defmodule Magpie.Experiments.Experiment do
            Map.get(changeset.changes, :num_generations) do
         changeset
         |> add_error(
-          :is_complex,
+          :is_dynamic,
           "The num_variant, num_chains and num_generations attributes are only for complex experiments!"
         )
       else

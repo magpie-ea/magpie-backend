@@ -14,12 +14,14 @@ defmodule Magpie.Experiments.Experiment do
     field :dynamic_retrieval_keys, {:array, :string}
 
     field :is_dynamic, :boolean, default: false, null: false
+    field :is_interactive, :boolean, default: false, null: false
 
     # null: true because they can be null for simple experiments.
     field :num_variants, :integer, null: true
     field :num_chains, :integer, null: true
 
     field :num_generations, :integer, null: true
+    field :num_players, :integer, null: true
 
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)
@@ -41,7 +43,9 @@ defmodule Magpie.Experiments.Experiment do
       :num_variants,
       :num_chains,
       :num_generations,
-      :is_dynamic
+      :num_players,
+      :is_dynamic,
+      :is_interactive
     ])
     |> validate_required([:name, :author])
     |> validate_complex_experiment_requirements()

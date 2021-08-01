@@ -104,8 +104,8 @@ defmodule ExperimentControllerTest do
     end
 
     # This should usually be put into the context testing module. Since we don't use contexts yet, guess we can only put it here for now.
-    test "Corresponding ExperimentStatus entries are created together with complex experiments" do
-      experiment = insert_complex_experiment()
+    test "Corresponding ExperimentStatus entries are created together with dynamic experiments" do
+      experiment = insert_dynamic_experiment()
 
       all_experiment_statuses = Magpie.Repo.all(ExperimentStatus, experiment_id: experiment.id)
 
@@ -179,9 +179,9 @@ defmodule ExperimentControllerTest do
       assert Enum.empty?(all_experiment_results)
     end
 
-    test "Related ExperimentStatus entries are also deleted after deleting a complex experiment",
+    test "Related ExperimentStatus entries are also deleted after deleting a dynamic experiment",
          %{conn: conn} do
-      experiment = insert_complex_experiment()
+      experiment = insert_dynamic_experiment()
       all_experiment_statuses = Magpie.Repo.all(ExperimentStatus, experiment_id: experiment.id)
 
       assert length(all_experiment_statuses) ==
@@ -223,7 +223,7 @@ defmodule ExperimentControllerTest do
     end
 
     test "toggle/2 resets all in progress experiments for an active experiment", %{conn: conn} do
-      experiment = insert_complex_experiment()
+      experiment = insert_dynamic_experiment()
 
       from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment.id,
@@ -244,7 +244,7 @@ defmodule ExperimentControllerTest do
     end
 
     test "toggle/2 doesn't reset any completed experiments' status", %{conn: conn} do
-      experiment = insert_complex_experiment()
+      experiment = insert_dynamic_experiment()
 
       from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment.id,
@@ -292,7 +292,7 @@ defmodule ExperimentControllerTest do
 
     test "Related ExperimentStatus have their :status field set to 0 after resetting an experiment",
          %{conn: conn} do
-      experiment = insert_complex_experiment()
+      experiment = insert_dynamic_experiment()
 
       from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment.id,

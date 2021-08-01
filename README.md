@@ -7,7 +7,7 @@
     - [Username and password for authentication](#username-and-password-for-authentication)
     - [Experiments](#experiments)
         - [Experiment creation](#experiment-creation)
-        - [Complex experiments](#complex-experiments)
+        - [Dynamic experiments](#dynamic-experiments)
         - [Editing an experiment](#editing-an-experiment)
         - [Deactivating an experiment](#deactivating-an-experiment)
         - [Experiment Result submission via HTTP POST](#experiment-result-submission-via-http-post)
@@ -65,15 +65,15 @@ One can create a new experiment with the `New` button from the user interface. T
 
 After an experiment is created, you can see its ID in the main user interface. Use this ID for results submission and retrieval.
 
-### Complex experiments
+### Dynamic experiments
 
-Complex experiments are now supported via [Phoenix Channels](https://hexdocs.pm/phoenix/channels.html).
+Dynamic experiments are now supported via [Phoenix Channels](https://hexdocs.pm/phoenix/channels.html).
 
-In a complex experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation (e.g. iterated narration). Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task (e.g. a game of chess).
+In a dynamic experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation (e.g. iterated narration). Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task (e.g. a game of chess).
 
 Each participant will be assigned a unique `<variant-nr, chain-nr, generation-nr>` identifier, so that such dependencies could be made explicit.
 
-The server is responsible for broadcasting messages between the participants. To make the backend as generic as possible, the specific interpretation and handling of the messages depend on the frontend client. For examples of frontends of complex experiments, please refer to: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
+The server is responsible for broadcasting messages between the participants. To make the backend as generic as possible, the specific interpretation and handling of the messages depend on the frontend client. For examples of frontends of dynamic experiments, please refer to: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
 
 To create such an experiment, you need to specify the total number of variants, chains and generations. Any positive integer is allowed.
 
@@ -87,7 +87,7 @@ Detailed descriptions can also be found at the experiment creation page.
 
 ### Editing an experiment
 
-You can edit an experiment after its creation. However, note that at the moment the `<num_variants, num_chains, num_generations>` trituple of a complex experiment is not editable after experiment creation.
+You can edit an experiment after its creation. However, note that at the moment the `<num_variants, num_chains, num_generations>` trituple of a dynamic experiment is not editable after experiment creation.
 
 ### Deactivating an experiment
 
@@ -111,7 +111,7 @@ Note that `crossDomain: true` is needed since the server domain will likely be d
 
 ### Experiment results submission via Phoenix Channels
 
-Since the client maintains a socket connection with the server in complex experiments, the submissions in such experiments are also expected to be performed via the socket. The server expects a `"submit_results"` message with a payload containing the `"results"` key. Examples: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
+Since the client maintains a socket connection with the server in dynamic experiments, the submissions in such experiments are also expected to be performed via the socket. The server expects a `"submit_results"` message with a payload containing the `"results"` key. Examples: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
 
 ### Experiment results retrieval as CSV
 

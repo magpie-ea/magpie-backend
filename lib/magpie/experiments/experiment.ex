@@ -48,16 +48,16 @@ defmodule Magpie.Experiments.Experiment do
       :is_interactive
     ])
     |> validate_required([:name, :author])
-    |> validate_complex_experiment_requirements()
+    |> validate_dynamic_experiment_requirements()
   end
 
-  # If the experiment is complex, those three numbers must be present.
-  # If the experiment is not complex, all of them must be absent, otherwise the user has made an error.
+  # If the experiment is dynamic, those three numbers must be present.
+  # If the experiment is not dynamic, all of them must be absent, otherwise the user has made an error.
   # This is still a bit ugly. Can we do it better?
   # validate_change/3 is only applicable to one single field.
-  # A cleaner way would be to create a completely separate model for complex experiments, instead of containing everything within one model.
+  # A cleaner way would be to create a completely separate model for dynamic experiments, instead of containing everything within one model.
   # For now let's first continue with this I guess.
-  defp validate_complex_experiment_requirements(changeset) do
+  defp validate_dynamic_experiment_requirements(changeset) do
     if Map.get(changeset.changes, :is_dynamic) && changeset.changes.is_dynamic do
       changeset
       |> validate_required([:num_variants, :num_chains, :num_generations])
@@ -70,7 +70,7 @@ defmodule Magpie.Experiments.Experiment do
         changeset
         |> add_error(
           :is_dynamic,
-          "The num_variant, num_chains and num_generations attributes are only for complex experiments!"
+          "The num_variant, num_chains and num_generations attributes are only for dynamic experiments!"
         )
       else
         changeset

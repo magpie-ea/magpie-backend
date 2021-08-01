@@ -1,5 +1,5 @@
   <div class="form-group">
-    <%= label @f, :is_dynamic, "Complex experiment", class: "control-label" %>
+    <%= label @f, :is_dynamic, "Dynamic experiment", class: "control-label" %>
     <%= checkbox @f, :is_dynamic%>
     <p>
       In this experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
@@ -16,7 +16,7 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_variants, "(Only for complex experiments) Number of variants", class: "control-label" %>
+    <%= label @f, :num_variants, "(Only for dynamic experiments) Number of variants", class: "control-label" %>
     <p>
        Specifies the number of variants for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
       </p>
@@ -35,7 +35,7 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_chains, "(Only for complex experiments) Number of chains", class: "control-label" %>
+    <%= label @f, :num_chains, "(Only for dynamic experiments) Number of chains", class: "control-label" %>
     <p>
        Specifies the number of chains for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
       </p>
@@ -53,7 +53,7 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_generations, "(Only for complex experiments) Number of generations (per chain)", class: "control-label" %>
+    <%= label @f, :num_generations, "(Only for dynamic experiments) Number of generations (per chain)", class: "control-label" %>
     <p>
        Specifies the number of generations for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
       </p>
@@ -63,7 +63,7 @@
 </p>
 
 <p>
-  <strong>Please remember that as soon as the total number of participants is reached, the server will stop accepting new connections. Therefore, be sure to specify a sufficiently high participant number when creating a complex experiment.</strong>
+  <strong>Please remember that as soon as the total number of participants is reached, the server will stop accepting new connections. Therefore, be sure to specify a sufficiently high participant number when creating a dynamic experiment.</strong>
 </p>
     <%= text_input @f, :num_generations, placeholder: "e.g. 100", class: "form-control" %>
     <%= error_tag @f, :num_generations%>

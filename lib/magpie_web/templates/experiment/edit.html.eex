@@ -29,10 +29,10 @@
 
   <%= render "form.html", conn: @conn, f: f%>
 
-  <p><i>N.B.: Currently, attribute editing for complex experiments is disallowed. Please create a new experiment if you want to make the experiment complex/want a different set of attributes.</i></p>
+  <p><i>N.B.: Currently, attribute editing for dynamic experiments is disallowed. Please create a new experiment if you want to make the experiment dynamic/want a different set of attributes.</i></p>
 
   <%= if @experiment.is_dynamic do %>
-    <%= render "complex_experiment_edit.html", conn: @conn, f: f%>
+    <%= render "dynamic_experiment_edit.html", conn: @conn, f: f%>
   <% end %>
 
   <div class="form-group">

@@ -7,7 +7,7 @@ defmodule Magpie.ExperimentTest do
   alias Magpie.Experiments.Experiment
   alias Magpie.Repo
 
-  @non_complex_experiment_attrs %{
+  @non_dynamic_experiment_attrs %{
     name: "some name",
     author: "some author",
     description: "some description",
@@ -16,7 +16,7 @@ defmodule Magpie.ExperimentTest do
     is_dynamic: false
   }
 
-  @complex_experiment_attrs %{
+  @dynamic_experiment_attrs %{
     name: "some name",
     author: "some author",
     description: "some description",
@@ -28,7 +28,7 @@ defmodule Magpie.ExperimentTest do
     num_generations: 3
   }
 
-  @innon_complex_experiment_attrs %{
+  @innon_dynamic_experiment_attrs %{
     name: nil,
     author: nil,
     active: nil,
@@ -36,32 +36,32 @@ defmodule Magpie.ExperimentTest do
   }
 
   test "changeset with valid attributes" do
-    changeset = Experiment.changeset(%Experiment{}, @non_complex_experiment_attrs)
+    changeset = Experiment.changeset(%Experiment{}, @non_dynamic_experiment_attrs)
     assert changeset.valid?
   end
 
   test "changeset with invalid attributes" do
-    changeset = Experiment.changeset(%Experiment{}, @innon_complex_experiment_attrs)
+    changeset = Experiment.changeset(%Experiment{}, @innon_dynamic_experiment_attrs)
     refute changeset.valid?
   end
 
   test "name is required" do
     changeset =
-      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :name))
+      Experiment.changeset(%Experiment{}, Map.delete(@non_dynamic_experiment_attrs, :name))
 
     refute changeset.valid?
   end
 
   test "author is required" do
     changeset =
-      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :author))
+      Experiment.changeset(%Experiment{}, Map.delete(@non_dynamic_experiment_attrs, :author))
 
     refute changeset.valid?
   end
 
   test "active is not required and defaults to `true`" do
     changeset =
-      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :active))
+      Experiment.changeset(%Experiment{}, Map.delete(@non_dynamic_experiment_attrs, :active))
 
     {:ok, experiment} = Repo.insert(changeset)
     assert experiment.active == true
@@ -69,7 +69,7 @@ defmodule Magpie.ExperimentTest do
 
   test "is_dynamic is not required and defaults to `false`" do
     changeset =
-      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :is_dynamic))
+      Experiment.changeset(%Experiment{}, Map.delete(@non_dynamic_experiment_attrs, :is_dynamic))
 
     {:ok, experiment} = Repo.insert(changeset)
     assert experiment.is_dynamic == false
@@ -77,7 +77,7 @@ defmodule Magpie.ExperimentTest do
 
   test "description is not required" do
     changeset =
-      Experiment.changeset(%Experiment{}, Map.delete(@non_complex_experiment_attrs, :description))
+      Experiment.changeset(%Experiment{}, Map.delete(@non_dynamic_experiment_attrs, :description))
 
     assert changeset.valid?
   end
@@ -86,32 +86,32 @@ defmodule Magpie.ExperimentTest do
     changeset =
       Experiment.changeset(
         %Experiment{},
-        Map.delete(@non_complex_experiment_attrs, :dynamic_retrieval_keys)
+        Map.delete(@non_dynamic_experiment_attrs, :dynamic_retrieval_keys)
       )
 
     assert changeset.valid?
   end
 
-  describe "complex experiments" do
-    test "complex experiments must have num_variants" do
+  describe "dynamic experiments" do
+    test "dynamic experiments must have num_variants" do
       changeset =
-        Experiment.changeset(%Experiment{}, Map.delete(@complex_experiment_attrs, :num_variants))
+        Experiment.changeset(%Experiment{}, Map.delete(@dynamic_experiment_attrs, :num_variants))
 
       refute changeset.valid?
     end
 
-    test "complex experiments must have num_chains" do
+    test "dynamic experiments must have num_chains" do
       changeset =
-        Experiment.changeset(%Experiment{}, Map.delete(@complex_experiment_attrs, :num_chains))
+        Experiment.changeset(%Experiment{}, Map.delete(@dynamic_experiment_attrs, :num_chains))
 
       refute changeset.valid?
     end
 
-    test "complex experiments must have num_generations" do
+    test "dynamic experiments must have num_generations" do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.delete(@complex_experiment_attrs, :num_generations)
+          Map.delete(@dynamic_experiment_attrs, :num_generations)
         )
 
       refute changeset.valid?
@@ -121,7 +121,7 @@ defmodule Magpie.ExperimentTest do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@complex_experiment_attrs, :num_variants, 0)
+          Map.put(@dynamic_experiment_attrs, :num_variants, 0)
         )
 
       assert {:num_variants,
@@ -133,7 +133,7 @@ defmodule Magpie.ExperimentTest do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@complex_experiment_attrs, :num_chains, 0)
+          Map.put(@dynamic_experiment_attrs, :num_chains, 0)
         )
 
       assert {:num_chains,
@@ -145,7 +145,7 @@ defmodule Magpie.ExperimentTest do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@complex_experiment_attrs, :num_generations, 0)
+          Map.put(@dynamic_experiment_attrs, :num_generations, 0)
         )
 
       assert {:num_generations,
@@ -153,31 +153,31 @@ defmodule Magpie.ExperimentTest do
                [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
     end
 
-    test "non-complex experiments cannot have num_variants" do
+    test "non-dynamic experiments cannot have num_variants" do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@non_complex_experiment_attrs, :num_variants, 2)
+          Map.put(@non_dynamic_experiment_attrs, :num_variants, 2)
         )
 
       refute changeset.valid?
     end
 
-    test "non-complex experiments cannot have num_chains" do
+    test "non-dynamic experiments cannot have num_chains" do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@non_complex_experiment_attrs, :num_chains, 2)
+          Map.put(@non_dynamic_experiment_attrs, :num_chains, 2)
         )
 
       refute changeset.valid?
     end
 
-    test "non-complex experiments cannot have num_generations" do
+    test "non-dynamic experiments cannot have num_generations" do
       changeset =
         Experiment.changeset(
           %Experiment{},
-          Map.put(@non_complex_experiment_attrs, :num_generations, 2)
+          Map.put(@non_dynamic_experiment_attrs, :num_generations, 2)
         )
 
       refute changeset.valid?

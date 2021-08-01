@@ -3,7 +3,7 @@ defmodule Magpie.TestHelpers do
   Helper functions for tests
   """
 
-  @complex_experiment_attrs %{
+  @dynamic_experiment_attrs %{
     name: "some name",
     author: "some author",
     description: "some description",
@@ -34,10 +34,10 @@ defmodule Magpie.TestHelpers do
     "results" => @results_simple_experiment
   }
 
-  def insert_complex_experiment(attrs \\ %{}) do
+  def insert_dynamic_experiment(attrs \\ %{}) do
     changes =
       Map.merge(
-        @complex_experiment_attrs,
+        @dynamic_experiment_attrs,
         attrs
       )
 
@@ -87,7 +87,7 @@ defmodule Magpie.TestHelpers do
     @experiment_attrs
   end
 
-  def get_complex_experiment_attrs() do
-    @complex_experiment_attrs
+  def get_dynamic_experiment_attrs() do
+    @dynamic_experiment_attrs
   end
 end

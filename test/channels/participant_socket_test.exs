@@ -7,7 +7,7 @@ defmodule Magpie.ParticipantSocketTest do
   alias Magpie.{ParticipantSocket, ChannelHelper}
 
   test "connect with a valid experiment_id" do
-    experiment = insert_complex_experiment()
+    experiment = insert_dynamic_experiment()
 
     assert {:ok, socket} =
              connect(ParticipantSocket, %{
@@ -24,7 +24,7 @@ defmodule Magpie.ParticipantSocketTest do
   end
 
   test "Assigns ExperimentStatus to 1 upon connection" do
-    experiment = insert_complex_experiment()
+    experiment = insert_dynamic_experiment()
 
     {:ok, socket} =
       connect(ParticipantSocket, %{
@@ -59,7 +59,7 @@ defmodule Magpie.ParticipantSocketTest do
   end
 
   test "refuse connection without supplying participant_id" do
-    experiment = insert_complex_experiment()
+    experiment = insert_dynamic_experiment()
 
     assert :error =
              connect(ParticipantSocket, %{
@@ -68,7 +68,7 @@ defmodule Magpie.ParticipantSocketTest do
   end
 
   test "refuse connection with an empty participant_id" do
-    experiment = insert_complex_experiment()
+    experiment = insert_dynamic_experiment()
 
     assert :error =
              connect(ParticipantSocket, %{
@@ -79,7 +79,7 @@ defmodule Magpie.ParticipantSocketTest do
 
   # I guess this is a bit irrelevant so whatever. Just let it crash.
   # test "refuse connection with an empty experiment_id" do
-  #   experiment = insert_complex_experiment()
+  #   experiment = insert_dynamic_experiment()
 
   #   assert :error =
   #            connect(ParticipantSocket, %{

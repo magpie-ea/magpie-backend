@@ -77,7 +77,7 @@ The server is responsible for broadcasting messages between the participants. To
 
 To create such an experiment, you need to specify the total number of variants, chains and generations. Any positive integer is allowed.
 
-The identifiers will be assigned incrementally in the order of `variant-nr` -> `chain-nr` -> `generation-nr`. Assuming the `<num-variants, num-chains, num-generations>` trituple is specified as `<2, 3, 10>` at experiment creation, the participant who joins after the participant `<1, 1, 1>` will be assigned the identifier `<2, 1, 1>`, the participant who joins after `<2, 1, 3>` will be assigned the identifier `<1, 2, 3>`, etc.
+The identifiers will be assigned incrementally in the order of `generation-nr` -> `chain-nr` -> `variant-nr`. Assuming the `<num-variants, num-chains, num-generations>` trituple is specified as `<2, 3, 10>` at experiment creation, the participant who joins after the participant `<1, 1, 1>` will be assigned the identifier `<1, 1, 2>`, the participant who joins after `<2, 1, 10>` will be assigned the identifier `<2, 2, 1>`, etc.
 
 Normally, an interactive experiment has multiple variants (for example, a speaker and a listener, or player-1 and player-2), while an iterated experiment has multiple chains.
 

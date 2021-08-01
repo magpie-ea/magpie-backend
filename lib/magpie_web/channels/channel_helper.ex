@@ -27,8 +27,8 @@ defmodule Magpie.ChannelHelper do
       Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment_id,
         where: s.status == 0,
-        # First by generation, then by chain, then by variant. In this way the variant gets incremented first.
-        order_by: [s.generation, s.chain, s.variant]
+        # First by variant, then by chain, then by generation. In this way the generation gets incremented first.
+        order_by: [s.variant, s.chain, s.generation]
         # limit: 1
       )
 

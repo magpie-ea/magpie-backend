@@ -5,6 +5,8 @@ config :logger,
 
 config :magpie, :environment, :prod
 
+config :magpie, MagpieWeb.Endpoint, cache_static_manifest: "priv/static/cache_manifest.json"
+
 # We don't have a basic auth on the demo app, so we need to allow for this flexibility
 # Deliberate compile-time variable
 config :magpie,

@@ -12,7 +12,8 @@ defmodule Magpie.Repo.Migrations.AddNumPlayersToExperiments do
     end
 
     alter table(:experiment_statuses) do
-      add :player, :integer, null: false
+      # Need to provide a default for all the previously existing entries.
+      add :player, :integer, default: 1, null: false
     end
 
     # Create additional indices without dropping the previous ones.

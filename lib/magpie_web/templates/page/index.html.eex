@@ -1,10 +1,10 @@
-<h2>Minimal Architecture for the Generation of Portable Interactive Experiments</h2>
+<h1 class="page-title">Minimal Architecture for the Generation of Portable Interactive Experiments</h1>
 
-<div class="row navigation-container">
-<div class="col-xs-6">
-<%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "btn btn-primary btn-lg btn-block " %>
+<div class="navigation-container">
+<div class="">
+<%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "button " %>
 </div>
-<div class="col-xs-6">
-<%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "btn btn-success btn-lg btn-block " %>
+<div class="">
+<%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "button button-outline" %>
 </div>
 </div>

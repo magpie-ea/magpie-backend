@@ -1,11 +1,10 @@
-<h2 class="page-title">Manage Custom Records</h2>
-<br>
+<h1 class="page-title">Manage Custom Records</h1>
 <div class="top-buttons-container">
-<div><%= link "New Record", to: custom_record_path(@conn, :new), class: "btn btn-primary btn-default" %></div>
-<div><%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "btn btn-info" %></div>
+<div><%= link "New Record", to: custom_record_path(@conn, :new), class: "button" %></div>
+<div><%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "button button-clear" %></div>
 </div>
 
-<table class="table sortable">
+<table>
   <thead>
     <tr>
       <th>ID</th>
@@ -22,13 +21,13 @@
       <td><%= record.id %></td>
       <td><%= record.name %></td>
         <td class="text-right">
-          <%= link "Retrieve CSV", to: custom_record_path(@conn, :retrieve_as_csv, record), class: "btn btn-success btn-sm" %>
+          <%= link "Retrieve CSV", to: custom_record_path(@conn, :retrieve_as_csv, record), class: "button button-small button-outline" %>
         </td>
       <td class="text-right">
-        <%= link "Edit", to: custom_record_path(@conn, :edit, record), class: "btn btn-info btn-sm"  %>
+        <%= link "Edit", to: custom_record_path(@conn, :edit, record), class: "button button-small button-outline"  %>
       </td>
       <td class="text-right">
-        <%= link "Delete", to: custom_record_path(@conn, :delete, record), method: :delete, data: [confirm: "You are about to delete #{record.name}. Are you sure?"], class: "btn btn-danger btn-sm" %>
+        <%= link "Delete", to: custom_record_path(@conn, :delete, record), method: :delete, data: [confirm: "You are about to delete #{record.name}. Are you sure?"], class: "button button-small button-outline" %>
       </td>
     </tr>
   <% end %>

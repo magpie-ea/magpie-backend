@@ -1,11 +1,10 @@
-<h2 class="page-title">Manage Experiments</h2>
-<br>
+<h1 class="page-title">Manage Experiments</h1>
 <div class="top-buttons-container">
-<div><%= link "New Experiment", to: experiment_path(@conn, :new), class: "btn btn-primary btn-default" %></div>
-<div><%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "btn btn-info" %></div>
+<div><%= link "New Experiment", to: experiment_path(@conn, :new), class: "button" %></div>
+<div><%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "button button-clear" %></div>
 </div>
 
-<table class="table sortable">
+<table>
   <thead>
     <tr>
       <th>ID</th>
@@ -39,13 +38,13 @@
         <td><%= experiment.active %></td>
 
         <td class="text-right">
-          <%= link "Retrieve CSV", to: experiment_path(@conn, :retrieve_as_csv, experiment), class: "btn btn-success btn-sm" %>
+          <%= link "Retrieve CSV", to: experiment_path(@conn, :retrieve_as_csv, experiment), class: "button button-small button-outline" %>
         </td>
         <td class="text-right">
-          <%= link "Edit", to: experiment_path(@conn, :edit, experiment), class: "btn btn-info btn-sm" %>
+          <%= link "Edit", to: experiment_path(@conn, :edit, experiment), class: "button button-small button-outline" %>
         </td>
         <td class="text-right">
-          <%= link "Delete", to: experiment_path(@conn, :delete, experiment), method: :delete, data: [confirm: "You are about to delete #{experiment.name}. Make sure that you have already backed up the experiment results, if necessary!"], class: "btn btn-danger btn-sm" %>
+          <%= link "Delete", to: experiment_path(@conn, :delete, experiment), method: :delete, data: [confirm: "You are about to delete #{experiment.name}. Make sure that you have already backed up the experiment results, if necessary!"], class: "button button-small button-outline" %>
         </td>
       </tr>
     <% end %>

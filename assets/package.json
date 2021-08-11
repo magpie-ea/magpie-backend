@@ -6,9 +6,6 @@
     "watch": "webpack --mode development --watch-stdin"
   },
   "dependencies": {
-    "bootstrap": "^3.4.1",
-    "jquery": "3.6.0",
-    "moment": "2.29.1",
     "phoenix": "1.2.1",
     "phoenix_html": "2.10.4"
   },

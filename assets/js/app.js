@@ -43,6 +43,14 @@ window.onload = () => {
     };
   });
 
+  const toggleHide = function (checkbox, formGroup) {
+    if (checkbox.checked) {
+      formGroup.classList.remove('hide');
+    } else {
+      formGroup.classList.add('hide');
+    }
+  };
+
   if (document.querySelector('#dynamic-experiment-checkbox')) {
     const dynamicExperimentCheckbox = document.getElementById(
       'dynamic-experiment-checkbox'
@@ -50,12 +58,9 @@ window.onload = () => {
     const dynamicExperimentFormGroup = document.getElementById(
       'dynamic-experiment-form-group'
     );
+    toggleHide(dynamicExperimentCheckbox, dynamicExperimentFormGroup);
     dynamicExperimentCheckbox.onchange = () => {
-      if (dynamicExperimentCheckbox.checked) {
-        dynamicExperimentFormGroup.classList.remove('hide');
-      } else {
-        dynamicExperimentFormGroup.classList.add('hide');
-      }
+      toggleHide(dynamicExperimentCheckbox, dynamicExperimentFormGroup);
     };
   }
 
@@ -66,12 +71,9 @@ window.onload = () => {
     const interactiveExperimentFormGroup = document.getElementById(
       'interactive-experiment-form-group'
     );
+    toggleHide(interactiveExperimentCheckbox, interactiveExperimentFormGroup);
     interactiveExperimentCheckbox.onchange = () => {
-      if (interactiveExperimentCheckbox.checked) {
-        interactiveExperimentFormGroup.classList.remove('hide');
-      } else {
-        interactiveExperimentFormGroup.classList.add('hide');
-      }
+      toggleHide(interactiveExperimentCheckbox, interactiveExperimentFormGroup);
     };
   }
 };

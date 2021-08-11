@@ -1,0 +1,12 @@
+  <div class="form-group">
+    <%= label @f, :is_interactive, "Interactive experiment", class: "control-label" %>
+    <%= checkbox @f, :is_interactive, disabled: "disabled" %>
+    <%= error_tag @f, :is_interactive%>
+  </div>
+
+
+    <div class="form-group">
+      <%= label @f, :num_players, "Number of players expected to participate together in an experiment", class: "control-label" %>
+      <%= text_input @f, :num_players, class: "form-control", disabled: "disabled" %>
+      <%= error_tag @f, :num_players %>
+    </div>

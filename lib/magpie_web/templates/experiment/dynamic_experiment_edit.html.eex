@@ -5,19 +5,19 @@
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_variants, "(Only for dynamic experiments) Total number of variants", class: "control-label" %>
+    <%= label @f, :num_variants, "Total number of variants", class: "control-label" %>
     <%= text_input @f, :num_variants, class: "form-control", disabled: "disabled" %>
     <%= error_tag @f, :num_variants%>
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_chains, "(Only for dynamic experiments) Total number of chains", class: "control-label" %>
+    <%= label @f, :num_chains, "Total number of chains", class: "control-label" %>
     <%= text_input @f, :num_chains, class: "form-control", disabled: "disabled" %>
     <%= error_tag @f, :num_chains%>
   </div>
 
   <div class="form-group">
-    <%= label @f, :num_generations, "(Only for dynamic experiments) Total number of generations", class: "control-label" %>
+    <%= label @f, :num_generations, "Total number of generations", class: "control-label" %>
     <%= text_input @f, :num_generations, class: "form-control", disabled: "disabled" %>
     <%= error_tag @f, :num_generations%>
   </div>

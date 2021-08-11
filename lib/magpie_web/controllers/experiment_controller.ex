@@ -46,7 +46,7 @@ defmodule Magpie.ExperimentController do
       # The failure doesn't lie in experiment creation
       {:error, _, _failed_value, _changes_so_far} ->
         conn
-        |> render("new.html")
+        |> render("new.html", Experiment.changeset(%Experiment{}))
     end
   end
 

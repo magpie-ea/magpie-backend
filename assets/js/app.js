@@ -44,8 +44,6 @@ window.onload = () => {
   });
 
   if (document.querySelector('#dynamic-experiment-checkbox')) {
-    console.log('Asdfsadfgsdfg');
-
     const dynamicExperimentCheckbox = document.getElementById(
       'dynamic-experiment-checkbox'
     );
@@ -53,11 +51,26 @@ window.onload = () => {
       'dynamic-experiment-form-group'
     );
     dynamicExperimentCheckbox.onchange = () => {
-      console.log('asdf');
       if (dynamicExperimentCheckbox.checked) {
         dynamicExperimentFormGroup.classList.remove('hide');
       } else {
         dynamicExperimentFormGroup.classList.add('hide');
+      }
+    };
+  }
+
+  if (document.querySelector('#interactive-experiment-checkbox')) {
+    const interactiveExperimentCheckbox = document.getElementById(
+      'interactive-experiment-checkbox'
+    );
+    const interactiveExperimentFormGroup = document.getElementById(
+      'interactive-experiment-form-group'
+    );
+    interactiveExperimentCheckbox.onchange = () => {
+      if (interactiveExperimentCheckbox.checked) {
+        interactiveExperimentFormGroup.classList.remove('hide');
+      } else {
+        interactiveExperimentFormGroup.classList.add('hide');
       }
     };
   }

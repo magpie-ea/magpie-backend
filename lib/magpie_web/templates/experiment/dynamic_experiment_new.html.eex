@@ -2,7 +2,7 @@
     <%= label @f, :is_dynamic, "Dynamic experiment", class: "control-label" %>
     <%= checkbox @f, :is_dynamic, id: "dynamic-experiment-checkbox" %>
     <p>
-      In this experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
+      In this experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation.
       </p>
 
 <p>
@@ -15,7 +15,7 @@
     <%= error_tag @f, :is_dynamic%>
   </div>
 
-  <div id="dynamic-experiment-form-group">
+  <div id="dynamic-experiment-form-group" class="hide">
 
   <div class="form-group">
     <%= label @f, :num_variants, "(Only for dynamic experiments) Number of variants", class: "control-label" %>

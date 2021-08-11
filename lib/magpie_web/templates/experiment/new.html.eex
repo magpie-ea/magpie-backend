@@ -9,12 +9,13 @@
 
   <%= render "form.html", conn: @conn, f: f%>
   <%= render "dynamic_experiment_new.html", conn: @conn, f: f%>
+  <%= render "interactive_experiment_new.html", conn: @conn, f: f%>
 
   <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary" %>
+    <%= submit "Confirm", class: "button" %>
   </div>
 
   <div class="form-group">
-    <%= link "Back", to: experiment_path(@conn, :index), class: "btn btn-default" %>
+    <%= link "Back", to: experiment_path(@conn, :index), class: "button button button-outline" %>
   </div>
 <% end %>

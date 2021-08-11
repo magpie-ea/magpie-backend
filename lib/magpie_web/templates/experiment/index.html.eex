@@ -1,5 +1,5 @@
 <h1 class="page-title">Manage Experiments</h1>
-<div class="top-buttons-container">
+<div class="buttons-container">
 <div><%= link "New Experiment", to: experiment_path(@conn, :new), class: "button" %></div>
 <div><%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "button button-clear" %></div>
 </div>

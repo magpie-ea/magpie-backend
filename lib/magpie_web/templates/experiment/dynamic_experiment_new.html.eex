@@ -1,0 +1,74 @@
+  <div class="form-group">
+    <%= label @f, :is_dynamic, "Dynamic experiment", class: "control-label" %>
+    <%= checkbox @f, :is_dynamic, id: "dynamic-experiment-checkbox" %>
+    <p>
+      In this experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation. Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task.
+      </p>
+
+<p>
+      Each participant will be assigned a unique <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> identifier, so that such dependencies can be made explicit.
+    </p>
+
+<p>
+    The client must connect with the server via Phoenix Channel in such experiments.
+    </p>
+    <%= error_tag @f, :is_dynamic%>
+  </div>
+
+  <div id="dynamic-experiment-form-group">
+
+  <div class="form-group">
+    <%= label @f, :num_variants, "(Only for dynamic experiments) Number of variants", class: "control-label" %>
+    <p>
+       Specifies the number of variants for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
+      </p>
+
+      <p>
+
+      For example, in a speaker-listener experiment, the speaker would be <code>variant-1</code> while the listener would be <code>variant-2</code>.
+
+</p>
+
+<p>
+      Leave it as 1 if there are no different variants of the experiment.
+    </p>
+    <%= text_input @f, :num_variants, placeholder: "e.g. 2", class: "form-control" %>
+    <%= error_tag @f, :num_variants%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_chains, "(Only for dynamic experiments) Number of chains", class: "control-label" %>
+    <p>
+       Specifies the number of chains for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
+      </p>
+
+      <p>
+      In multi-generational experiments, a chain forms a coherent unit. For example, in an iterated narration experiment, the participant <code><1, 1, 2></code> gets the previous version of the story from the participant <code><1, 1, 1></code>, while the participant <code><1, 3, 2></code> gets the previous version of the story from the participant <code><1, 3, 1></code>.
+
+      </p>
+
+      <p>
+      Leave it as <code>1</code> if there is no need for different chains in the experiment.
+    </p>
+    <%= text_input @f, :num_chains, placeholder: "e.g. 10", class: "form-control" %>
+    <%= error_tag @f, :num_chains%>
+  </div>
+
+  <div class="form-group">
+    <%= label @f, :num_generations, "(Only for dynamic experiments) Number of generations (per chain)", class: "control-label" %>
+    <p>
+       Specifies the number of generations for an experiment in regard to the <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> tri-tuple.
+      </p>
+
+      <p>
+      A chain will reach its end when all generations have been submitted. For example, an iterated narration experiment might have 1 variant, 10 chains, with 20 generations each chain, meaning that a total of 200 participants will be recruited.
+</p>
+
+<p>
+  <strong>Please remember that as soon as the total number of participants is reached, the server will stop accepting new connections. Therefore, be sure to specify a sufficiently high participant number when creating a dynamic experiment.</strong>
+</p>
+    <%= text_input @f, :num_generations, placeholder: "e.g. 100", class: "form-control" %>
+    <%= error_tag @f, :num_generations%>
+  </div>
+
+  </div>

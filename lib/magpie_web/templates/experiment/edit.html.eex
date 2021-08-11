@@ -1,4 +1,4 @@
-<h2>Edit Experiment</h2>
+<h1>Edit Experiment</h1>
 
 <p>
   Please use the endpoints shown below when submitting/retrieving experiments:
@@ -17,30 +17,32 @@
     </div>
   <% end %>
 
-  <%= link "Reset experiment", to: experiment_path(@conn, :reset, @experiment), class: "btn btn-danger", method: :delete, data: [confirm: "You are about to reset #{@experiment.name}. All experiment results will be deleted and the experiment stauses will be reset! Make sure that you have already backed up the experiment results, if necessary."] %>
-
-  <br>
-  <br>
-
-  <%= link "Toggle activation status", to: experiment_path(@conn, :toggle, @experiment), class: "btn btn-warning" %>
-
-  <br/>
-  <br/>
-
   <%= render "form.html", conn: @conn, f: f%>
 
-  <p><i>N.B.: Currently, attribute editing for dynamic experiments is disallowed. Please create a new experiment if you want to make the experiment dynamic/want a different set of attributes.</i></p>
+  <p><i>N.B.: Currently, attribute editing for complex experiments is disallowed. Please create a new experiment if you want to make the experiment complex/want a different set of attributes.</i></p>
 
   <%= if @experiment.is_dynamic do %>
     <%= render "dynamic_experiment_edit.html", conn: @conn, f: f%>
   <% end %>
 
-  <div class="form-group">
-    <%= submit "Submit", class: "btn btn-primary" %>
+  <%= if @experiment.is_interactive do %>
+    <%= render "interactive_experiment_edit.html", conn: @conn, f: f%>
+  <% end %>
+
+  <div class="buttons-container">
+    <div>
+      <%= submit "Apply changes", class: "button" %>
+    </div>
+
+    <div>
+
+      <%= link "Reset experiment", to: experiment_path(@conn, :reset, @experiment), class: "button button-red", method: :delete, data: [confirm: "You are about to reset #{@experiment.name}. All experiment results will be deleted and the experiment stauses will be reset! Make sure that you have already backed up the experiment results, if necessary."] %>
+    </div>
+
+    <div>
+      <%= link "Back", to: experiment_path(@conn, :index), class: "button button-outline" %>
+    </div>
   </div>
 
-  <div class="form-group">
-    <%= link "Back", to: experiment_path(@conn, :index), class: "btn btn-default" %>
-  </div>
 
 <% end %>

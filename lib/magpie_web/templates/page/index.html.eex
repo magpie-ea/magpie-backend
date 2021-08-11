@@ -1,6 +1,6 @@
 <h1 class="page-title">Minimal Architecture for the Generation of Portable Interactive Experiments</h1>
 
-<div class="navigation-container">
+<div class="buttons-container">
 <div class="">
 <%= link "Manage Experiments", to: experiment_path(@conn, :index), class: "button " %>
 </div>

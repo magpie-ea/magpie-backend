@@ -16,12 +16,12 @@ defmodule Magpie.Experiments.Experiment do
     field :is_dynamic, :boolean, default: false, null: false
     field :is_interactive, :boolean, default: false, null: false
 
-    # null: true because they can be null for simple experiments.
-    field :num_variants, :integer, null: true
-    field :num_chains, :integer, null: true
+    # Might be a better idea to always set them to 1 by default for the benefit of the ExperimentStatus table.
+    field :num_variants, :integer, null: true, default: 1
+    field :num_chains, :integer, null: true, default: 1
 
-    field :num_generations, :integer, null: true
-    field :num_players, :integer, null: true
+    field :num_generations, :integer, null: true, default: 1
+    field :num_players, :integer, null: true, default: 1
 
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)

@@ -12,42 +12,37 @@ defmodule Magpie.Experiments do
   def create_experiment(experiment_params) do
     changeset_experiment = Experiment.changeset(%Experiment{}, experiment_params)
 
-    # This check is a bit clunky but currently we can only go this way as we don't have a separate ComplexExperiment model yet.
-    multi =
-      if Map.has_key?(changeset_experiment.changes, :is_dynamic) &&
-           changeset_experiment.changes.is_dynamic do
-        create_experiment_make_multi_with_insert(changeset_experiment)
-      else
-        Multi.new()
-        |> Multi.insert(:experiment, changeset_experiment)
-      end
-
-    Repo.transaction(multi)
+    changeset_experiment
+    |> create_experiment_make_multi_with_insert()
+    |> Repo.transaction()
   end
 
   defp create_experiment_make_multi_with_insert(changeset_experiment) do
     Multi.new()
     |> Multi.insert(:experiment, changeset_experiment)
     |> Multi.merge(fn %{experiment: experiment} ->
-      # Just use reduce for everything. Jose's favorite anyways.
+      # TODO: Of course we should be able to use insert_all... But this could be left as a further improvement I guess.
       Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
         Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
           Enum.reduce(1..experiment.num_generations, multi, fn generation, multi ->
-            params = %{
-              experiment_id: experiment.id,
-              variant: variant,
-              chain: chain,
-              generation: generation,
-              status: 0
-            }
+            Enum.reduce(1..experiment.num_players, multi, fn player, multi ->
+              params = %{
+                experiment_id: experiment.id,
+                variant: variant,
+                chain: chain,
+                generation: generation,
+                player: player,
+                status: 0
+              }
 
-            changeset = ExperimentStatus.changeset(%ExperimentStatus{}, params)
+              changeset = ExperimentStatus.changeset(%ExperimentStatus{}, params)
 
-            multi
-            |> Multi.insert(
-              String.to_atom("experiment_status_#{variant}_#{chain}_#{generation}"),
-              changeset
-            )
+              multi
+              |> Multi.insert(
+                String.to_atom("experiment_status_#{variant}_#{chain}_#{generation}"),
+                changeset
+              )
+            end)
           end)
         end)
       end)

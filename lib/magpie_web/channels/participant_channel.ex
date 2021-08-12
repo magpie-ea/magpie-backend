@@ -19,7 +19,7 @@ defmodule Magpie.ParticipantChannel do
       send(self(), :after_participant_join)
 
       :ok =
-        Magpie.ChannelWatcher.monitor(
+        Magpie.Experiments.ChannelWatcher.monitor(
           :participants,
           self(),
           {__MODULE__, :handle_leave, [socket]}
@@ -107,7 +107,7 @@ defmodule Magpie.ParticipantChannel do
         )
 
         # No need to monitor this participant anymore
-        Magpie.ChannelWatcher.demonitor(:participants, self())
+        Magpie.Experiments.ChannelWatcher.demonitor(:participants, self())
 
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
         Magpie.Endpoint.broadcast!(

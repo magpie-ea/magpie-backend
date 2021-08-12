@@ -27,13 +27,13 @@ defmodule Magpie.Experiments.ExperimentStatusResetWorker do
   end
 
   @impl true
-  def handle_cast(:sweep, state) do
+  def handle_cast(:reset_statuses, state) do
     Experiments.reset_statuses_for_inactive_complex_experiments()
     {:noreply, schedule(state)}
   end
 
   @impl true
-  def handle_info(:sweep, state) do
+  def handle_info(:reset_statuses, state) do
     Experiments.reset_statuses_for_inactive_complex_experiments()
     {:noreply, schedule(state)}
   end
@@ -45,7 +45,7 @@ defmodule Magpie.Experiments.ExperimentStatusResetWorker do
   scheduled work.
   """
   def purge do
-    GenServer.cast(__MODULE__, :sweep)
+    GenServer.cast(__MODULE__, :reset_statuses)
   end
 
   @doc """
@@ -59,7 +59,7 @@ defmodule Magpie.Experiments.ExperimentStatusResetWorker do
     if timer = Keyword.get(opts, :timer), do: Process.cancel_timer(timer)
 
     interval = Keyword.get(opts, :interval)
-    timer = Process.send_after(self(), :sweep, interval)
+    timer = Process.send_after(self(), :reset_statuses, interval)
 
     [interval: interval, timer: timer]
   end

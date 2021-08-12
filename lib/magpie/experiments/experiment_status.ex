@@ -1,6 +1,6 @@
 defmodule Magpie.Experiments.ExperimentStatus do
   @moduledoc """
-  Keeps track of the experiment status, where it can be available/abandoned (0), in progress (1), or submitted (2). Used for complex experiments.
+  Keeps track of the experiment status, where it can be open (0), in progress (1), or completed (2). Used for complex experiments.
   """
   use MagpieWeb, :model
 
@@ -9,8 +9,9 @@ defmodule Magpie.Experiments.ExperimentStatus do
     field(:chain, :integer, null: false)
     field(:generation, :integer, null: false)
     field(:player, :integer, null: false)
-    # 0 means not taken up/dropped. 1 means in progress. 2 means submitted
-    field(:status, :integer, default: 0, null: false)
+
+    # 0 means open (i.e. either not taken up or dropped). 1 means in progress. 2 means completed (submitted by the participant)
+    field(:status, Ecto.Enum, values: [open: 0, in_progress: 1, completed: 2])
 
     belongs_to(:experiment, Magpie.Experiments.Experiment)
 
@@ -25,8 +26,6 @@ defmodule Magpie.Experiments.ExperimentStatus do
     |> validate_number(:chain, greater_than: 0)
     |> validate_number(:generation, greater_than: 0)
     |> validate_number(:player, greater_than: 0)
-    # Only 0, 1, 2 are valid entries.
-    |> validate_inclusion(:status, 0..2, message: "must be 0, 1 or 2")
     # Must be associated with an experiment
     |> assoc_constraint(:experiment)
   end

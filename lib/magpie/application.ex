@@ -22,7 +22,7 @@ defmodule Magpie.Application do
       # Starts a worker by calling: Magpie.Worker.start_link(arg)
       # {Magpie.Worker, arg},
       {Magpie.Experiments.ExperimentStatusResetWorker, []},
-      {Magpie.ChannelWatcher, :participants}
+      {Magpie.Experiments.ChannelWatcher, :participants}
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html

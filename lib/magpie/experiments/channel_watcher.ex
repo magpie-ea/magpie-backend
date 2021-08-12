@@ -1,4 +1,4 @@
-defmodule Magpie.ChannelWatcher do
+defmodule Magpie.Experiments.ChannelWatcher do
   @moduledoc """
   A module to watch out for participant disconnections. Phoenix.Presence and the terminate/2 callback might not be foolproof. See: https://github.com/magpie-project/magpie-backend/issues/51
   """

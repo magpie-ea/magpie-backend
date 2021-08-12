@@ -16,6 +16,8 @@ defmodule Magpie.Experiments.ExperimentStatusResetWorker do
 
   @impl true
   def init(state) do
+    # Perform the action at application startup as well
+    Experiments.reset_statuses_for_inactive_complex_experiments()
     {:ok, schedule(state)}
   end
 

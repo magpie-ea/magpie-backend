@@ -19,12 +19,9 @@ defmodule Magpie.Application do
       Magpie.Presence,
       # Start your own worker by calling: Magpie.Worker.start_link(arg1, arg2, arg3)
       # worker(Magpie.Worker, [arg1, arg2, arg3]),
-      # Starts a worker by calling: Assistant.Worker.start_link(arg)
-      # {Assistant.Worker, arg},
-      Supervisor.child_spec(
-        {Task, &Magpie.Experiments.reset_in_progress_experiment_statuses/0},
-        restart: :temporary
-      ),
+      # Starts a worker by calling: Magpie.Worker.start_link(arg)
+      # {Magpie.Worker, arg},
+      {Magpie.Experiments.ExperimentStatusResetWorker, []},
       {Magpie.ChannelWatcher, :participants}
     ]
 

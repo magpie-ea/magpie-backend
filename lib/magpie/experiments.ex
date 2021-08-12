@@ -9,6 +9,8 @@ defmodule Magpie.Experiments do
   import Ecto.Query
   import Magpie.Helpers
 
+  require Logger
+
   def create_experiment(experiment_params) do
     changeset_experiment = Experiment.changeset(%Experiment{}, experiment_params)
 
@@ -80,10 +82,6 @@ defmodule Magpie.Experiments do
     new_status = !experiment.active
     changeset = Ecto.Changeset.change(experiment, active: new_status)
 
-    if new_status == false do
-      reset_in_progress_experiment_statuses()
-    end
-
     Repo.update(changeset)
   end
 
@@ -91,14 +89,9 @@ defmodule Magpie.Experiments do
     Multi.new()
     |> Multi.delete_all(:experiment_results, Ecto.assoc(experiment, :experiment_results))
     |> Multi.update_all(:experiment_statuses, Ecto.assoc(experiment, :experiment_statuses),
-      set: [status: 0]
+      set: [status: :open]
     )
     |> Repo.transaction()
-  end
-
-  def reset_in_progress_experiment_statuses do
-    from(p in ExperimentStatus, where: p.status == 1)
-    |> Repo.update_all(set: [status: 0])
   end
 
   @doc """
@@ -132,6 +125,23 @@ defmodule Magpie.Experiments do
 
         {:ok, file_path}
     end
+  end
+
+  @doc """
+  Releases complex experiments that have been taken up by some participant
+  but for which the participant hasn't sent a heartbeat message for over 2 minutes.
+  """
+  def reset_statuses_for_inactive_complex_experiments do
+    Logger.info("Resetting statuses for inactive complex experiments.")
+
+    two_minutes_ago = DateTime.add(DateTime.utc_now(), 2, :minute)
+
+    query =
+      from es in ExperimentStatus,
+        where: es.status == :in_progress,
+        where: es.last_heartbeat < ^two_minutes_ago
+
+    Repo.update_all(query, set: [status: :open])
   end
 
   # Writes the submissions to a CSV file.

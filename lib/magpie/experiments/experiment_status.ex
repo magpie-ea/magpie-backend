@@ -13,6 +13,8 @@ defmodule Magpie.Experiments.ExperimentStatus do
     # 0 means open (i.e. either not taken up or dropped). 1 means in progress. 2 means completed (submitted by the participant)
     field(:status, Ecto.Enum, values: [open: 0, in_progress: 1, completed: 2])
 
+    field(:last_heartbeat, :utc_datetime, null: true)
+
     belongs_to(:experiment, Magpie.Experiments.Experiment)
 
     timestamps(type: :utc_datetime)

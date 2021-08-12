@@ -134,7 +134,7 @@ defmodule Magpie.Experiments do
   def reset_statuses_for_inactive_complex_experiments do
     Logger.info("Resetting statuses for inactive complex experiments.")
 
-    two_minutes_ago = DateTime.add(DateTime.utc_now(), 2, :minute)
+    two_minutes_ago = DateTime.add(DateTime.utc_now(), -120, :second)
 
     query =
       from es in ExperimentStatus,

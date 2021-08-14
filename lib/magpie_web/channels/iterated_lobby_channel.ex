@@ -46,7 +46,7 @@ defmodule Magpie.IteratedLobbyChannel do
             where: r.is_intermediate == false
           )
 
-        experiment_results = Repo.one!(results_query)
+        experiment_results = hd(Repo.all(results_query))
 
         # The same as what we do when the waited-on participant submits their results, send the results to all participants waiting for this participant.
         Magpie.Endpoint.broadcast!(

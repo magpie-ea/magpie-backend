@@ -47,7 +47,7 @@ defmodule Magpie.ParticipantChannel do
         where: s.status == 1
       )
 
-    Repo.update_all(relevant_in_progress_experiment_statuses, set: [status: 0])
+    Repo.update_all(relevant_in_progress_experiment_statuses, set: [status: :open])
   end
 
   def handle_info(:after_participant_join, socket) do
@@ -96,7 +96,9 @@ defmodule Magpie.ParticipantChannel do
 
     operation =
       Multi.new()
-      |> Multi.update_all(:experiment_statuses, relevant_experiment_statuses, set: [status: 2])
+      |> Multi.update_all(:experiment_statuses, relevant_experiment_statuses,
+        set: [status: :completed]
+      )
       |> Multi.insert(:experiment_result, experiment_result_changeset)
 
     case Repo.transaction(operation) do

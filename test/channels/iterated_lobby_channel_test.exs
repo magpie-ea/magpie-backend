@@ -47,7 +47,7 @@ defmodule Magpie.IteratedLobbyChannelTest do
   #   insert_experiment_result(%{"experiment_id" => experiment.id})
 
   #   experiment_status
-  #   |> ExperimentStatus.changeset(%{status: 2})
+  #   |> ExperimentStatus.changeset(%{status: :completed})
   #   |> Repo.update!()
 
   #   assert_broadcast("finished", %{})

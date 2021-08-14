@@ -26,10 +26,10 @@ defmodule Magpie.ChannelHelper do
     available_assignments_query =
       Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment_id,
-        where: s.status == 0,
-        # First by variant, then by chain, then by generation. In this way the generation gets incremented first.
-        order_by: [s.variant, s.chain, s.generation]
-        # limit: 1
+        where: s.status == :open,
+        # First by variant, then by chain, then by generation, then by player. In this way player gets incremented first and generation second.
+        order_by: [s.variant, s.chain, s.generation, s.player],
+        limit: 1
       )
 
     Repo.all(available_assignments_query)

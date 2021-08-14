@@ -227,7 +227,7 @@ defmodule ExperimentControllerTest do
 
       from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment.id,
-        update: [set: [status: 1]]
+        update: [set: [status: :in_progress]]
       )
       |> Repo.update_all([])
 
@@ -248,7 +248,7 @@ defmodule ExperimentControllerTest do
 
       from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment.id,
-        update: [set: [status: 2]]
+        update: [set: [status: :completed]]
       )
       |> Repo.update_all([])
 
@@ -296,7 +296,7 @@ defmodule ExperimentControllerTest do
 
       from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment.id,
-        update: [set: [status: 2]]
+        update: [set: [status: :completed]]
       )
       |> Repo.update_all([])
 

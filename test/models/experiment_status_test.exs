@@ -11,7 +11,7 @@ defmodule Magpie.ExperimentStatusTest do
     variant: 1,
     chain: 2,
     generation: 3,
-    status: 0
+    status: :completed
   }
 
   @invalid_attrs %{}

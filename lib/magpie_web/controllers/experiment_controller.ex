@@ -138,11 +138,8 @@ defmodule Magpie.ExperimentController do
   The "id" field is identifiable in the URL, as defined in router.ex
   """
   def submit(conn, %{"id" => id, "_json" => results}) do
-    # This is the "Experiment" object that's supposed to be associated with this submission.
-    experiment = Experiments.get_experiment(id)
-
-    case experiment do
-      nil ->
+    case Experiments.submit_experiment(id, results) do
+      {:error, :experiment_not_found} ->
         conn
         |> put_resp_content_type("text/plain")
         |> send_resp(
@@ -150,31 +147,24 @@ defmodule Magpie.ExperimentController do
           "No experiment with the specified id found. Please check your configuration."
         )
 
-      _ ->
-        case experiment.active do
-          false ->
-            conn
-            |> put_resp_content_type("text/plain")
-            |> send_resp(
-              403,
-              "The experiment is not active at the moment and submissions are not allowed."
-            )
+      {:error, :experiment_inactive} ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(
+          403,
+          "The experiment is not active at the moment and submissions are not allowed."
+        )
 
-          true ->
-            case Experiments.create_experiment_result(experiment, results) do
-              {:ok, _} ->
-                send_resp(conn, :created, "")
+      {:error, :unprocessable_entity} ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(
+          :unprocessable_entity,
+          "Unsuccessful submission. The results are probably malformed. Ensure that the results are submitted as an array of JSON objects, and that each object contains the same set of keys."
+        )
 
-              {:error, _changeset} ->
-                # unprocessable entity is 422
-                conn
-                |> put_resp_content_type("text/plain")
-                |> send_resp(
-                  :unprocessable_entity,
-                  "Unsuccessful submission. The results are probably malformed. Ensure that the results are submitted as an array of JSON objects, and that each object contains the same set of keys."
-                )
-            end
-        end
+      :ok ->
+        send_resp(conn, :created, "")
     end
   end
 
@@ -182,8 +172,8 @@ defmodule Magpie.ExperimentController do
   Check whether the given experiment_id is valid before the participant starts the experiment on the frontend.
   """
   def check_valid(conn, %{"id" => id}) do
-    case Experiments.get_experiment(id) do
-      nil ->
+    case Experiments.check_experiment_valid(id) do
+      {:error, :experiment_not_found} ->
         conn
         |> put_resp_content_type("text/plain")
         |> send_resp(
@@ -191,21 +181,18 @@ defmodule Magpie.ExperimentController do
           "No experiment with the specified id found. Please check your configuration."
         )
 
-      experiment ->
-        case experiment.active do
-          true ->
-            conn
-            |> put_resp_content_type("text/plain")
-            |> send_resp(200, "The experiment exists and is active")
+      {:error, :experiment_inactive} ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(
+          403,
+          "The experiment is not active at the moment and cannot be participated in."
+        )
 
-          false ->
-            conn
-            |> put_resp_content_type("text/plain")
-            |> send_resp(
-              403,
-              "The experiment is not active at the moment and submissions are not allowed."
-            )
-        end
+      :ok ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(200, "The experiment exists and is active")
     end
   end
 

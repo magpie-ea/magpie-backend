@@ -105,6 +105,28 @@ defmodule Magpie.Experiments do
     |> Repo.insert()
   end
 
+  def submit_experiment(experiment_id, results) do
+    with experiment when not is_nil(experiment) <- get_experiment(experiment_id),
+         true <- experiment.active,
+         {:ok, _} <- create_experiment_result(experiment, results) do
+      :ok
+    else
+      nil -> {:error, :experiment_not_found}
+      false -> {:error, :experiment_inactive}
+      {:error, %Ecto.Changeset{} = _changeset} -> {:error, :unprocessable_entity}
+    end
+  end
+
+  def check_experiment_valid(experiment_id) do
+    with experiment when not is_nil(experiment) <- get_experiment(experiment_id),
+         true <- experiment.active do
+      :ok
+    else
+      nil -> {:error, :experiment_not_found}
+      false -> {:error, :experiment_inactive}
+    end
+  end
+
   def retrieve_experiment_results_as_csv(%Experiment{} = experiment) do
     experiment_submissions = Repo.all(Ecto.assoc(experiment, :experiment_results))
 

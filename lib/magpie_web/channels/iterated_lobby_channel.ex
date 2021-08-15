@@ -3,9 +3,8 @@ defmodule Magpie.IteratedLobbyChannel do
   Channel for maintaining lobbies for iterated experiments where new participants need to wait for previous participants to finish first.
   """
   use MagpieWeb, :channel
-  alias Magpie.ChannelHelper
-  alias Magpie.Repo
-  alias Magpie.Experiments.ExperimentResult
+  alias Magpie.Experiments
+  alias Magpie.Experiments.AssignmentIdentifier
 
   @doc """
   A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.
@@ -15,42 +14,30 @@ defmodule Magpie.IteratedLobbyChannel do
         _payload,
         socket
       ) do
-    case String.split(assignment_identifier, ":") do
-      [experiment_id, variant, chain, generation] ->
-        # By including `experiment_id` in the identifier we also allow a new participant to wait on the results of a previous experiment. Why not if they want to do so.
-        send(self(), {:after_participant_join, experiment_id, variant, chain, generation})
+    case AssignmentIdentifier.from_string(assignment_identifier) do
+      {:ok, %AssignmentIdentifier{} = identifier_struct} ->
+        send(self(), {:after_participant_join, identifier_struct})
         {:ok, socket}
 
-      _ ->
-        {:error, %{reason: "wrong_format"}}
+      {:error, :invalid_format} ->
+        {:error, %{reason: "invalid_format"}}
     end
   end
 
-  def handle_info({:after_participant_join, experiment_id, variant, chain, generation}, socket) do
-    experiment_status =
-      ChannelHelper.get_experiment_status(
-        experiment_id,
-        variant,
-        chain,
-        generation
-      )
+  def handle_info(
+        {:after_participant_join, %AssignmentIdentifier{} = assignment_identifier},
+        socket
+      ) do
+    experiment_status = Experiments.get_experiment_status(assignment_identifier)
 
     case experiment_status.status do
-      2 ->
-        results_query =
-          from(r in ExperimentResult,
-            where: r.experiment_id == ^experiment_id,
-            where: r.variant == ^variant,
-            where: r.chain == ^chain,
-            where: r.generation == ^generation,
-            where: r.is_intermediate == false
-          )
-
-        experiment_results = hd(Repo.all(results_query))
+      :completed ->
+        experiment_results =
+          Experiments.get_one_experiment_results_for_identifier(assignment_identifier)
 
         # The same as what we do when the waited-on participant submits their results, send the results to all participants waiting for this participant.
         Magpie.Endpoint.broadcast!(
-          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{generation}",
+          "iterated_lobby:#{AssignmentIdentifier.to_string(assignment_identifier)}",
           "finished",
           %{results: experiment_results.results}
         )

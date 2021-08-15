@@ -1,7 +1,22 @@
 defmodule Magpie.ParticipantSocket do
-  alias Magpie.ChannelHelper
+  @moduledoc """
+  The socket that every experiment participant connects to.
+
+  At the moment, all the channels in Magpie are based on this socket.
+
+  Flow of a complex experiment:
+  1. The participant connects with this socket
+  2. If the experiment is interactive, the participant joins InteractiveRoomChannel under the room `experiment_id:chain:variant:generation`.
+    Once the number of participants is reached, the experiment starts.
+  3. If the experiment is dynamic, the participant joins IteratedLobbyChannel under the room `experiment_id:chain:variant:generation`. Note that the assignment identifier for the lobby does NOT refer to the assignment identifier of the participant themselves, but rather, the assignment identifier on which the participant intends to wait for results to become available.
+    Once the result from the experiment `experiment_id:chain:variant:generation` is available, the experiment starts.
+
+  Note: There is no restriction on an experiment being both interactive AND dynamic. In this case, the participant will join both channels described in 2. and 3. It's up to the frontend to decide when to start the experiment.
+  """
+
   alias Magpie.Repo
-  alias Magpie.Experiments.{Experiment, ExperimentStatus}
+  alias Magpie.Experiments
+  alias Magpie.Experiments.{AssignmentIdentifier, Experiment, ExperimentStatus}
 
   require Ecto.Query
   require Logger
@@ -41,10 +56,11 @@ defmodule Magpie.ParticipantSocket do
     with false <- participant_id == "",
          experiment when not is_nil(experiment) <- Repo.get(Experiment, experiment_id),
          true <- experiment.active,
-         [next_assignment | _] <- ChannelHelper.get_all_available_assignments(experiment_id) do
+         next_assignment when not is_nil(next_assignment) <-
+           Experiments.get_next_available_assignment(experiment_id) do
       Logger.log(
         :info,
-        "participant with id #{participant_id} is joining. They are assigned the assignment with chain #{next_assignment.chain}, generation #{next_assignment.generation}, variant #{next_assignment.variant}, player #{next_assignment.player}"
+        "participant with id #{participant_id} is joining. They are assigned the assignment #{AssignmentIdentifier.to_string(next_assignment)}"
       )
 
       # Mark this assignment as "in progress", i.e. allocated to this participant.
@@ -57,20 +73,17 @@ defmodule Magpie.ParticipantSocket do
           # The second item to return is the socket. We need to add assigns to the socket before returning it.
           Logger.log(
             :info,
-            "The assignment with chain #{next_assignment.chain}, generation #{next_assignment.generation}, variant #{next_assignment.variant}, player #{next_assignment.player} is now updated in DB and is marked as in progress."
+            "The assignment #{AssignmentIdentifier.to_string(next_assignment)} is now updated in DB and is marked as in progress."
           )
 
           {:ok,
            socket
            |> assign(:participant_id, participant_id)
-           |> assign(:experiment_id, experiment_id)
-           |> assign(:variant, next_assignment.variant)
-           |> assign(:chain, next_assignment.chain)
-           |> assign(:generation, next_assignment.generation)
-           |> assign(:player, next_assignment.player)
-           |> assign(:num_variants, experiment.num_variants)
-           |> assign(:num_chains, experiment.num_chains)
-           |> assign(:num_generations, experiment.num_generations)
+           |> assign(
+             :assignment_identifier,
+             AssignmentIdentifier.from_experiment_status(next_assignment)
+           )
+           # Only need to keep track of this so that we know when to start an interactive experiment.
            |> assign(:num_players, experiment.num_players)}
 
         {:error, _} ->
@@ -95,5 +108,5 @@ defmodule Magpie.ParticipantSocket do
   #     Magpie.Endpoint.broadcast("participants_socket:#{participant.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
-  def id(_socket), do: nil
+  def id(socket), do: "participant_socket:#{socket.assigns.participant_id}"
 end

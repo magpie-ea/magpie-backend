@@ -6,42 +6,54 @@ defmodule Magpie.InteractiveRoomChannel do
   """
 
   use MagpieWeb, :channel
+  alias Magpie.Experiments.AssignmentIdentifier
   alias Magpie.Presence
 
   @doc """
   Let the participant join the lobby and wait in there.
 
-  One lobby is created for one
+  One lobby is created for one combination of experiment_id:chain:variant:generation combination
   """
-  def join("interactive_room:" <> assignment_identifier, _payload, socket) do
-    # Need to convert the values stored in socket.assigns to strings. Otherwise they cannot be compared to the topic string.
-    if assignment_identifier ==
-         "#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}" do
+  # I'm a bit confused here though: Apparently the "socket" is the real socket. Then what happened to the channel process itself?
+  def join("interactive_room:" <> room_identifier, _payload, socket) do
+    # The assignment identifier also contains the :player_num part.
+    assignment_identifier = AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)
+
+    if String.contains?(assignment_identifier, room_identifier) do
       send(self(), :after_participant_join)
 
       {:ok, socket}
     else
-      {:error, %{reason: "wrong_format"}}
+      {:error, %{reason: "invalid_format"}}
     end
   end
 
   def handle_info(:after_participant_join, socket) do
     # Add this participant to the list of all participants waiting in the lobby of this experiment.
-    # Let me just make the following assumption: An interactive experiment must happen between participants of the same chain and generation.
+    # Let me just make the following assumption: An interactive experiment must happen between participants of the same chain, variant and generation.
     # If they need something more complicated in the future, change the structure by then.
     # This Presence can also be helpful in informing participants when one participant drops out.
-    Presence.track(socket, "#{socket.assigns.participant_id}", %{
-      variant: socket.assigns.variant,
-      chain: socket.assigns.chain,
-      generation: socket.assigns.generation,
-      online_at: inspect(System.system_time(:second))
-    })
 
+    # Oh OK, I think I now understood how it works. With some magic under the hood, even though we're passing in "socket" as the first argument here, it automagically figures out that we're actually tracking this *channel*, which is of course room  `experiment_id:chain:variant:generation`.
+    # There is another function Presence.track/4 which allows you to track any process by topic and key: track(pid, topic, key, meta)
+    # But still it seems to me that the grouping key should be the assignment_identifier instead of the particular participant_id? I'm a bit confused at how this worked. Let's see.
+    Presence.track(
+      socket,
+      "#{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}",
+      %{
+        participant_id: socket.assigns.participant_id,
+        # This came from the official example.
+        online_at: inspect(System.system_time(:second))
+      }
+    )
+
+    # Therefore, why am I listing the socket, but not the topic?
+    # Note that the presence information will be returned as a map with presences *grouped by key*, together with the metadata.
     existing_participants = Map.keys(Presence.list(socket))
 
-    # Start the experiment if the predefined number of variants is reached.
+    # Start the experiment if the predefined number of players is reached.
     # We could also send a presence_state event to the clients. Though this is the easy way to do it.
-    if length(existing_participants) >= socket.assigns.num_variants do
+    if length(existing_participants) >= socket.assigns.num_players do
       broadcast!(socket, "start_game", %{})
     end
 

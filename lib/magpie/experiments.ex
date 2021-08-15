@@ -2,7 +2,7 @@ defmodule Magpie.Experiments do
   @moduledoc """
   Context for experiments
   """
-  alias Magpie.Experiments.{Experiment, ExperimentResult, ExperimentStatus}
+  alias Magpie.Experiments.{AssignmentIdentifier, Experiment, ExperimentResult, ExperimentStatus}
   alias Magpie.Repo
 
   alias Ecto.Multi
@@ -164,6 +164,81 @@ defmodule Magpie.Experiments do
         where: es.last_heartbeat < ^two_minutes_ago
 
     Repo.update_all(query, set: [status: :open])
+  end
+
+  @doc """
+  Fetch experiment status with the given identifiers.
+  """
+  def get_experiment_status(%AssignmentIdentifier{} = assignment_identifier) do
+    query =
+      Ecto.Query.from(s in ExperimentStatus,
+        where: s.experiment_id == ^assignment_identifier.experiment_id,
+        where: s.variant == ^assignment_identifier.variant,
+        where: s.chain == ^assignment_identifier.chain,
+        where: s.generation == ^assignment_identifier.generation,
+        where: s.player == ^assignment_identifier.player
+      )
+
+    Repo.one!(query)
+  end
+
+  @doc """
+  Fetch all experiment results with the given identifier (could be more than one due to multiple submissions).
+  """
+  def get_all_experiment_results_for_identifier(%AssignmentIdentifier{} = assignment_identifier) do
+    query =
+      Ecto.Query.from(er in ExperimentResult,
+        where: er.experiment_id == ^assignment_identifier.experiment_id,
+        where: er.variant == ^assignment_identifier.variant,
+        where: er.chain == ^assignment_identifier.chain,
+        where: er.generation == ^assignment_identifier.generation,
+        where: er.player == ^assignment_identifier.player,
+        where: er.is_intermediate == false
+      )
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Just take the first one out of the potential list of results.
+  """
+  def get_one_experiment_results_for_identifier(%AssignmentIdentifier{} = assignment_identifier) do
+    hd(get_all_experiment_results_for_identifier(assignment_identifier))
+  end
+
+  def get_next_available_assignment(experiment_id) do
+    # This could be a bit slow but I hope it will still be efficient enough. The participant can wait.
+    query =
+      Ecto.Query.from(s in ExperimentStatus,
+        where: s.experiment_id == ^experiment_id,
+        where: s.status == :open,
+        # First by variant, then by chain, then by generation, then by player. In this way player gets incremented first and generation second.
+        order_by: [s.variant, s.chain, s.generation, s.player],
+        limit: 1
+      )
+
+    Repo.all(query)
+  end
+
+  def split_assignment_identifier(identifier) when is_binary(identifier) do
+    case String.split(identifier, ":") do
+      [experiment_id, variant, chain, generation, player] ->
+        {:ok,
+         %AssignmentIdentifier{
+           experiment_id: experiment_id,
+           variant: variant,
+           chain: chain,
+           generation: generation,
+           player: player
+         }}
+
+      _ ->
+        {:error, :invalid_format}
+    end
+  end
+
+  def split_assignment_identifier(_) do
+    {:error, :invalid_format}
   end
 
   # Writes the submissions to a CSV file.

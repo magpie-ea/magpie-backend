@@ -5,6 +5,7 @@ defmodule Magpie.ParticipantChannelTest do
   use Magpie.ChannelCase, async: false
 
   # alias Magpie.ParticipantChannel
+  alias Magpie.Experiments
   alias Magpie.ParticipantSocket
 
   setup do
@@ -53,7 +54,7 @@ defmodule Magpie.ParticipantChannelTest do
     Process.sleep(100)
 
     experiment_status =
-      Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, generation)
+      Experiments.get_experiment_status(experiment_id, variant, chain, generation)
 
     assert experiment_status.status === 1
   end
@@ -77,7 +78,7 @@ defmodule Magpie.ParticipantChannelTest do
   #   Process.sleep(100)
 
   #   experiment_status =
-  #     Magpie.ChannelHelper.get_experiment_status(experiment_id, variant, chain, generation)
+  #     Experiments.get_experiment_status(experiment_id, variant, chain, generation)
 
   #   assert experiment_status.status === 0
   # end

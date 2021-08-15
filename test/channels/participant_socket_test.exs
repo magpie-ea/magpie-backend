@@ -4,7 +4,7 @@ defmodule Magpie.ParticipantSocketTest do
   """
   use Magpie.ChannelCase, async: true
 
-  alias Magpie.{ParticipantSocket, ChannelHelper}
+  alias Magpie.{Experiments, ParticipantSocket}
 
   test "connect with a valid experiment_id" do
     experiment = insert_dynamic_experiment()
@@ -33,7 +33,7 @@ defmodule Magpie.ParticipantSocketTest do
       })
 
     assignment =
-      ChannelHelper.get_experiment_status(
+      Experiments.get_experiment_status(
         experiment.id,
         socket.assigns.variant,
         socket.assigns.chain,

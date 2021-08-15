@@ -37,7 +37,7 @@ defmodule Magpie.IteratedLobbyChannelTest do
   #     )
 
   #   experiment_status =
-  #     ChannelHelper.get_experiment_status(
+  #     Experiments.get_experiment_status(
   #       experiment.id,
   #       socket.assigns.variant,
   #       socket.assigns.chain,

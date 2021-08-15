@@ -5,6 +5,7 @@ defmodule Magpie.Experiments.ExperimentStatus do
   use MagpieWeb, :model
 
   schema "experiment_statuses" do
+    # TODO: Embed AssignmentIdentifier here?
     field(:variant, :integer, null: false)
     field(:chain, :integer, null: false)
     field(:generation, :integer, null: false)

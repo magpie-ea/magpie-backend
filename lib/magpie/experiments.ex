@@ -154,7 +154,7 @@ defmodule Magpie.Experiments do
   but for which the participant hasn't sent a heartbeat message for over 2 minutes.
   """
   def reset_statuses_for_inactive_complex_experiments do
-    Logger.info("Resetting statuses for inactive complex experiments.")
+    # Logger.info("Resetting statuses for inactive complex experiments.")
 
     two_minutes_ago = DateTime.add(DateTime.utc_now(), -120, :second)
 
@@ -180,6 +180,81 @@ defmodule Magpie.Experiments do
       )
 
     Repo.one!(query)
+  end
+
+  @doc """
+  Used when a participant breaks out, resulting in it being impossible to complete the experiment.
+
+  Note that if the other participant already submitted their results, we wouldn't reset the statuses.
+  """
+  def reset_in_progress_assignments_for_interactive_exp(
+        %AssignmentIdentifier{} = assignment_identifier
+      ) do
+    relevant_in_progress_experiment_statuses =
+      Ecto.Query.from(s in ExperimentStatus,
+        where: s.experiment_id == ^assignment_identifier.experiment_id,
+        where: s.chain == ^assignment_identifier.chain,
+        where: s.variant == ^assignment_identifier.variant,
+        where: s.generation == ^assignment_identifier.generation,
+        where: s.status == :in_progress
+      )
+
+    Repo.update_all(relevant_in_progress_experiment_statuses, set: [status: :open])
+  end
+
+  def submit_and_complete_assignment_for_interactive_exp(
+        %AssignmentIdentifier{} = assignment_identifier,
+        results
+      ) do
+    relevant_experiment_statuses =
+      Ecto.Query.from(s in ExperimentStatus,
+        where: s.experiment_id == ^assignment_identifier.experiment_id,
+        where: s.chain == ^assignment_identifier.chain,
+        where: s.variant == ^assignment_identifier.variant,
+        where: s.generation == ^assignment_identifier.generation
+      )
+
+    experiment_result_changeset =
+      ExperimentResult.changeset(
+        %ExperimentResult{},
+        %{
+          experiment_id: assignment_identifier.experiment_id,
+          results: results,
+          chain: assignment_identifier.chain,
+          variant: assignment_identifier.variant,
+          generation: assignment_identifier.generation,
+          player: assignment_identifier.player,
+          is_intermediate: false
+        }
+      )
+
+    Multi.new()
+    |> Multi.update_all(:experiment_statuses, relevant_experiment_statuses,
+      set: [status: :completed]
+    )
+    |> Multi.insert(:experiment_result, experiment_result_changeset)
+    |> Repo.transaction()
+  end
+
+  def save_intermediate_experiment_results(
+        %AssignmentIdentifier{} = assignment_identifier,
+        intermediate_results
+      ) do
+    experiment_result_changeset =
+      ExperimentResult.changeset(
+        %ExperimentResult{},
+        %{
+          experiment_id: assignment_identifier.experiment_id,
+          results: results,
+          chain: assignment_identifier.chain,
+          variant: assignment_identifier.variant,
+          generation: assignment_identifier.generation,
+          player: assignment_identifier.player,
+          is_intermediate: true
+        }
+      )
+
+    Repo.insert(experiment_result_changeset)
   end
 
   @doc """
@@ -217,28 +292,8 @@ defmodule Magpie.Experiments do
         limit: 1
       )
 
-    Repo.all(query)
-  end
-
-  def split_assignment_identifier(identifier) when is_binary(identifier) do
-    case String.split(identifier, ":") do
-      [experiment_id, variant, chain, generation, player] ->
-        {:ok,
-         %AssignmentIdentifier{
-           experiment_id: experiment_id,
-           variant: variant,
-           chain: chain,
-           generation: generation,
-           player: player
-         }}
-
-      _ ->
-        {:error, :invalid_format}
-    end
-  end
-
-  def split_assignment_identifier(_) do
-    {:error, :invalid_format}
+    # Will produce nil in the case of empty list of results.
+    List.first(Repo.all(query))
   end
 
   # Writes the submissions to a CSV file.

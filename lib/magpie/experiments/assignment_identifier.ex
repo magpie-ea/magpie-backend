@@ -29,12 +29,26 @@ defmodule Magpie.Experiments.AssignmentIdentifier do
     }
   end
 
-  def to_string(%__MODULE__{} = assignment_identifier) do
-    "#{assignment_identifier.experiment_id}:#{assignment_identifier.chain}:#{assignment_identifier.variant}:#{assignment_identifier.generation}:#{assignment_identifier.player}"
+  def to_string(%__MODULE__{} = assignment_identifier, include_player \\ true) do
+    base =
+      "#{assignment_identifier.experiment_id}:#{assignment_identifier.chain}:#{assignment_identifier.variant}:#{assignment_identifier.generation}"
+
+    if include_player do
+      base <> ":#{assignment_identifier.player}"
+    else
+      base
+    end
   end
 
-  def to_string(%ExperimentStatus{} = experiment_status) do
-    "#{experiment_status.experiment_id}:#{experiment_status.chain}:#{experiment_status.variant}:#{experiment_status.generation}:#{experiment_status.player}"
+  def to_string(%ExperimentStatus{} = experiment_status, include_player \\ true) do
+    base =
+      "#{experiment_status.experiment_id}:#{experiment_status.chain}:#{experiment_status.variant}:#{experiment_status.generation}"
+
+    if include_player do
+      base <> ":#{experiment_status.player}"
+    else
+      base
+    end
   end
 
   def to_string(_) do

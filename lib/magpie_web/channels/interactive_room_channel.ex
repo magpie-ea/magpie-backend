@@ -16,10 +16,8 @@ defmodule Magpie.InteractiveRoomChannel do
   """
   # I'm a bit confused here though: Apparently the "socket" is the real socket. Then what happened to the channel process itself?
   def join("interactive_room:" <> room_identifier, _payload, socket) do
-    # The assignment identifier also contains the :player_num part.
-    assignment_identifier = AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)
-
-    if String.contains?(assignment_identifier, room_identifier) do
+    if room_identifier ==
+         AssignmentIdentifier.to_string(socket.assigns.assignment_identifier, false) do
       send(self(), :after_participant_join)
 
       {:ok, socket}

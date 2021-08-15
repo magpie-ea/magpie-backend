@@ -56,6 +56,7 @@ defmodule Magpie.ParticipantSocket do
     with false <- participant_id == "",
          experiment when not is_nil(experiment) <- Repo.get(Experiment, experiment_id),
          true <- experiment.active,
+         # TODO: There probably needs to be a mechanism to ensure that no race condition happens between two participants that join extremely close to each other.
          next_assignment when not is_nil(next_assignment) <-
            Experiments.get_next_available_assignment(experiment_id) do
       Logger.log(

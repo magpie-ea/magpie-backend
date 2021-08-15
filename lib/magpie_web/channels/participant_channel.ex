@@ -4,7 +4,8 @@ defmodule Magpie.ParticipantChannel do
   """
 
   use MagpieWeb, :channel
-  alias Magpie.Experiments.{ExperimentStatus, ExperimentResult}
+  alias Magpie.Experiments
+  alias Magpie.Experiments.{AssignmentIdentifier, ExperimentStatus, ExperimentResult}
   alias Magpie.Repo
   alias Ecto.Multi
   require Ecto.Query
@@ -39,24 +40,23 @@ defmodule Magpie.ParticipantChannel do
   def handle_leave(socket) do
     # We should probably reset the whole set of statuses, even if only one participant breaks out.
     # Note that we only deal with experiments with status 1, i.e. if any of other participants already saved the entire result and thus set the status to 2, the results would not be affected.
-    relevant_in_progress_experiment_statuses =
-      Ecto.Query.from(s in ExperimentStatus,
-        where: s.experiment_id == ^socket.assigns.experiment_id,
-        where: s.chain == ^socket.assigns.chain,
-        where: s.generation == ^socket.assigns.generation,
-        where: s.status == 1
-      )
-
-    Repo.update_all(relevant_in_progress_experiment_statuses, set: [status: :open])
+    Experiments.reset_in_progress_assignments_for_interactive_exp(
+      socket.assigns.assignment_identifier
+    )
   end
 
   def handle_info(:after_participant_join, socket) do
-    # Broadcast the trituple <variant-nr, chain-nr, generation-nr> to the user.
-    broadcast(socket, "experiment_available", %{
-      variant: socket.assigns.variant,
-      chain: socket.assigns.chain,
-      generation: socket.assigns.generation
-    })
+    # Broadcast the tuple <variant-nr, chain-nr, generation-nr, player-nr> to the user.
+    # We know that the experiment is available already when we accept the participant in ParticipantSocket.
+    # However we can only broadcast the message after they've joined to the channel.
+    broadcast(socket, "experiment_available", socket.assigns.assignment_status)
+
+    # broadcast(socket, "experiment_available", %{
+    #   variant: socket.assigns.assignment_status.variant,
+    #   chain: socket.assigns.assignment_status.chain,
+    #   generation: socket.assigns.assignment_status.generation,
+    #   player: socket.assigns.assignment_status.player
+    # })
 
     {:noreply, socket}
   end
@@ -67,45 +67,14 @@ defmodule Magpie.ParticipantChannel do
   We might still allow the submissions via the REST API anyways. Both should be viable options.
   """
   def handle_in("submit_results", payload, socket) do
-    experiment_id = socket.assigns.experiment_id
-    variant = socket.assigns.variant
-    chain = socket.assigns.chain
-    generation = socket.assigns.generation
-    results = payload["results"]
-
-    # When one participant finishes, set all relevant experiment statuses to "complete".
-    relevant_experiment_statuses =
-      Ecto.Query.from(s in ExperimentStatus,
-        where: s.experiment_id == ^socket.assigns.experiment_id,
-        where: s.chain == ^socket.assigns.chain,
-        where: s.generation == ^socket.assigns.generation
-      )
-
-    experiment_result_changeset =
-      ExperimentResult.changeset(
-        %ExperimentResult{},
-        %{
-          experiment_id: experiment_id,
-          results: results,
-          variant: variant,
-          chain: chain,
-          generation: generation,
-          is_intermediate: false
-        }
-      )
-
-    operation =
-      Multi.new()
-      |> Multi.update_all(:experiment_statuses, relevant_experiment_statuses,
-        set: [status: :completed]
-      )
-      |> Multi.insert(:experiment_result, experiment_result_changeset)
-
-    case Repo.transaction(operation) do
+    case Experiments.submit_and_complete_assignment_for_interactive_exp(
+           socket.assigns.assignment_identifier,
+           payload["results"]
+         ) do
       {:ok, _} ->
         Logger.log(
           :info,
-          "Experiment results successfully saved for participant with chain #{chain}, generation #{generation}, variant #{variant}"
+          "Experiment results successfully saved for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}"
         )
 
         # No need to monitor this participant anymore
@@ -113,9 +82,9 @@ defmodule Magpie.ParticipantChannel do
 
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
         Magpie.Endpoint.broadcast!(
-          "iterated_lobby:#{experiment_id}:#{variant}:#{chain}:#{generation}",
+          "iterated_lobby:#{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier, false)}",
           "finished",
-          %{results: results}
+          %{results: payload["results"]}
         )
 
         # Send a simple ack reply to the submitting client.
@@ -124,7 +93,7 @@ defmodule Magpie.ParticipantChannel do
       {:error, failed_operation, failed_value, changes_so_far} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant with chain #{chain}, generation #{generation}, variant #{variant}, operation
+          "Saving experiment results failed for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}, operation
           #{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{inspect(changes_so_far)}"
         )
 
@@ -135,30 +104,16 @@ defmodule Magpie.ParticipantChannel do
   # The client could send a "save_intermediate_progress" message even before the experiment finishes, so that experiment progress will not be lost if the client drops out before the end.
   # For now this is mainly useful when one participant drops out of an interactive experiment.
   def handle_in("save_intermediate_results", payload, socket) do
-    experiment_id = socket.assigns.experiment_id
-    variant = socket.assigns.variant
-    chain = socket.assigns.chain
-    generation = socket.assigns.generation
     intermediate_results = payload["results"]
 
-    experiment_result_changeset =
-      ExperimentResult.changeset(
-        %ExperimentResult{},
-        %{
-          experiment_id: experiment_id,
-          results: intermediate_results,
-          variant: variant,
-          chain: chain,
-          generation: generation,
-          is_intermediate: true
-        }
-      )
-
-    case Repo.insert(experiment_result_changeset) do
+    case Experiments.save_intermediate_experiment_results(
+           socket.assigns.assignment_identifier,
+           intermediate_results
+         ) do
       {:ok, _} ->
         Logger.log(
           :info,
-          "Experiment results successfully saved for participant with chain #{chain}, generation #{generation}, variant #{variant}"
+          "Experiment results successfully saved for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}"
         )
 
         # Send a simple ack reply
@@ -167,7 +122,7 @@ defmodule Magpie.ParticipantChannel do
       {:error, changeset} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant with chain #{chain}, generation #{generation}, variant #{variant} with changeset
+          "Saving experiment results failed for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)} with changeset
             #{inspect(changeset)}"
         )
 

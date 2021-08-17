@@ -41,7 +41,7 @@ defmodule Magpie.Experiments do
 
               multi
               |> Multi.insert(
-                String.to_atom("experiment_status_#{variant}_#{chain}_#{generation}"),
+                String.to_atom("experiment_status_#{chain}_#{variant}_#{generation}_#{player}"),
                 changeset
               )
             end)
@@ -245,7 +245,7 @@ defmodule Magpie.Experiments do
         %ExperimentResult{},
         %{
           experiment_id: assignment_identifier.experiment_id,
-          results: results,
+          results: intermediate_results,
           chain: assignment_identifier.chain,
           variant: assignment_identifier.variant,
           generation: assignment_identifier.generation,

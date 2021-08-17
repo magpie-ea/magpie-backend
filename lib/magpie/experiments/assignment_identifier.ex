@@ -29,7 +29,9 @@ defmodule Magpie.Experiments.AssignmentIdentifier do
     }
   end
 
-  def to_string(%__MODULE__{} = assignment_identifier, include_player \\ true) do
+  def to_string(assignment_identifier, include_player \\ true)
+
+  def to_string(%__MODULE__{} = assignment_identifier, include_player) do
     base =
       "#{assignment_identifier.experiment_id}:#{assignment_identifier.chain}:#{assignment_identifier.variant}:#{assignment_identifier.generation}"
 
@@ -40,7 +42,7 @@ defmodule Magpie.Experiments.AssignmentIdentifier do
     end
   end
 
-  def to_string(%ExperimentStatus{} = experiment_status, include_player \\ true) do
+  def to_string(%ExperimentStatus{} = experiment_status, include_player) do
     base =
       "#{experiment_status.experiment_id}:#{experiment_status.chain}:#{experiment_status.variant}:#{experiment_status.generation}"
 
@@ -51,7 +53,7 @@ defmodule Magpie.Experiments.AssignmentIdentifier do
     end
   end
 
-  def to_string(_) do
+  def to_string(_, _include_player) do
     {:error, :invalid_format}
   end
 end

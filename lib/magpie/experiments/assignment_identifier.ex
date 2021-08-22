@@ -1,4 +1,5 @@
 defmodule Magpie.Experiments.AssignmentIdentifier do
+  @derive Jason.Encoder
   defstruct [:experiment_id, :variant, :chain, :generation, :player]
 
   alias Magpie.Experiments.ExperimentStatus

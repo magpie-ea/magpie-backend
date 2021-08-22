@@ -49,7 +49,11 @@ defmodule Magpie.ParticipantChannel do
     # Broadcast the tuple <variant-nr, chain-nr, generation-nr, player-nr> to the user.
     # We know that the experiment is available already when we accept the participant in ParticipantSocket.
     # However we can only broadcast the message after they've joined to the channel.
-    broadcast(socket, "experiment_available", socket.assigns.assignment_status)
+    broadcast(
+      socket,
+      "experiment_available",
+      socket.assigns.assignment_identifier
+    )
 
     # broadcast(socket, "experiment_available", %{
     #   variant: socket.assigns.assignment_status.variant,

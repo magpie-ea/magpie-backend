@@ -35,9 +35,11 @@ defmodule Magpie.InteractiveRoomChannel do
     # Oh OK, I think I now understood how it works. With some magic under the hood, even though we're passing in "socket" as the first argument here, it automagically figures out that we're actually tracking this *channel*, which is of course room  `experiment_id:chain:variant:generation`.
     # There is another function Presence.track/4 which allows you to track any process by topic and key: track(pid, topic, key, meta)
     # But still it seems to me that the grouping key should be the assignment_identifier instead of the particular participant_id? I'm a bit confused at how this worked. Let's see.
+    topic = AssignmentIdentifier.to_string(socket.assigns.assignment_identifier, false)
+
     Presence.track(
       socket,
-      "#{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}",
+      "#{topic}",
       %{
         participant_id: socket.assigns.participant_id,
         # This came from the official example.
@@ -45,9 +47,30 @@ defmodule Magpie.InteractiveRoomChannel do
       }
     )
 
-    # Therefore, why am I listing the socket, but not the topic?
     # Note that the presence information will be returned as a map with presences *grouped by key*, together with the metadata.
-    existing_participants = Map.keys(Presence.list(socket))
+    # Example:
+    # %{
+    #   "1:1:1:1" => %{
+    #     metas: [
+    #       %{
+    #         online_at: "1629644124",
+    #         participant_id: "b31e54b0e558d3a87fd3cd9530d07e297fe00d86",
+    #         phx_ref: "Fp2osoV59TjSYAFE"
+    #       },
+    #       %{
+    #         online_at: "1629644128",
+    #         participant_id: "54080b46f09162477e36e05e22ad4f8aa9dda49f",
+    #         phx_ref: "Fp2os3i8kgDSYAHE"
+    #       }
+    #     ]
+    #   }
+    # }
+    # To get the participants, we first go by the topic name, then go under :meta
+    existing_participants =
+      socket
+      |> Presence.list()
+      |> Map.get(topic)
+      |> Map.get(:metas)
 
     # Start the experiment if the predefined number of players is reached.
     # We could also send a presence_state event to the clients. Though this is the easy way to do it.

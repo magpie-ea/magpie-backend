@@ -8,6 +8,10 @@ defmodule Magpie.IteratedLobbyChannel do
 
   @doc """
   A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.
+
+  Note that the assignment identifier should always be the experiment_id followed by the complete 4-tuple.
+
+  Example: "iterated_lobby:45:1:1:1:1"
   """
   def join(
         "iterated_lobby:" <> assignment_identifier,

@@ -6,14 +6,15 @@ defmodule Magpie.Experiments.AssignmentIdentifier do
 
   def from_string(identifier_string) when is_binary(identifier_string) do
     case String.split(identifier_string, ":") do
-      [experiment_id, variant, chain, generation, player] ->
-        %__MODULE__{
-          experiment_id: experiment_id,
-          variant: variant,
-          chain: chain,
-          generation: generation,
-          player: player
-        }
+      [experiment_id, chain, variant, generation, player] ->
+        {:ok,
+         %__MODULE__{
+           experiment_id: experiment_id,
+           variant: variant,
+           chain: chain,
+           generation: generation,
+           player: player
+         }}
 
       _ ->
         {:error, :invalid_format}

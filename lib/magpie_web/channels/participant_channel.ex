@@ -92,7 +92,7 @@ defmodule Magpie.ParticipantChannel do
 
         # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
         Magpie.Endpoint.broadcast!(
-          "iterated_lobby:#{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier, false)}",
+          "iterated_lobby:#{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}",
           "finished",
           %{results: payload["results"]}
         )

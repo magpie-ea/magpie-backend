@@ -302,9 +302,9 @@ defmodule Magpie.Experiments do
       Ecto.Query.from(s in ExperimentStatus,
         where: s.experiment_id == ^experiment_id,
         where: s.status == :open,
-        # First by variant, then by chain, then by generation, then by player. In this way player gets incremented first and generation second.
-        order_by: [s.variant, s.chain, s.generation, s.player],
-        limit: 1
+        # First by chain, then by variant, then by generation, then by player. In this way player gets incremented first and generation second, variant third, and chain last.
+        order_by: [s.chain, s.variant, s.generation, s.player]
+        # limit: 1
       )
 
     # Will produce nil in the case of empty list of results.

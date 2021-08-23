@@ -45,7 +45,14 @@ config :magpie, :authentication,
        nil
      else
        System.fetch_env!("AUTH_PASSWORD")
-     end)
+    end)
+
+config :magpie, :no_basic_auth,
+  (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+    true
+  else
+    false
+  end)
 
 config :logger,
   backends: [:console]

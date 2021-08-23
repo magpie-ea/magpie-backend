@@ -9,12 +9,12 @@ config :magpie, Magpie.Endpoint,
     port: System.get_env("PORT", "443") |> String.to_integer()
   ],
   # Don't use force_ssl if the URL_SCHEME is http
-  force_ssl:
-    (if System.get_env("URL_SCHEME") == "http" do
-       []
-     else
-       [rewrite_on: [:x_forwarded_proto]]
-     end),
+  # force_ssl:
+  #   (if System.get_env("URL_SCHEME") == "http" do
+  #      []
+  #    else
+  #      [rewrite_on: [:x_forwarded_proto]]
+  #    end),
   server: true,
   # Allow clients from anywhere to connect to use the interactive experiment facilities. We can't constrain where the user chooses to host the frontend anyways.
   secret_key_base: System.fetch_env!("SECRET_KEY_BASE"),

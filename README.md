@@ -71,23 +71,23 @@ Dynamic experiments are now supported via [Phoenix Channels](https://hexdocs.pm/
 
 In a dynamic experiment, there is some sort of dependency between different generations. For example, the experiment might be iterative, in that the input of the next generation will be the output of the previous generation (e.g. iterated narration). Or the experiment might be interactive, in that multiple participants need to be present simultaneously to perform a task (e.g. a game of chess).
 
-Each participant will be assigned a unique `<variant-nr, chain-nr, generation-nr>` identifier, so that such dependencies could be made explicit.
+Each participant will be assigned a unique `<chain-nr, variant-nr, generation-nr, player-nr>` identifier, so that such dependencies could be made explicit.
 
 The server is responsible for broadcasting messages between the participants. To make the backend as generic as possible, the specific interpretation and handling of the messages depend on the frontend client. For examples of frontends of dynamic experiments, please refer to: [1](https://github.com/magpie-ea/color-reference/) and [2](https://github.com/magpie-ea/iterated-experiment-example).
 
-To create such an experiment, you need to specify the total number of variants, chains and generations. Any positive integer is allowed.
+To create such an experiment, you need to specify the total number of chains, variants, and generations. Any positive integer is allowed.
 
-The identifiers will be assigned incrementally in the order of `generation-nr` -> `chain-nr` -> `variant-nr`. Assuming the `<num-variants, num-chains, num-generations>` trituple is specified as `<2, 3, 10>` at experiment creation, the participant who joins after the participant `<1, 1, 1>` will be assigned the identifier `<1, 1, 2>`, the participant who joins after `<2, 1, 10>` will be assigned the identifier `<2, 2, 1>`, etc.
+The identifiers will be assigned incrementally in the order of `player-nr` -> `generation-nr` -> `chain-nr` -> `variant-nr`. Assuming the `<num-variants, num-chains, num-generations, num-players>` trituple is specified as `<2, 3, 10, 2>` at experiment creation, the participant who joins after the participant `<1, 1, 1, 1>` will be assigned the identifier `<1, 1, 1, 2>`, the participant who joins after `<2, 1, 10, 2>` will be assigned the identifier `<2, 2, 1, 1>`, etc.
 
 Normally, an interactive experiment has multiple variants (for example, a speaker and a listener, or player-1 and player-2), while an iterated experiment has multiple chains.
 
-A chain will reach its end when all generations have been submitted. The total number of expected participants is `num-variants * num-chains * num-generations`. For example, an iterated narration experiment might have 1 variant, 10 chains, with 20 generations each chain, meaning that a total of 200 participants will be recruited.
+A chain will reach its end when all generations have been submitted. The total number of expected participants is `num-chains * num-variants * num-generations * num-players`. For example, an iterated narration experiment might have 10 chains, 1 variant, 20 generations, 1 player (per round, since the experiment is not interactive), meaning that a total of 200 participants will be recruited.
 
 Detailed descriptions can also be found at the experiment creation page.
 
 ### Editing an experiment
 
-You can edit an experiment after its creation. However, note that at the moment the `<num_variants, num_chains, num_generations>` trituple of a dynamic experiment is not editable after experiment creation.
+You can edit an experiment after its creation. However, note that at the moment the `<num_variants, num_chains, num_generations, num_players>` tuple of a complex experiment is not editable after experiment creation.
 
 ### Deactivating an experiment
 

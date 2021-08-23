@@ -257,6 +257,21 @@ defmodule Magpie.Experiments do
     Repo.insert(experiment_result_changeset)
   end
 
+  def report_heartbeat(assignment_identifier_str) when is_binary(assignment_identifier_str) do
+    {:ok, assignment_identifier} = AssignmentIdentifier.from_string(assignment_identifier_str)
+
+    report_heartbeat(assignment_identifier)
+  end
+
+  def report_heartbeat(%AssignmentIdentifier{} = assignment_identifier) do
+    now = DateTime.utc_now()
+
+    assignment_identifier
+    |> get_experiment_status()
+    |> ExperimentStatus.changeset(%{last_heartbeat: now})
+    |> Repo.update!()
+  end
+
   @doc """
   Fetch all experiment results with the given identifier (could be more than one due to multiple submissions).
   """

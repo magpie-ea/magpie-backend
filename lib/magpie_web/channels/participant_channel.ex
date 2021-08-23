@@ -65,11 +65,17 @@ defmodule Magpie.ParticipantChannel do
     {:noreply, socket}
   end
 
-  @doc """
-  Record the submission when the client finishes the experiment. Set the experiment status to 2 (finished)
+  # A participant in a complex experiment needs to report their heartbeat every half a minute to keep occupying the slot.
+  # This can be done via either the socket or via a normal REST call.
+  # Here is the socket way.
+  def handle_in("report_heartbeat", _payload, socket) do
+    Experiments.report_heartbeat(socket.assigns.assignment_identifier)
 
-  We might still allow the submissions via the REST API anyways. Both should be viable options.
-  """
+    {:reply, :ok, socket}
+  end
+
+  # Record the submission when the client finishes the experiment. Set the experiment status to 2 (finished)
+  # We might still allow the submissions via the REST API anyways. Both should be viable options.
   def handle_in("submit_results", payload, socket) do
     case Experiments.submit_and_complete_assignment_for_interactive_exp(
            socket.assigns.assignment_identifier,

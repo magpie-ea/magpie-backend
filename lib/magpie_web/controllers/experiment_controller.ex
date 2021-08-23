@@ -197,6 +197,19 @@ defmodule Magpie.ExperimentController do
   end
 
   @doc """
+  A participant in a complex experiment needs to report their heartbeat every half a minute to keep occupying the slot.
+
+  This can be done via either the socket or via a normal REST call.
+
+  Here is the REST way.
+  """
+  def report_heartbeat(conn, %{"assignment_identifier" => assignment_identifier}) do
+    Experiments.report_heartbeat(assignment_identifier)
+
+    send_resp(conn, 200, "")
+  end
+
+  @doc """
   Retrieves the results up to now for an experiment in CSV format.
   """
   def retrieve_as_csv(conn, %{"id" => id}) do

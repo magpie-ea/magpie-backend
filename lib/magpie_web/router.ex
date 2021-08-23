@@ -43,5 +43,7 @@ defmodule Magpie.Router do
     get("/retrieve_experiment/:id/", ExperimentController, :retrieve_as_json)
     get("/retrieve_custom_record/:id/", CustomRecordController, :retrieve_as_json)
     get("/check_experiment/:id/", ExperimentController, :check_valid)
+
+    get("/report_heartbeat/:assignment_identifier", ExperimentController, :report_heartbeat)
   end
 end

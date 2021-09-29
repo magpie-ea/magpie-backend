@@ -1,10 +1,11 @@
 <h1>Edit Experiment</h1>
 
 <p>
-  Please use the endpoints shown below when submitting/retrieving experiments:
+  Please refer to the following information when submitting/retrieving experiments:
 </p>
 
 <ul>
+  <li>API token: <code><%= @experiment.api_token %></code></li>
   <li>Submission: <code><%= get_endpoint_url(:submit, @experiment.id) %></code></li>
   <li>Dynamic retrieval: <code><%= get_endpoint_url(:retrieve_as_json, @experiment.id) %></code></li>
   <li>Socket endpoint for interactive experiments: <code><%= get_socket_url() %></code></li>

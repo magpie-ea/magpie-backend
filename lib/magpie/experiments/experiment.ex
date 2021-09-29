@@ -8,6 +8,9 @@ defmodule Magpie.Experiments.Experiment do
     field :name, :string, null: false
     field :author, :string, null: false
 
+    # A randomly generated API token which the frontend should provide when interacting with the backend
+    field :api_token, :string, null: false
+
     # Note that the type :text is actually used for Postgres (specified in the migration file). It may not be valid for other databases. The description is potentially longer than varchar(255) limited by the default :string.
     field :description, :string
     field :active, :boolean, default: true, null: false

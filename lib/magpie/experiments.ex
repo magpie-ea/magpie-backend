@@ -161,7 +161,7 @@ defmodule Magpie.Experiments do
     query =
       from es in ExperimentStatus,
         where: es.status == :in_progress,
-        where: es.last_heartbeat < ^two_minutes_ago
+        where: is_nil(es.last_heartbeat) or es.last_heartbeat < ^two_minutes_ago
 
     Repo.update_all(query, set: [status: :open])
   end

@@ -3,6 +3,8 @@ defmodule Magpie.Experiments.ExperimentResult do
   An ExperimentResult corresponds to a set of results obtained from one participant finishing one complete experiment, which usually consists of several trials.
   """
 
+  @derive {Jason.Encoder, only: [:results]}
+
   use MagpieWeb, :model
 
   import Magpie.Helpers

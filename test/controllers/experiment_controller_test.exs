@@ -422,6 +422,41 @@ defmodule ExperimentControllerTest do
     # end
   end
 
+  describe "retrieve_assignment/2" do
+    test "correctly returns the data in JSON format", %{conn: conn} do
+      experiment = insert_experiment()
+
+      chain = 4
+      variant = 2
+      generation = 1
+      player = 1
+
+      insert_experiment_result(%{
+        "experiment_id" => experiment.id,
+        "variant" => variant,
+        "chain" => chain,
+        "generation" => generation,
+        "player" => player,
+        "is_intermediate" => false
+      })
+
+      conn =
+        conn
+        |> using_basic_auth()
+        |> get(
+          experiment_path(
+            conn,
+            :retrieve_assignment,
+            "#{experiment.id}:#{chain}:#{variant}:#{generation}:#{player}"
+          )
+        )
+
+      data = response(conn, 200) |> Jason.decode!()
+
+      assert data == %{"results" => [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22}]}
+    end
+  end
+
   describe "submit/2" do
     test "Submission of active experiment succeeds with 201 (created) and successfully stores the results in the DB",
          %{conn: conn} do

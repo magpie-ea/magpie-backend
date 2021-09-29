@@ -3,7 +3,7 @@ defmodule Magpie.ExperimentController do
   use MagpieWeb, :controller
 
   alias Magpie.Experiments
-  alias Magpie.Experiments.Experiment
+  alias Magpie.Experiments.{AssignmentIdentifier, Experiment, ExperimentResult}
 
   import Plug.BasicAuth
 
@@ -207,6 +207,28 @@ defmodule Magpie.ExperimentController do
     Experiments.report_heartbeat(assignment_identifier)
 
     send_resp(conn, 200, "")
+  end
+
+  @doc """
+  Retrieve the results of a particular assignment instead of a whole experiment.
+  """
+  def retrieve_assignment(conn, %{"assignment_identifier" => identifier_string}) do
+    with {:ok, %AssignmentIdentifier{} = identifier} <-
+           AssignmentIdentifier.from_string(identifier_string),
+         %ExperimentResult{} = result <-
+           Experiments.get_one_experiment_results_for_identifier(identifier) do
+      json(conn, result)
+    else
+      {:error, :invalid_format} ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(403, "Wrong format for assignment identifier.")
+
+      nil ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(404, "No submissions for this experiment recorded yet.")
+    end
   end
 
   @doc """

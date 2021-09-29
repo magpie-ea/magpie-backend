@@ -87,7 +87,7 @@ Detailed descriptions can also be found at the experiment creation page.
 
 ### Editing an experiment
 
-You can edit an experiment after its creation. However, note that at the moment the `<num_variants, num_chains, num_generations, num_players>` tuple of a complex experiment is not editable after experiment creation.
+You can edit an experiment after its creation. However, note that at the moment the specifications of a complex experiment are not editable after experiment creation. You may create a new experiment instead.
 
 ### Deactivating an experiment
 

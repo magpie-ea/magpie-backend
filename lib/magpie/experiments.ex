@@ -293,7 +293,7 @@ defmodule Magpie.Experiments do
   Just take the first one out of the potential list of results.
   """
   def get_one_experiment_results_for_identifier(%AssignmentIdentifier{} = assignment_identifier) do
-    hd(get_all_experiment_results_for_identifier(assignment_identifier))
+    List.first(get_all_experiment_results_for_identifier(assignment_identifier))
   end
 
   def get_next_available_assignment(experiment_id) do

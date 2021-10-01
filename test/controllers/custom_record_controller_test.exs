@@ -69,7 +69,7 @@ defmodule CustomRecordControllerTest do
         |> get("/custom_records/new")
 
       assert html_response(conn, 200) =~ "Create a New Custom Record"
-      assert html_response(conn, 200) =~ "Submit"
+      assert html_response(conn, 200) =~ "Confirm"
     end
   end
 
@@ -194,7 +194,7 @@ defmodule CustomRecordControllerTest do
         |> get("/custom_records/#{custom_record.id}/edit")
 
       assert html_response(conn, 200) =~ "Edit Custom Record"
-      assert html_response(conn, 200) =~ "Submit"
+      assert html_response(conn, 200) =~ "Confirm"
     end
   end
 

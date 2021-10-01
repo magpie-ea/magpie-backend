@@ -222,12 +222,12 @@ defmodule Magpie.ExperimentController do
       {:error, :invalid_format} ->
         conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(403, "Wrong format for assignment identifier.")
+        |> send_resp(403, "Invalid format for assignment identifier.")
 
       nil ->
         conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(404, "No submissions for this experiment recorded yet.")
+        |> send_resp(404, "No submissions for this assignment recorded yet.")
     end
   end
 

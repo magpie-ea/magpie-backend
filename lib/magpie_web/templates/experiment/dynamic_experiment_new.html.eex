@@ -6,9 +6,8 @@
       </p>
 
 <p>
-      Each participant will be assigned a unique <code>&lt;variant-nr, chain-nr, generation-nr&gt;</code> identifier, so that such dependencies can be made explicit.
+      Each participant will be assigned a unique <code>&lt;chain-nr, variant-nr, generation-nr, player-nr&gt;</code> identifier, so that such dependencies can be made explicit.
     </p>
-
 <p>
     The client must connect with the server via Phoenix Channel in such experiments.
     </p>

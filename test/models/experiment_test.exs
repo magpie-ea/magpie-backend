@@ -25,10 +25,11 @@ defmodule Magpie.ExperimentTest do
     is_dynamic: true,
     num_variants: 2,
     num_chains: 5,
-    num_generations: 3
+    num_generations: 3,
+    num_players: 1
   }
 
-  @innon_dynamic_experiment_attrs %{
+  @invalid_non_dynamic_experiment_attrs %{
     name: nil,
     author: nil,
     active: nil,
@@ -41,7 +42,7 @@ defmodule Magpie.ExperimentTest do
   end
 
   test "changeset with invalid attributes" do
-    changeset = Experiment.changeset(%Experiment{}, @innon_dynamic_experiment_attrs)
+    changeset = Experiment.changeset(%Experiment{}, @invalid_non_dynamic_experiment_attrs)
     refute changeset.valid?
   end
 
@@ -93,29 +94,7 @@ defmodule Magpie.ExperimentTest do
   end
 
   describe "dynamic experiments" do
-    test "dynamic experiments must have num_variants" do
-      changeset =
-        Experiment.changeset(%Experiment{}, Map.delete(@dynamic_experiment_attrs, :num_variants))
-
-      refute changeset.valid?
-    end
-
-    test "dynamic experiments must have num_chains" do
-      changeset =
-        Experiment.changeset(%Experiment{}, Map.delete(@dynamic_experiment_attrs, :num_chains))
-
-      refute changeset.valid?
-    end
-
-    test "dynamic experiments must have num_generations" do
-      changeset =
-        Experiment.changeset(
-          %Experiment{},
-          Map.delete(@dynamic_experiment_attrs, :num_generations)
-        )
-
-      refute changeset.valid?
-    end
+    # The previous checks on dynamic experiments must having those num_ attributes became useless. Since we have DB defaults now.
 
     test "num_variants must be greater than 0" do
       changeset =
@@ -153,6 +132,18 @@ defmodule Magpie.ExperimentTest do
                [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
     end
 
+    test "num_players must be greater than 0" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@dynamic_experiment_attrs, :num_players, 0)
+        )
+
+      assert {:num_players,
+              {"must be greater than %{number}",
+               [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
+    end
+
     test "non-dynamic experiments cannot have num_variants" do
       changeset =
         Experiment.changeset(
@@ -178,6 +169,16 @@ defmodule Magpie.ExperimentTest do
         Experiment.changeset(
           %Experiment{},
           Map.put(@non_dynamic_experiment_attrs, :num_generations, 2)
+        )
+
+      refute changeset.valid?
+    end
+
+    test "non-dynamic experiments cannot have num_players" do
+      changeset =
+        Experiment.changeset(
+          %Experiment{},
+          Map.put(@non_dynamic_experiment_attrs, :num_players, 2)
         )
 
       refute changeset.valid?

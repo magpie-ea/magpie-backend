@@ -62,19 +62,23 @@ defmodule Magpie.Experiments.Experiment do
   # A cleaner way would be to create a completely separate model for dynamic experiments, instead of containing everything within one model.
   # For now let's first continue with this I guess.
   defp validate_dynamic_experiment_requirements(changeset) do
-    if Map.get(changeset.changes, :is_dynamic) && changeset.changes.is_dynamic do
+    if Ecto.Changeset.get_field(changeset, :is_dynamic) ||
+         Ecto.Changeset.get_field(changeset, :is_interactive) do
       changeset
-      |> validate_required([:num_variants, :num_chains, :num_generations])
+      |> validate_required([:num_variants, :num_chains, :num_generations, :num_players])
       |> validate_number(:num_variants, greater_than: 0)
       |> validate_number(:num_chains, greater_than: 0)
       |> validate_number(:num_generations, greater_than: 0)
+      |> validate_number(:num_players, greater_than: 0)
     else
-      if Map.get(changeset.changes, :num_variants) || Map.get(changeset.changes, :num_chains) ||
-           Map.get(changeset.changes, :num_generations) do
+      if Ecto.Changeset.get_change(changeset, :num_variants) ||
+           Ecto.Changeset.get_change(changeset, :num_chains) ||
+           Ecto.Changeset.get_change(changeset, :num_generations) ||
+           Ecto.Changeset.get_change(changeset, :num_players) do
         changeset
         |> add_error(
           :is_dynamic,
-          "The num_variant, num_chains and num_generations attributes are only for dynamic experiments!"
+          "The num_variant, num_chains, num_generations, num_players attributes are only for dynamic experiments!"
         )
       else
         changeset

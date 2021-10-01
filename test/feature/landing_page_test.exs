@@ -9,22 +9,16 @@ defmodule Magpie.LandingPageTest do
   test "Has exactly two buttons", %{session: session} do
     session
     |> visit("/")
-    |> assert_has(css(".btn", count: 2))
+    |> assert_has(css(".button", count: 2))
   end
 
-  test "Has btn-primary for experiments", %{session: session} do
+  test "Has button-outline for custom records", %{session: session} do
     session
     |> visit("/")
-    |> assert_has(css(".btn-primary", text: "Manage Experiments"))
+    |> assert_has(css(".button-outline", value: "Manage Custom Records"))
   end
 
-  test "Has btn-success for custom records", %{session: session} do
-    session
-    |> visit("/")
-    |> assert_has(css(".btn-success", text: "Manage Custom Records"))
-  end
-
-  test "Clicking on the experiemnts button leads to the experiment management page", %{
+  test "Clicking on the experiments button leads to the experiment management page", %{
     session: session
   } do
     session

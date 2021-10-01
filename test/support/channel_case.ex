@@ -43,7 +43,11 @@ defmodule Magpie.ChannelCase do
 
         {:ok, _, _} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-        {:ok, socket: socket, experiment: experiment, participant_id: participant_id}
+        {:ok,
+         socket: socket,
+         experiment: experiment,
+         participant_id: participant_id,
+         assignment_identifier: socket.assigns.assignment_identifier}
       end
     end
   end

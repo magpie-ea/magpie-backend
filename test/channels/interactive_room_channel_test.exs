@@ -15,24 +15,26 @@ defmodule Magpie.InteractiveRoomChannelTest do
   test "joins the interactive room channel successfully", %{
     socket: socket,
     experiment: _experiment,
-    participant_id: _participant_id
+    participant_id: _participant_id,
+    assignment_identifier: assignment_identifier
   } do
     assert {:ok, _, _socket} =
              subscribe_and_join(
                socket,
-               "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
+               "interactive_room:#{assignment_identifier.experiment_id}:#{assignment_identifier.variant}:#{assignment_identifier.chain}:#{assignment_identifier.generation}"
              )
   end
 
   test "the newly joined user is tracked by Presence", %{
     socket: socket,
     experiment: _experiment,
-    participant_id: _participant_id
+    participant_id: _participant_id,
+    assignment_identifier: assignment_identifier
   } do
     {:ok, _, _socket} =
       subscribe_and_join(
         socket,
-        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
+        "interactive_room:#{assignment_identifier.experiment_id}:#{assignment_identifier.variant}:#{assignment_identifier.chain}:#{assignment_identifier.generation}"
       )
 
     # payload = %{
@@ -49,23 +51,27 @@ defmodule Magpie.InteractiveRoomChannelTest do
 
   test "start_game message is sent after the specified number of participants is reached", %{
     socket: socket,
-    experiment: experiment
+    experiment: experiment,
+    assignment_identifier: assignment_identifier
   } do
     # First we need do join the first created participant to the channel...
     subscribe_and_join(
       socket,
-      "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
+      "interactive_room:#{assignment_identifier.experiment_id}:#{assignment_identifier.variant}:#{assignment_identifier.chain}:#{assignment_identifier.generation}"
     )
 
-    num_participants = socket.assigns.num_variants
-    # Enum.reduce(1..num_participants - 1, , fun)
+    num_participants = socket.assigns.num_players
+
     Enum.each(1..(num_participants - 1), fn _count ->
-      {:ok, socket: socket, experiment: _experiment, participant_id: _participant_id} =
-        create_and_subscribe_participant(experiment)
+      {:ok,
+       socket: socket,
+       experiment: _experiment,
+       participant_id: _participant_id,
+       assignment_identifier: _ai} = create_and_subscribe_participant(experiment)
 
       subscribe_and_join(
         socket,
-        "interactive_room:#{socket.assigns.experiment_id}:#{socket.assigns.chain}:#{socket.assigns.generation}"
+        "interactive_room:#{assignment_identifier.experiment_id}:#{assignment_identifier.variant}:#{assignment_identifier.chain}:#{assignment_identifier.generation}"
       )
     end)
 

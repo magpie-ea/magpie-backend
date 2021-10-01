@@ -24,13 +24,14 @@ defmodule Magpie.ParticipantChannelTest do
   test "Receives the trituple denoting the next available experiment slot after joining", %{
     socket: socket,
     experiment: _experiment,
-    participant_id: participant_id
+    participant_id: participant_id,
+    assignment_identifier: assignment_identifier
   } do
-    {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+    {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-    variant = socket.assigns.variant
-    chain = socket.assigns.chain
-    generation = socket.assigns.generation
+    variant = assignment_identifier.variant
+    chain = assignment_identifier.chain
+    generation = assignment_identifier.generation
 
     assert_broadcast("experiment_available", %{
       variant: ^variant,
@@ -42,21 +43,16 @@ defmodule Magpie.ParticipantChannelTest do
   test "The experiment status is set to 1 after a participant joins", %{
     socket: socket,
     experiment: _experiment,
-    participant_id: participant_id
+    participant_id: participant_id,
+    assignment_identifier: assignment_identifier
   } do
-    {:ok, _, socket} = subscribe_and_join(socket, "participant:#{participant_id}")
-
-    experiment_id = socket.assigns.experiment_id
-    variant = socket.assigns.variant
-    chain = socket.assigns.chain
-    generation = socket.assigns.generation
+    {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
     Process.sleep(100)
 
-    experiment_status =
-      Experiments.get_experiment_status(experiment_id, variant, chain, generation)
+    experiment_status = Experiments.get_experiment_status(assignment_identifier)
 
-    assert experiment_status.status === 1
+    assert experiment_status.status === :in_progress
   end
 
   # The issue with SQL Sandbox is solved with Elixir 1.8.0+ and DBConnection 2.0.4+

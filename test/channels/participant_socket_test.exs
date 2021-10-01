@@ -5,6 +5,7 @@ defmodule Magpie.ParticipantSocketTest do
   use Magpie.ChannelCase, async: true
 
   alias Magpie.{Experiments, ParticipantSocket}
+  alias Magpie.Experiments.AssignmentIdentifier
 
   test "connect with a valid experiment_id" do
     experiment = insert_dynamic_experiment()
@@ -17,10 +18,14 @@ defmodule Magpie.ParticipantSocketTest do
 
     # Assert the assigns as well
     assert socket.assigns.participant_id == "1234"
-    assert socket.assigns.experiment_id == experiment.id
-    assert socket.assigns.num_variants == experiment.num_variants
-    assert socket.assigns.num_chains == experiment.num_chains
-    assert socket.assigns.num_generations == experiment.num_generations
+
+    assert socket.assigns.assignment_identifier == %AssignmentIdentifier{
+             chain: 1,
+             experiment_id: experiment.id,
+             generation: 1,
+             player: 1,
+             variant: 1
+           }
   end
 
   test "Assigns ExperimentStatus to 1 upon connection" do
@@ -32,15 +37,9 @@ defmodule Magpie.ParticipantSocketTest do
         "experiment_id" => experiment.id
       })
 
-    assignment =
-      Experiments.get_experiment_status(
-        experiment.id,
-        socket.assigns.variant,
-        socket.assigns.chain,
-        socket.assigns.generation
-      )
+    assignment = Experiments.get_experiment_status(socket.assigns.assignment_identifier)
 
-    assert assignment.status == 1
+    assert assignment.status == :in_progress
   end
 
   test "refuse connection with an invalid experiment_id" do

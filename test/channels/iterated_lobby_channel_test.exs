@@ -13,13 +13,13 @@ defmodule Magpie.IteratedLobbyChannelTest do
 
   test "joins the iterated lobby channel successfully", %{
     socket: socket,
-    experiment: experiment,
-    participant_id: _participant_id
+    participant_id: _participant_id,
+    assignment_identifier: assignment_identifier
   } do
     assert {:ok, _, _socket} =
              subscribe_and_join(
                socket,
-               "iterated_lobby:#{experiment.id}:#{socket.assigns.variant}:#{socket.assigns.chain}:#{socket.assigns.generation}"
+               "iterated_lobby:#{assignment_identifier.experiment_id}:#{assignment_identifier.variant}:#{assignment_identifier.chain}:#{assignment_identifier.generation}:#{assignment_identifier.player}"
              )
   end
 

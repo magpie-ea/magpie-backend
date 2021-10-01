@@ -90,7 +90,7 @@ defmodule Magpie.ExperimentController do
     experiment = Experiments.get_experiment!(id)
 
     case Experiments.toggle_experiment(experiment) do
-      {:ok, experiment} ->
+      {:ok, _} ->
         conn
         |> put_flash(
           :info,
@@ -98,7 +98,7 @@ defmodule Magpie.ExperimentController do
         )
         |> redirect(to: experiment_path(conn, :edit, experiment))
 
-      {:error, _changeset} ->
+      {:error, _, _failed_value, _changes_so_far} ->
         conn
         |> put_flash(:error, "The activation status wasn't changed successfully!")
         |> redirect(to: experiment_path(conn, :edit, experiment))

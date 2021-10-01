@@ -11,6 +11,7 @@ defmodule Magpie.ExperimentStatusTest do
     variant: 1,
     chain: 2,
     generation: 3,
+    player: 1,
     status: :completed
   }
 
@@ -87,25 +88,5 @@ defmodule Magpie.ExperimentStatusTest do
     assert {:generation,
             {"must be greater than %{number}",
              [validation: :number, kind: :greater_than, number: 0]}} in changeset.errors
-  end
-
-  test "status must be greater than or equal to 0" do
-    changeset =
-      ExperimentStatus.changeset(
-        %ExperimentStatus{},
-        Map.put(@valid_attrs, :status, -1)
-      )
-
-    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion, enum: 0..2]}} in changeset.errors
-  end
-
-  test "status must be less than or equal to 2" do
-    changeset =
-      ExperimentStatus.changeset(
-        %ExperimentStatus{},
-        Map.put(@valid_attrs, :status, 3)
-      )
-
-    assert {:status, {"must be 0, 1 or 2", [validation: :inclusion, enum: 0..2]}} in changeset.errors
   end
 end

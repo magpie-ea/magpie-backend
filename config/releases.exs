@@ -29,17 +29,6 @@ config :magpie, Magpie.Repo,
   pool_size: String.to_integer(System.get_env("POOL_SIZE", "2")),
   log: :debug
 
-# Used for basic_auth
-# However, we can't assume they always exist, since in some situations (e.g. demo app) we don't have any authentication.
-# This will look a bit ugly... Will do for now.
-config :magpie, :authentication,
-  username: System.fetch_env!("AUTH_USERNAME"),
-  password: System.fetch_env!("AUTH_PASSWORD")
-
-config :magpie,
-       :no_basic_auth,
-       false
-
 config :logger,
   backends: [:console]
 

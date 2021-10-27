@@ -34,26 +34,12 @@ config :magpie, Magpie.Repo,
 # However, we can't assume they always exist, since in some situations (e.g. demo app) we don't have any authentication.
 # This will look a bit ugly... Will do for now.
 config :magpie, :authentication,
-  username:
-    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-       nil
-     else
-       System.fetch_env!("AUTH_USERNAME")
-     end),
-  password:
-    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-       nil
-     else
-       System.fetch_env!("AUTH_PASSWORD")
-     end)
+  username: System.fetch_env!("AUTH_USERNAME"),
+  password: System.fetch_env!("AUTH_PASSWORD")
 
 config :magpie,
        :no_basic_auth,
-       (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-          true
-        else
-          false
-        end)
+       false
 
 config :logger,
   backends: [:console]

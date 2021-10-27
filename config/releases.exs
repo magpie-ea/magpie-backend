@@ -1,12 +1,12 @@
 import Config
 
 config :magpie, Magpie.Endpoint,
-  http: [port: System.get_env("PORT", "443") |> String.to_integer()],
+  http: [port: System.get_env("PORT", "80") |> String.to_integer()],
   url: [
     scheme: System.get_env("URL_SCHEME", "https"),
     host: System.fetch_env!("HOST"),
     path: System.get_env("MAGPIE_PATH", "/"),
-    port: System.get_env("PORT", "443") |> String.to_integer()
+    port: System.get_env("PORT", "80") |> String.to_integer()
   ],
   # Don't use force_ssl if the URL_SCHEME is http
   # force_ssl:
@@ -45,14 +45,15 @@ config :magpie, :authentication,
        nil
      else
        System.fetch_env!("AUTH_PASSWORD")
-    end)
+     end)
 
-config :magpie, :no_basic_auth,
-  (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-    true
-  else
-    false
-  end)
+config :magpie,
+       :no_basic_auth,
+       (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+          true
+        else
+          false
+        end)
 
 config :logger,
   backends: [:console]

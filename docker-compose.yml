@@ -7,4 +7,4 @@ services:
       POSTGRES_DB: magpie_prod
       POSTGRES_PASSWORD: magpie
     ports:
-      - 5432:5432
+      - 5433:5432

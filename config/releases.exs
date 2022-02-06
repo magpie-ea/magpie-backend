@@ -51,8 +51,7 @@ config :magpie, :authentication,
        System.fetch_env!("AUTH_PASSWORD")
      end)
 
-config :magpie,
-  no_basic_auth: (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+config :magpie, :no_basic_auth, (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
           true
         else
           false

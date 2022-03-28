@@ -115,6 +115,7 @@ defmodule Magpie.Experiments do
       nil -> {:error, :experiment_not_found}
       false -> {:error, :experiment_inactive}
       {:error, %Ecto.Changeset{} = _changeset} -> {:error, :unprocessable_entity}
+      _ -> {:error, :unprocessable_entity}
     end
   end
 
@@ -129,27 +130,22 @@ defmodule Magpie.Experiments do
   end
 
   def retrieve_experiment_results_as_csv(%Experiment{} = experiment) do
-    experiment_submissions = Repo.all(Ecto.assoc(experiment, :experiment_results))
+    with [_submission | _] = experiment_submissions <-
+           Repo.all(Ecto.assoc(experiment, :experiment_results)),
+         {:ok, file_path} <- Briefly.create(),
+         file <- File.open!(file_path, [:write, :utf8]),
+         [_key | _] = keys <-
+           get_keys_for_csv_download(experiment.experiment_result_columns, experiment_submissions) do
+      prepare_submissions_for_csv_download(keys, experiment_submissions)
+      # Enum.each because the CSV library returns a stream, with each row being an entry. We need to make the stream concrete with this step.
+      |> Enum.each(&IO.write(file, &1))
 
-    case experiment_submissions do
-      [] ->
-        {:error, :no_submissions_yet}
+      File.close(file)
 
-      _ ->
-        # Name the CSV file to be returned.
-        {:ok, file_path} = Briefly.create()
-        file = File.open!(file_path, [:write, :utf8])
-
-        keys =
-          get_keys_for_csv_download(experiment.experiment_result_columns, experiment_submissions)
-
-        prepare_submissions_for_csv_download(keys, experiment_submissions)
-        # Enum.each because the CSV library returns a stream, with each row being an entry. We need to make the stream concrete with this step.
-        |> Enum.each(&IO.write(file, &1))
-
-        File.close(file)
-
-        {:ok, file_path}
+      {:ok, file_path}
+    else
+      [] -> {:error, :no_submissions_yet}
+      error -> error
     end
   end
 
@@ -325,6 +321,15 @@ defmodule Magpie.Experiments do
     end
   end
 
+  defp get_keys_for_csv_download([], submissions) do
+    with [submission | _] <- submissions,
+         [trial | _] <- submission.results do
+      Map.keys(trial)
+    else
+      _ -> :error
+    end
+  end
+
   # Get the keys from the columns already accumulated from the DB.
   defp get_keys_for_csv_download(columns, _experiment_submissions) do
     columns
@@ -376,6 +381,7 @@ defmodule Magpie.Experiments do
          new_experiment_result_columns <- merge_columns(keys, previously_accumulated_columns) do
       update_experiment(experiment, %{experiment_result_columns: new_experiment_result_columns})
     else
+      [] -> {:error, :unprocessable_entity}
       error -> error
     end
   end

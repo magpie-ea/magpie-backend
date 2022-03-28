@@ -108,7 +108,7 @@ defmodule Magpie.Experiments do
   def submit_experiment(experiment_id, results) do
     with experiment when not is_nil(experiment) <- get_experiment(experiment_id),
          true <- experiment.active,
-         :ok <- update_experiment_result_columns(experiment, results),
+         {:ok, _} <- update_experiment_result_columns(experiment, results),
          {:ok, _} <- create_experiment_result(experiment, results) do
       :ok
     else
@@ -372,11 +372,17 @@ defmodule Magpie.Experiments do
     # previously_accumulated_columns <- experiment.
     with [trial | _] <- results,
          keys <- Map.keys(trial),
-         previously_accumulated_experiment <- Map.get(experiment, :experiment_result_columns, []),
-         new_experiment_result_columns <-
-           MapSet.union(MapSet.new(keys), previously_accumulated_experiment) do
+         previously_accumulated_columns <- Map.get(experiment, :experiment_result_columns) || [],
+         new_experiment_result_columns <- merge_columns(keys, previously_accumulated_columns) do
       update_experiment(experiment, %{experiment_result_columns: new_experiment_result_columns})
+    else
+      error -> error
     end
+  end
+
+  defp merge_columns(keys, previously_accumulated_columns) do
+    merged_columns = MapSet.union(MapSet.new(keys), MapSet.new(previously_accumulated_columns))
+    MapSet.to_list(merged_columns)
   end
 
   def retrieve_experiment_results_as_json(nil) do

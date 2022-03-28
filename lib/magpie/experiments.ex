@@ -363,9 +363,8 @@ defmodule Magpie.Experiments do
       trial = Map.put(trial, "submission_id", submission.id)
       # For each trial, use the order specified by keys
       keys
-      |> Enum.map(fn k -> trial[k] end)
       # This is processing done when one of fields is an array. Though this type of submission should be discouraged.
-      |> Enum.map(fn v -> format_value(v) end)
+      |> Enum.map(fn k -> format_value(Map.get(trial, k, "")) end)
     end)
   end
 

@@ -21,7 +21,7 @@ defmodule CustomRecordControllerTest do
         [
           get(conn, custom_record_path(conn, :index)),
           get(conn, custom_record_path(conn, :new)),
-          post(conn, custom_record_path(conn, :create, %{})),
+          post(conn, custom_record_path(conn, :create), %{"custom_record" => %{}}),
           get(conn, custom_record_path(conn, :edit, "123")),
           put(conn, custom_record_path(conn, :update, "123")),
           delete(conn, custom_record_path(conn, :delete, "123")),

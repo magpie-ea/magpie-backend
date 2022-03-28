@@ -28,3 +28,7 @@ config :wallaby,
   driver: Wallaby.Chrome
 
 config :magpie, :environment, :test
+
+config :magpie,
+       :no_basic_auth,
+       false

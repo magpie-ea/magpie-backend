@@ -20,7 +20,7 @@ defmodule ExperimentControllerTest do
         [
           get(conn, experiment_path(conn, :index)),
           get(conn, experiment_path(conn, :new)),
-          post(conn, experiment_path(conn, :create, %{})),
+          post(conn, experiment_path(conn, :create), %{"experiment" => %{}}),
           get(conn, experiment_path(conn, :edit, "123")),
           put(conn, experiment_path(conn, :update, "123")),
           delete(conn, experiment_path(conn, :delete, "123")),

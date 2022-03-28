@@ -51,7 +51,7 @@ defmodule Magpie.Mixfile do
       {:briefly, "~> 0.3"},
       {:csv, "~> 2.4"},
       {:calendar, "~> 1.0"},
-      {:wallaby, "~> 0.28.0", [runtime: false, only: :test]},
+      {:wallaby, "~> 0.29.0", [runtime: false, only: :test]},
       {:excoveralls, "~> 0.14.2", only: :test},
       # Error checking and linting
       {:credo, "~> 1.5", only: [:dev, :test]},

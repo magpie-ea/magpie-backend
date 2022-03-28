@@ -108,6 +108,7 @@ defmodule Magpie.Experiments do
   def submit_experiment(experiment_id, results) do
     with experiment when not is_nil(experiment) <- get_experiment(experiment_id),
          true <- experiment.active,
+         :ok <- update_experiment_result_columns(experiment, results),
          {:ok, _} <- create_experiment_result(experiment, results) do
       :ok
     else
@@ -139,7 +140,10 @@ defmodule Magpie.Experiments do
         {:ok, file_path} = Briefly.create()
         file = File.open!(file_path, [:write, :utf8])
 
-        prepare_submissions_for_csv_download(experiment_submissions)
+        keys =
+          get_keys_for_csv_download(experiment.experiment_result_columns, experiment_submissions)
+
+        prepare_submissions_for_csv_download(keys, experiment_submissions)
         # Enum.each because the CSV library returns a stream, with each row being an entry. We need to make the stream concrete with this step.
         |> Enum.each(&IO.write(file, &1))
 
@@ -311,32 +315,44 @@ defmodule Magpie.Experiments do
     List.first(Repo.all(query))
   end
 
+  # Fetch the keys from the first submission.
+  defp get_keys_for_csv_download(nil, submissions) do
+    with [submission | _] <- submissions,
+         [trial | _] <- submission.results do
+      Map.keys(trial)
+    else
+      _ -> :error
+    end
+  end
+
+  # Get the keys from the columns already accumulated from the DB.
+  defp get_keys_for_csv_download(columns, _experiment_submissions) do
+    columns
+  end
+
+  defp prepare_submissions_for_csv_download(:error, _submissions) do
+    []
+  end
+
   # Writes the submissions to a CSV file.
   # Note that we have a validation in schemas to ensure that each entry in `results` must have the same set of keys. So the following code take take that as an assumption.
-  defp prepare_submissions_for_csv_download(submissions) do
-    # Fetch the keys from the first submission.
-    with [submission | _] <- submissions,
-         [trial | _] <- submission.results,
-         keys <- Map.keys(trial) do
-      # We need to prepend an additional column which contains uid in the output
-      keys = ["submission_id" | keys]
+  defp prepare_submissions_for_csv_download(keys, submissions) do
+    # We need to prepend an additional column which contains uid in the output
+    keys = ["submission_id" | keys]
 
-      # The list `outputs` contains all rows of the resulting CSV file.
-      # The first row will be the keys, i.e. headers
-      outputs = [keys]
+    # The list `outputs` contains all rows of the resulting CSV file.
+    # The first row will be the keys, i.e. headers
+    outputs = [keys]
 
-      # For each submission, get the results and concatenate it to the `outputs` list.
-      outputs =
-        outputs ++
-          List.foldl(submissions, [], fn submission, acc ->
-            acc ++ format_submission(submission, keys)
-          end)
+    # For each submission, get the results and concatenate it to the `outputs` list.
+    outputs =
+      outputs ++
+        List.foldl(submissions, [], fn submission, acc ->
+          acc ++ format_submission(submission, keys)
+        end)
 
-      # Note that the separator defaults to \r\n just to be safe
-      outputs |> CSV.encode()
-    else
-      _ -> []
-    end
+    # Note that the separator defaults to \r\n just to be safe
+    outputs |> CSV.encode()
   end
 
   # For each trial recorded in this one experimentresult, ensure the proper key order is used to extract values.
@@ -351,6 +367,17 @@ defmodule Magpie.Experiments do
       # This is processing done when one of fields is an array. Though this type of submission should be discouraged.
       |> Enum.map(fn v -> format_value(v) end)
     end)
+  end
+
+  defp update_experiment_result_columns(experiment, results) do
+    # previously_accumulated_columns <- experiment.
+    with [trial | _] <- results,
+         keys <- Map.keys(trial),
+         previously_accumulated_experiment <- Map.get(experiment, :experiment_result_columns, []),
+         new_experiment_result_columns <-
+           MapSet.union(MapSet.new(keys), previously_accumulated_experiment) do
+      update_experiment(experiment, %{experiment_result_columns: new_experiment_result_columns})
+    end
   end
 
   def retrieve_experiment_results_as_json(nil) do

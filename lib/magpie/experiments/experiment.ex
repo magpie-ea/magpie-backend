@@ -27,6 +27,9 @@ defmodule Magpie.Experiments.Experiment do
     # For interactive experiments.
     field :num_players, :integer, null: true, default: 1
 
+    # Accumulation of columns contained in each result JSON submission.
+    field :experiment_result_columns, {:array, :string}
+
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)
 
@@ -44,6 +47,7 @@ defmodule Magpie.Experiments.Experiment do
       :description,
       :active,
       :dynamic_retrieval_keys,
+      :experiment_result_columns,
       :num_variants,
       :num_chains,
       :num_generations,

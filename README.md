@@ -376,7 +376,7 @@ To run the server app locally with `dev` environment, the following instructions
 
 6. Run `mix deps.get; mix ecto.create; mix ecto.migrate` in the app folder.
 
-7. Run `npm install` to install the frontend dependencies.
+7. Run `npm install` to install the frontend dependencies. (Note that your local Node.js version needs to be <= 14 due to the version constraint from `node-sass`.)
 
 8. Run `mix phx.server` to run the server on `localhost:4000`.
 

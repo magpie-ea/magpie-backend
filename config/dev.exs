@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
@@ -40,8 +40,8 @@ config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 config :magpie, Magpie.Repo,
-  username: "magpie_dev",
-  password: "magpie",
+  username: "postgres",
+  password: "postgres",
   # This is the current workaround. "db" is the host name for the Docker postgres container. "localhost" when you actually run it with your system's postgres instead of through Docker.
   hostname:
     (if System.get_env("DOCKER") == "true" do

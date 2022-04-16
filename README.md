@@ -353,31 +353,13 @@ For detailed documentation on the structure and deployment of experiments, pleas
 To run the server app locally with `dev` environment, the following instructions could help. However, as the configuration of Postgres DB could be platform specific, relevant resources for [Postgres](https://www.postgresql.org/) could help.
 
 1. Install Postgres. Ensure that you have version 9.2 or greater (for its JSON data type). You can check the version with the command `psql --version`.
+
 2. Make sure that Postgres is correctly initialized as a service. If you installed it via Homebrew, the instructions should be shown on the command line. If you're on Linux, [the guide on Arch Linux Wiki](https://wiki.archlinux.org/index.php/PostgreSQL#Initial_configuration) could help.
-3. Start a postgres interactive terminal. On Linux you could do it with `sudo su - postgres` followed by `psql`. On MacOS you might be able to run `psql postgres` directly without using `sudo`.
-4. Create the database user for dev environment. The username and password is specified in `dev.exs`. By default it's `magpie_dev` and `magpie`:
 
-   ```sql
-   CREATE USER magpie_dev WITH PASSWORD 'magpie';
-   ```
+3. Run `mix deps.get; mix ecto.create; mix ecto.migrate` in the app folder.
 
-5. Then, create the `magpie_dev` DB and grant all privileges on this DB to the user.
+4. Run `cd assets; npm install` to install the frontend dependencies. (Note that your local Node.js version needs to be <= 14 due to the version constraint from `node-sass`.)
 
-   ```sql
-   CREATE DATABASE magpie_dev;
-   GRANT ALL PRIVILEGES ON DATABASE magpie_dev TO magpie_dev;
-   ```
+5. Run `cd ..; mix phx.server` to run the server on `localhost:4000`.
 
-   Or, alternatively, allow the user to create DBs by itself:
-
-   ```sql
-   ALTER USER magpie_dev CREATEDB;
-   ```
-
-6. Run `mix deps.get; mix ecto.create; mix ecto.migrate` in the app folder.
-
-7. Run `npm install` to install the frontend dependencies. (Note that your local Node.js version needs to be <= 14 due to the version constraint from `node-sass`.)
-
-8. Run `mix phx.server` to run the server on `localhost:4000`.
-
-9. Every time a database change is introduced with new migration files, run `mix ecto.migrate` again before starting the server.
+6. Every time a database change is introduced with new migration files, run `mix ecto.migrate` again before starting the server.

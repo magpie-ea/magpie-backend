@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :magpie, Magpie.Endpoint,
   http: [port: 4001],
@@ -7,8 +7,8 @@ config :magpie, Magpie.Endpoint,
 
 # Configure your database
 config :magpie, Magpie.Repo,
-  username: "magpie_dev",
-  password: "magpie",
+  username: "postgres",
+  password: "postgres",
   database: "magpie_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

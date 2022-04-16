@@ -11,4 +11,5 @@ fi
 
 git push heroku master
 heroku run "_build/prod/rel/magpie/bin/magpie eval 'Magpie.ReleaseTasks.db_migrate()'"
+heroku restart
 heroku open

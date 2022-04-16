@@ -18,4 +18,5 @@ heroku config:set AUTH_USERNAME=$2
 heroku config:set AUTH_PASSWORD=$3
 git push heroku master
 heroku run "_build/prod/rel/magpie/bin/magpie eval 'Magpie.ReleaseTasks.db_migrate()'"
+heroku restart
 heroku open

@@ -4,7 +4,7 @@ defmodule Magpie.Mixfile do
   def project do
     [
       app: :magpie,
-      version: "0.2.3",
+      version: "2.0.1",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -26,21 +26,20 @@ defmodule Magpie.Mixfile do
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "web", "test/support"]
-  defp elixirc_paths(_), do: ["lib", "web"]
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
   #
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.9"},
-      {:phoenix_pubsub, "~> 2.0"},
+      {:phoenix, "~> 1.6.7"},
       # phoenix_ecto 3.x corresponds to Ecto 2.x. phoenix_ecto 4.x corresponds to Ecto 3.x
-      {:phoenix_ecto, "~> 4.3"},
+      {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.14"},
+      {:phoenix_html, "~> 3.0"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:gettext, "~> 0.18"},
       {:cowboy, "~> 2.9"},
@@ -55,7 +54,7 @@ defmodule Magpie.Mixfile do
       {:excoveralls, "~> 0.14.2", only: :test},
       # Error checking and linting
       {:credo, "~> 1.5", only: [:dev, :test]},
-      {:dogma, "~> 0.1", only: [:dev]},
+      {:dogma, "~> 0.1", only: [:dev]}
     ]
   end
 
@@ -67,9 +66,10 @@ defmodule Magpie.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end

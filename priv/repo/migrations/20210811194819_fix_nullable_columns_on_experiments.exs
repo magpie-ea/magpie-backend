@@ -17,7 +17,32 @@ defmodule Magpie.Repo.Migrations.FixNullableColumnsOnExperiments do
       join: e in Experiment,
       where: e.is_dynamic == false,
       where: er.experiment_id == e.id
+
     Repo.update_all(non_dynamic_experiment_results_query, set: [variant: 1, chain: 1, generation: 1, player: 1])
+
+    player_null_experiment_results_query =
+      from er in ExperimentResult,
+      where: is_nil(er.player)
+
+    Repo.update_all(player_null_experiment_results_query, set: [player: 1])
+
+    variant_null_experiment_results_query =
+      from er in ExperimentResult,
+      where: is_nil(er.variant)
+
+    Repo.update_all(variant_null_experiment_results_query, set: [variant: 1])
+
+    chain_null_experiment_results_query =
+      from er in ExperimentResult,
+      where: is_nil(er.chain)
+
+    Repo.update_all(chain_null_experiment_results_query, set: [chain: 1])
+
+    generation_null_experiment_results_query =
+      from er in ExperimentResult,
+      where: is_nil(er.generation)
+
+    Repo.update_all(generation_null_experiment_results_query, set: [generation: 1])
 
     alter table(:experiments) do
       modify(:name, :string, null: false)

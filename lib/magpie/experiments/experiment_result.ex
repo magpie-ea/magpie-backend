@@ -13,10 +13,10 @@ defmodule Magpie.Experiments.ExperimentResult do
     # A map represents the whole JSON object received when the experiment was first submitted.
     # The map type will already be JSONB in Postgres by default. It will be simply TEXT in other DBs.
     field(:results, {:array, :map}, null: false)
-    field(:variant, :integer, null: true)
-    field(:chain, :integer, null: true)
-    field(:generation, :integer, null: true)
-    field(:player, :integer, null: true)
+    field(:variant, :integer, null: false, default: 1)
+    field(:chain, :integer, null: false, default: 1)
+    field(:generation, :integer, null: false, default: 1)
+    field(:player, :integer, null: false, default: 1)
     field(:is_intermediate, :boolean, default: false)
 
     belongs_to(:experiment, Magpie.Experiments.Experiment)

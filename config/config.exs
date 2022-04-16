@@ -3,7 +3,7 @@
 #
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
-use Mix.Config
+import Config
 
 # General application configuration
 config :magpie,
@@ -15,6 +15,16 @@ config :magpie, Magpie.Endpoint,
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
   render_errors: [view: Magpie.ErrorView, accepts: ~w(html json)],
   pubsub_server: Magpie.PubSub
+
+# Configure esbuild (the version is required)
+config :esbuild,
+  version: "0.14.29",
+  default: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ]
 
 # Configures Elixir's Logger
 config :logger, :console,

@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :magpie, Magpie.Endpoint,
   http: [port: 4001],

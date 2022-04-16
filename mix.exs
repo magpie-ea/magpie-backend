@@ -34,7 +34,7 @@ defmodule Magpie.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.9"},
+      {:phoenix, "~> 1.6.7"},
       {:phoenix_pubsub, "~> 2.0"},
       # phoenix_ecto 3.x corresponds to Ecto 2.x. phoenix_ecto 4.x corresponds to Ecto 3.x
       {:phoenix_ecto, "~> 4.3"},
@@ -55,7 +55,7 @@ defmodule Magpie.Mixfile do
       {:excoveralls, "~> 0.14.2", only: :test},
       # Error checking and linting
       {:credo, "~> 1.5", only: [:dev, :test]},
-      {:dogma, "~> 0.1", only: [:dev]},
+      {:dogma, "~> 0.1", only: [:dev]}
     ]
   end
 

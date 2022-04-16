@@ -27,35 +27,13 @@ config :magpie, Magpie.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.fetch_env!("DATABASE_URL"),
   pool_size: String.to_integer(System.get_env("POOL_SIZE", "2")),
-  ssl: (if System.get_env("DATABASE_SSL", "true") == "true" do
-          true
-        else
-          false
-        end),
-  log: :debug
-
-# Used for basic_auth
-# However, we can't assume they always exist, since in some situations (e.g. demo app) we don't have any authentication.
-# This will look a bit ugly... Will do for now.
-config :magpie, :authentication,
-  username:
-    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-       nil
+  ssl:
+    (if System.get_env("DATABASE_SSL", "true") == "true" do
+       true
      else
-       System.fetch_env!("AUTH_USERNAME")
+       false
      end),
-  password:
-    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-       nil
-     else
-       System.fetch_env!("AUTH_PASSWORD")
-     end)
-
-config :magpie, :no_basic_auth, (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
-          true
-        else
-          false
-        end)
+  log: :debug
 
 config :logger,
   backends: [:console]

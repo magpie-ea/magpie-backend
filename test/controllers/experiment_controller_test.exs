@@ -445,7 +445,7 @@ defmodule ExperimentControllerTest do
 
       conn =
         conn
-        |> post("api/submit_experiment/#{experiment.id}/", %{
+        |> post("/api/submit_experiment/#{experiment.id}/", %{
           "_json" => @results_simple_experiment
         })
 
@@ -461,7 +461,7 @@ defmodule ExperimentControllerTest do
 
       conn =
         conn
-        |> post("api/submit_experiment/#{experiment.id}/", %{
+        |> post("/api/submit_experiment/#{experiment.id}/", %{
           "_json" => @results_simple_experiment
         })
 
@@ -474,7 +474,7 @@ defmodule ExperimentControllerTest do
     } do
       conn =
         conn
-        |> post("api/submit_experiment/1234/", %{
+        |> post("/api/submit_experiment/1234/", %{
           "_json" => @results_simple_experiment
         })
 
@@ -488,7 +488,7 @@ defmodule ExperimentControllerTest do
 
       conn =
         conn
-        |> post("api/submit_experiment/#{experiment.id}/", %{
+        |> post("/api/submit_experiment/#{experiment.id}/", %{
           "_json" => []
         })
 
@@ -502,7 +502,7 @@ defmodule ExperimentControllerTest do
 
       conn =
         conn
-        |> post("api/submit_experiment/#{experiment.id}/", %{
+        |> post("/api/submit_experiment/#{experiment.id}/", %{
           "_json" => [%{"a" => 1, "b" => 2}, %{"a" => 11, "b" => 22, "c" => 123}]
         })
 

@@ -296,19 +296,45 @@ defmodule Magpie.Experiments do
     List.first(get_all_experiment_results_for_identifier(assignment_identifier))
   end
 
-  def get_next_available_assignment(experiment_id) do
-    # This could be a bit slow but I hope it will still be efficient enough. The participant can wait.
-    query =
-      Ecto.Query.from(s in ExperimentStatus,
-        where: s.experiment_id == ^experiment_id,
-        where: s.status == :open,
-        # First by chain, then by variant, then by generation, then by player. In this way player gets incremented first and generation second, variant third, and chain last.
-        order_by: [s.chain, s.variant, s.generation, s.player]
-        # limit: 1
-      )
+  def get_and_set_to_in_progress_next_available_assignment(experiment_id) do
+    Repo.transaction(fn ->
+      # This could be a bit slow but I hope it will still be efficient enough. The participant can wait.
+      query =
+        Ecto.Query.from(s in ExperimentStatus,
+          where: s.experiment_id == ^experiment_id,
+          where: s.status == :open,
+          # First by chain, then by variant, then by generation, then by player. In this way player gets incremented first and generation second, variant third, and chain last.
+          order_by: [s.chain, s.variant, s.generation, s.player],
+          limit: 1,
+          lock: "FOR UPDATE"
+        )
 
-    # Will produce nil in the case of empty list of results.
-    List.first(Repo.all(query))
+      # Will produce nil in the case of empty list of results.
+      experiment_status = List.first(Repo.all(query))
+
+      case experiment_status do
+        nil ->
+          nil
+
+        experiment_status ->
+          set_experiment_status_to_in_progress(experiment_status)
+      end
+    end)
+  end
+
+  defp set_experiment_status_to_in_progress(experiment_status) do
+    # Mark this assignment as "in progress", i.e. allocated to this participant.
+    changeset =
+      experiment_status
+      |> ExperimentStatus.changeset(%{status: :in_progress})
+
+    case Repo.update(changeset) do
+      {:ok, updated_experiment_status} ->
+        updated_experiment_status
+
+      {:error, _} ->
+        :error
+    end
   end
 
   # Fetch the keys from the first submission.
@@ -377,7 +403,8 @@ defmodule Magpie.Experiments do
     # previously_accumulated_columns <- experiment.
     with [trial | _] <- results,
          keys <- Map.keys(trial),
-         previously_accumulated_columns <- Map.get(experiment, :experiment_result_columns) || [],
+         previously_accumulated_columns <-
+           Map.get(experiment, :experiment_result_columns) || [],
          new_experiment_result_columns <- merge_columns(keys, previously_accumulated_columns) do
       update_experiment(experiment, %{experiment_result_columns: new_experiment_result_columns})
     else

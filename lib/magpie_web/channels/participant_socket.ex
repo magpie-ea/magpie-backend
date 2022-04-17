@@ -16,7 +16,7 @@ defmodule Magpie.ParticipantSocket do
 
   alias Magpie.Repo
   alias Magpie.Experiments
-  alias Magpie.Experiments.{AssignmentIdentifier, Experiment, ExperimentStatus}
+  alias Magpie.Experiments.{AssignmentIdentifier, Experiment}
 
   require Ecto.Query
   require Logger
@@ -56,40 +56,22 @@ defmodule Magpie.ParticipantSocket do
     with false <- participant_id == "",
          experiment when not is_nil(experiment) <- Repo.get(Experiment, experiment_id),
          true <- experiment.active,
-         # TODO: There probably needs to be a mechanism to ensure that no race condition happens between two participants that join extremely close to each other.
-         next_assignment when not is_nil(next_assignment) <-
-           Experiments.get_next_available_assignment(experiment_id) do
+         {:ok, next_assignment} when not is_nil(next_assignment) <-
+           Experiments.get_and_set_to_in_progress_next_available_assignment(experiment_id) do
       Logger.log(
         :info,
         "participant with id #{participant_id} is joining. They are assigned the assignment #{AssignmentIdentifier.to_string(next_assignment)}"
       )
 
-      # Mark this assignment as "in progress", i.e. allocated to this participant.
-      changeset =
-        next_assignment
-        |> ExperimentStatus.changeset(%{status: :in_progress})
-
-      case Repo.update(changeset) do
-        {:ok, _} ->
-          # The second item to return is the socket. We need to add assigns to the socket before returning it.
-          Logger.log(
-            :info,
-            "The assignment #{AssignmentIdentifier.to_string(next_assignment)} is now updated in DB and is marked as in progress."
-          )
-
-          {:ok,
-           socket
-           |> assign(:participant_id, participant_id)
-           |> assign(
-             :assignment_identifier,
-             AssignmentIdentifier.from_experiment_status(next_assignment)
-           )
-           # Only need to keep track of this so that we know when to start an interactive experiment.
-           |> assign(:num_players, experiment.num_players)}
-
-        {:error, _} ->
-          :error
-      end
+      {:ok,
+       socket
+       |> assign(:participant_id, participant_id)
+       |> assign(
+         :assignment_identifier,
+         AssignmentIdentifier.from_experiment_status(next_assignment)
+       )
+       # Only need to keep track of this so that we know when to start an interactive experiment.
+       |> assign(:num_players, experiment.num_players)}
     else
       # It seems that socket doesn't allow for sending specialized error messages. Just send :error
       _ -> :error

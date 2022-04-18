@@ -1,15 +1,17 @@
 defmodule Magpie.Router do
   use MagpieWeb, :router
   use Plug.ErrorHandler
-  import Plug.BasicAuth
 
-  pipeline :browser do
+  defp basic_auth(conn, _opts) do
     unless Application.get_env(:magpie, :no_basic_auth) do
       username = Application.get_env(:magpie, :authentication)[:username]
       password = Application.get_env(:magpie, :authentication)[:password]
-      plug :basic_auth, username: username, password: password
+      Plug.BasicAuth.basic_auth(conn, username: username, password: password)
     end
+  end
 
+  pipeline :browser do
+    plug(:basic_auth)
     plug(:accepts, ["html"])
     plug(:fetch_session)
     plug(:fetch_flash)

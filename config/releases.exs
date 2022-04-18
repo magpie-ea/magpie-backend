@@ -38,5 +38,29 @@ config :magpie, Magpie.Repo,
 config :logger,
   backends: [:console]
 
+# We don't have a basic auth on the demo app, so we need to allow for this flexibility
+config :magpie,
+       :no_basic_auth,
+       (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+          true
+        else
+          false
+        end)
+
+# Used for basic_auth
+config :magpie, :authentication,
+  username:
+    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+       nil
+     else
+       System.fetch_env!("AUTH_USERNAME")
+     end),
+  password:
+    (if System.get_env("MAGPIE_NO_BASIC_AUTH") == "true" do
+       nil
+     else
+       System.fetch_env!("AUTH_PASSWORD")
+     end)
+
 # This is useful when the app is behind a reverse proxy and you need to actually use the URL shown to the outside by the reverse proxy, e.g. in template generation in web/templates/experiments/edit.html.eex
 config :magpie, :real_url, System.get_env("REAL_URL", System.fetch_env!("HOST"))

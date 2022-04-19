@@ -7,6 +7,8 @@ defmodule Magpie.Router do
       username = Application.get_env(:magpie, :authentication)[:username]
       password = Application.get_env(:magpie, :authentication)[:password]
       Plug.BasicAuth.basic_auth(conn, username: username, password: password)
+    else
+      conn
     end
   end
 

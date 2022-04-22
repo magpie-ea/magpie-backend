@@ -23,9 +23,11 @@
       </p>
 
       <p>
+        For example, if you have different types of conditions, e.g., different starting conditions, use these as variants.
+</p>
 
-      For example, in a speaker-listener experiment, the speaker would be <code>variant-1</code> while the listener would be <code>variant-2</code>.
-
+<p>
+  In an iterated narration experiment, the different variants could be different stories that the first generation of each chain reads as original input.
 </p>
 
 <p>

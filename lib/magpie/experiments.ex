@@ -159,9 +159,10 @@ defmodule Magpie.Experiments do
     two_minutes_ago = DateTime.add(DateTime.utc_now(), -120, :second)
 
     query =
-      from es in ExperimentStatus,
+      from(es in ExperimentStatus,
         where: es.status == :in_progress,
         where: is_nil(es.last_heartbeat) or es.last_heartbeat < ^two_minutes_ago
+      )
 
     Repo.update_all(query, set: [status: :open])
   end
@@ -277,7 +278,7 @@ defmodule Magpie.Experiments do
   """
   def get_all_experiment_results_for_identifier(%AssignmentIdentifier{} = assignment_identifier) do
     query =
-      Ecto.Query.from(er in ExperimentResult,
+      from(er in ExperimentResult,
         where: er.experiment_id == ^assignment_identifier.experiment_id,
         where: er.variant == ^assignment_identifier.variant,
         where: er.chain == ^assignment_identifier.chain,
@@ -300,11 +301,11 @@ defmodule Magpie.Experiments do
     Repo.transaction(fn ->
       # This could be a bit slow but I hope it will still be efficient enough. The participant can wait.
       query =
-        Ecto.Query.from(s in ExperimentStatus,
+        from(s in ExperimentStatus,
           where: s.experiment_id == ^experiment_id,
           where: s.status == :open,
-          # First by chain, then by variant, then by generation, then by player. In this way player gets incremented first and generation second, variant third, and chain last.
-          order_by: [s.chain, s.variant, s.generation, s.player],
+          # Player gets incremented first and variant second, chain third, and generation last.
+          order_by: [s.generation, s.chain, s.variant, s.player],
           limit: 1,
           lock: "FOR UPDATE"
         )

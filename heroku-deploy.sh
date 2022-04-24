@@ -1,7 +1,10 @@
 #!/bin/bash
 
 if [[ -z $1 || -z $2 || -z $3 ]]; then
-		echo "Please provide an application name, a username, and a password for your Heroku deployment"
+		printf "Please provide an application name, a username, and a password for your Heroku deployment.\n
+    Example usage:\n
+    sh ./heroku-deploy.sh [application_name] [username] [password]\n
+    "
 		exit 1
 fi
 

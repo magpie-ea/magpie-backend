@@ -7,30 +7,19 @@ services:
     build: .
     # Map the 4000 of localhost to the 4000 of the container
     ports:
-      - "4000:4000"
+      - 4000:4000
     environment:
-      - MIX_ENV=prod
+      - MAGPIE_DB_HOST=db
+      - MIX_ENV=dev
       - PORT=4000
-      - DATABASE_URL="postgresql://postgres:postgres@localhost:5433/magpie"
-      - MAGPIE_NO_BASIC_AUTH=true
-    volumes:
-      - magpie-app-volume:/app
     # Ensures that the postgres service is started first.
     depends_on:
       - db
   db:
-    ports: 5433:5432
     image: postgres:13
-    volumes:
-      # Just preserve the postgresql data in the local folder.
-      - magpie-db-volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: magpie
-
-volumes:
-  magpie-app-volume:
-    external: true
-  magpie-db-volume:
-    external: true
+      POSTGRES_DB: magpie_dev

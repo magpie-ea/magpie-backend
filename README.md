@@ -177,11 +177,9 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 5. Run `heroku create --buildpack "https://github.com/HashNuke/heroku-buildpack-elixir.git"`
 
-6. Run `heroku buildpacks:add https://github.com/gjaldon/heroku-buildpack-phoenix-static.git`
-
    (Note: Although the command line output tells you to run `git push heroku master`, don't do it yet.)
 
-7. Run `heroku buildpacks:add https://github.com/chrismcg/heroku-buildpack-elixir-mix-release`
+6. Run `heroku buildpacks:add https://github.com/chrismcg/heroku-buildpack-elixir-mix-release`
 
 7. You may want to change the application name instead of using the default name. In that case, run `heroku apps:rename newname`.
 

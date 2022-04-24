@@ -1,5 +1,6 @@
 # Note that this Docker configuration is exclusively for starting up the server on a local machine so that experiments can be run by researchers even without any internet connection. The production web app is NOT deployed via Docker for now.
-version: '3'
+---
+version: '3.9'
 services:
   web:
     # The path that contains Dockerfile
@@ -8,23 +9,25 @@ services:
     ports:
       - "4000:4000"
     environment:
-      - MIX_ENV=dev
+      - MIX_ENV=prod
       - PORT=4000
-      - DOCKER=true
+      - DATABASE_URL="postgresql://postgres:postgres@localhost:5433/magpie"
+      - MAGPIE_NO_BASIC_AUTH=true
     volumes:
       - magpie-app-volume:/app
     # Ensures that the postgres service is started first.
     depends_on:
       - db
   db:
-    image: postgres:10
+    ports: 5433:5432
+    image: postgres:13
     volumes:
       # Just preserve the postgresql data in the local folder.
       - magpie-db-volume:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: magpie
-      POSTGRES_USER: magpie_dev
-      POSTGRES_DB: magpie_dev
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: magpie
 
 volumes:
   magpie-app-volume:

@@ -43,12 +43,7 @@ config :magpie, Magpie.Repo,
   username: "postgres",
   password: "postgres",
   # This is the current workaround. "db" is the host name for the Docker postgres container. "localhost" when you actually run it with your system's postgres instead of through Docker.
-  hostname:
-    (if System.get_env("DOCKER") == "true" do
-       "db"
-     else
-       "localhost"
-     end),
+  hostname: "localhost",
   database: "magpie_dev",
   pool_size: 10
 

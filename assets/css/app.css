@@ -63,7 +63,7 @@
 
 @media (min-width: 1200px) {
   .container {
-    max-width: 1000px;
+    max-width: 1200px;
   }
 }
 
@@ -89,4 +89,15 @@
     height: 4.5rem;
     line-height: 4.5rem;
     padding: 0 2rem;
+}
+
+.experiments-table {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+}
+
+.experiment-name-span {
+    max-width: 200px;
+    display: inline-block;
 }

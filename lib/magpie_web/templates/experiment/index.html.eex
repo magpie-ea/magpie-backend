@@ -4,7 +4,7 @@
 <div><%= link "Manage Custom Records", to: custom_record_path(@conn, :index), class: "button button-clear" %></div>
 </div>
 
-<table>
+<table class="experiments-table">
   <thead>
     <tr>
       <th>ID</th>
@@ -26,7 +26,11 @@
 
       <tr>
         <td><%= experiment.id %></td>
-        <td><%= experiment.name %></td>
+        <td>
+          <span class="experiment-name-span">
+            <%= experiment.name %>
+          </span>
+        </td>
         <td><%= experiment.author %></td>
         <td>
           <%= get_current_submissions(experiment) %>

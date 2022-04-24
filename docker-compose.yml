@@ -15,10 +15,11 @@ services:
     # Ensures that the postgres service is started first.
     depends_on:
       - db
+    volumes:
+      - .:/app
+    stdin_open: true
   db:
     image: postgres:13
-    ports:
-      - 5432:5432
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres

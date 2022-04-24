@@ -24,6 +24,6 @@ EXPOSE 4000
 # This thing apparently isn't working. No idea why.
 RUN mix deps.get \
 && mix deps.compile \
-&& cd assets; npm install; cd ..
+&& mix assets.deploy
 
 CMD ["sh", "./docker-entrypoint.sh"]

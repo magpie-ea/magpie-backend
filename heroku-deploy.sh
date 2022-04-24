@@ -8,8 +8,7 @@ if [[ -z $1 || -z $2 || -z $3 ]]; then
 		exit 1
 fi
 
-heroku create --buildpack "https://github.com/HashNuke/heroku-buildpack-elixir.git"
-heroku buildpacks:add https://github.com/gjaldon/heroku-buildpack-phoenix-static.git
+heroku create --buildpack https://github.com/HashNuke/heroku-buildpack-elixir.git
 heroku buildpacks:add https://github.com/chrismcg/heroku-buildpack-elixir-mix-release
 heroku apps:rename $1
 heroku config:set HOST=${1}.herokuapp.com PORT=443

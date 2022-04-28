@@ -112,12 +112,14 @@ defmodule Magpie.ExperimentView do
     base_url <> path
   end
 
-  def get_socket_url() do
+  def get_home_url() do
     base_url = Application.get_env(:magpie, :real_url, Magpie.Endpoint.url())
     home_path = Magpie.Router.Helpers.page_path(Magpie.Endpoint, :index)
     home_url = base_url <> home_path
+  end
 
-    home_url
+  def get_socket_url() do
+    get_home_url()
     |> String.replace_leading("http", "ws")
     |> Kernel.<>("socket")
   end

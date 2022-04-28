@@ -75,6 +75,6 @@ defmodule Magpie.InteractiveRoomChannelTest do
       )
     end)
 
-    assert_broadcast("start_game", %{})
+    assert_broadcast("start_game", %{"group_label" => _})
   end
 end

@@ -75,7 +75,7 @@ defmodule Magpie.InteractiveRoomChannel do
     # Start the experiment if the predefined number of players is reached.
     # We could also send a presence_state event to the clients. Though this is the easy way to do it.
     if length(existing_participants) >= socket.assigns.num_players do
-      group_label = :crypto.strong_rand_bytes(20)
+      group_label = Base.encode64(:crypto.strong_rand_bytes(20))
       broadcast!(socket, "start_game", %{"group_label" => group_label})
     end
 

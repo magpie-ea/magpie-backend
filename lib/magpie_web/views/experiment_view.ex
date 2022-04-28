@@ -115,7 +115,7 @@ defmodule Magpie.ExperimentView do
   def get_home_url() do
     base_url = Application.get_env(:magpie, :real_url, Magpie.Endpoint.url())
     home_path = Magpie.Router.Helpers.page_path(Magpie.Endpoint, :index)
-    home_url = base_url <> home_path
+    base_url <> home_path
   end
 
   def get_socket_url() do

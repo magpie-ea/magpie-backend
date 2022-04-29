@@ -63,6 +63,4 @@ config :magpie, :authentication,
      end)
 
 # This is useful when you need to show the URL the app is exposed at to the outside, e.g. in template generation in web/templates/experiments/edit.html.eex
-config :magpie,
-       :canonical_url,
-       System.get_env("CANONICAL_URL", Magpie.Router.Helpers.page_url(Magpie.Endpoint, :index))
+config :magpie, :canonical_url, System.get_env("CANONICAL_URL")

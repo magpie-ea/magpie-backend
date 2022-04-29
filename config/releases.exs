@@ -62,5 +62,7 @@ config :magpie, :authentication,
        System.fetch_env!("AUTH_PASSWORD")
      end)
 
-# This is useful when the app is behind a reverse proxy and you need to actually use the URL shown to the outside by the reverse proxy, e.g. in template generation in web/templates/experiments/edit.html.eex
-config :magpie, :real_url, System.get_env("REAL_URL", System.fetch_env!("HOST"))
+# This is useful when you need to show the URL the app is exposed at to the outside, e.g. in template generation in web/templates/experiments/edit.html.eex
+config :magpie,
+       :canonical_url,
+       System.get_env("CANONICAL_URL", Magpie.Router.Helpers.page_url(Magpie.Endpoint, :index))

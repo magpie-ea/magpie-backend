@@ -284,7 +284,8 @@ defmodule Magpie.Experiments do
         where: er.chain == ^assignment_identifier.chain,
         where: er.generation == ^assignment_identifier.generation,
         where: er.player == ^assignment_identifier.player,
-        where: er.is_intermediate == false
+        where: er.is_intermediate == false,
+        order_by: [desc: er.inserted_at]
       )
 
     Repo.all(query)

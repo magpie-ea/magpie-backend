@@ -30,6 +30,11 @@ defmodule Magpie.Experiments.Experiment do
     # Accumulation of columns contained in each result JSON submission.
     field :experiment_result_columns, {:array, :string}
 
+    # slots-related parts
+    field :slot_ordering, {:array, :string}
+    field :slot_statuses, :map
+    field :slot_dependencies, :map
+
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)
 
@@ -53,7 +58,10 @@ defmodule Magpie.Experiments.Experiment do
       :num_generations,
       :num_players,
       :is_dynamic,
-      :is_interactive
+      :is_interactive,
+      :slot_ordering,
+      :slot_statuses,
+      :slot_dependencies
     ])
     |> validate_required([:name, :author])
     |> validate_dynamic_experiment_requirements()

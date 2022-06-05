@@ -59,4 +59,17 @@ defmodule Magpie.Experiments.Slots do
     dependencies = Map.get(slot_dependencies, slot_name)
     Enum.all?(dependencies, fn dependency -> Map.get(slot_statuses, dependency) == "done" end)
   end
+
+  def update_slot_status(
+        %Experiment{
+          slot_ordering: _slot_ordering,
+          slot_statuses: orig_slot_statuses,
+          slot_dependencies: _slot_dependencies
+        } = experiment,
+        slot_name,
+        new_slot_status
+      ) do
+    new_slot_statuses = Map.put(orig_slot_statuses, slot_name, new_slot_status)
+    Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
+  end
 end

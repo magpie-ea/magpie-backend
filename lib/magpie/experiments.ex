@@ -12,7 +12,7 @@ defmodule Magpie.Experiments do
   require Logger
 
   def create_experiment(experiment_params) do
-    changeset_experiment = Experiment.changeset(%Experiment{}, experiment_params)
+    changeset_experiment = Experiment.create_changeset(%Experiment{}, experiment_params)
 
     changeset_experiment
     |> create_experiment_make_multi_with_insert()
@@ -67,7 +67,7 @@ defmodule Magpie.Experiments do
 
   def update_experiment(%Experiment{} = experiment, attrs) do
     experiment
-    |> Experiment.changeset(attrs)
+    |> Experiment.update_changeset(attrs)
     |> Repo.update()
   end
 

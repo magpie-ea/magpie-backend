@@ -34,6 +34,8 @@ defmodule Magpie.Experiments.Experiment do
     field :experiment_result_columns, {:array, :string}
 
     # slots-related parts
+    field :is_ulc, :boolean, default: true
+    field :copy_number, :integer, default: 0
     field :slot_ordering, {:array, :string}
     field :slot_statuses, :map
     field :slot_dependencies, :map
@@ -60,11 +62,13 @@ defmodule Magpie.Experiments.Experiment do
       :slot_ordering,
       :slot_statuses,
       :slot_dependencies,
-      :slot_attempt_counts
+      :slot_attempt_counts,
+      :copy_count
     ])
     |> validate_required([:name, :author])
     |> validate_dynamic_experiment_requirements()
-    |> initialize_slot_related_fields()
+
+    # |> initialize_slot_related_fields()
   end
 
   def create_changeset(struct, params \\ %{}) do
@@ -81,7 +85,8 @@ defmodule Magpie.Experiments.Experiment do
       :num_generations,
       :num_players,
       :is_dynamic,
-      :is_interactive
+      :is_interactive,
+      :is_ulc
     ])
     |> validate_required([:name, :author])
     |> validate_dynamic_experiment_requirements()
@@ -120,24 +125,24 @@ defmodule Magpie.Experiments.Experiment do
   end
 
   # Initialize slot-related fields when the user uses the default variant, chain, generation, player specification we provide.
-  defp initialize_slot_related_fields(changeset) do
-    num_variants = Changeset.get_field(changeset, :num_variants)
-    num_chains = Changeset.get_field(changeset, :num_chains)
-    num_generations = Changeset.get_field(changeset, :num_generations)
-    num_players = Changeset.get_field(changeset, :num_players)
+  # defp initialize_slot_related_fields(changeset) do
+  #   num_variants = Changeset.get_field(changeset, :num_variants)
+  #   num_chains = Changeset.get_field(changeset, :num_chains)
+  #   num_generations = Changeset.get_field(changeset, :num_generations)
+  #   num_players = Changeset.get_field(changeset, :num_players)
 
-    {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts} =
-      Slots.generate_slots_from_ulc_specification(%{
-        num_variants: num_variants,
-        num_chains: num_chains,
-        num_generations: num_generations,
-        num_players: num_players
-      })
+  #   {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts} =
+  #     Slots.update_slots_from_ulc_specification(%{
+  #       num_variants: num_variants,
+  #       num_chains: num_chains,
+  #       num_generations: num_generations,
+  #       num_players: num_players
+  #     })
 
-    changeset
-    |> Changeset.put_change(:slot_ordering, slot_ordering)
-    |> Changeset.put_change(:slot_statuses, slot_statuses)
-    |> Changeset.put_change(:slot_dependencies, slot_dependencies)
-    |> Changeset.put_change(:slot_attempt_counts, slot_attempt_counts)
-  end
+  #   changeset
+  #   |> Changeset.put_change(:slot_ordering, slot_ordering)
+  #   |> Changeset.put_change(:slot_statuses, slot_statuses)
+  #   |> Changeset.put_change(:slot_dependencies, slot_dependencies)
+  #   |> Changeset.put_change(:slot_attempt_counts, slot_attempt_counts)
+  # end
 end

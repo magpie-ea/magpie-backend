@@ -7,18 +7,33 @@ defmodule Magpie.Experiments.Slots do
 
   @doc """
   Since slot_ordering is an ordered list, we only need to find the first entry in the list which is available.
+
+  Note that we'll need to perform an expansion in the situation where the slots are all exhausted.
   """
-  def get_next_free_slot(%Experiment{
-        slot_ordering: slot_ordering,
-        slot_statuses: slot_statuses,
-        slot_dependencies: _slot_dependencies
-      }) do
-    Enum.reduce_while(slot_ordering, %{}, fn slot_name ->
-      case Map.get(slot_statuses, slot_name) do
-        "available" -> {:halt, slot_name}
-        _ -> :cont
-      end
-    end)
+  def get_next_free_slot(
+        %Experiment{
+          slot_ordering: slot_ordering,
+          slot_statuses: slot_statuses,
+          slot_dependencies: _slot_dependencies
+        } = experiment
+      ) do
+    next_slot =
+      Enum.find(slot_ordering, fn slot_name ->
+        Map.get(slot_statuses, slot_name) == "available"
+      end)
+
+    case next_slot do
+      nil ->
+        expanded_experiment = expand_experiment(experiment)
+        get_next_free_slot(expanded_experiment)
+
+      _ ->
+        next_slot
+    end
+  end
+
+  def expand_experiment(%Experiment{is_ulc: true} = experiment) do
+    update_slots_from_ulc_specification(experiment)
   end
 
   @doc """
@@ -60,61 +75,79 @@ defmodule Magpie.Experiments.Slots do
     Enum.all?(dependencies, fn dependency -> Map.get(slot_statuses, dependency) == "done" end)
   end
 
-  def update_slot_status(
+  # def update_slot_status(
+  #       %Experiment{
+  #         slot_ordering: _slot_ordering,
+  #         slot_statuses: orig_slot_statuses,
+  #         slot_dependencies: _slot_dependencies
+  #       } = experiment,
+  #       slot_name,
+  #       new_slot_status
+  #     ) do
+  #   new_slot_statuses = Map.put(orig_slot_statuses, slot_name, new_slot_status)
+  #   Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
+  # end
+
+  def update_slots_from_ulc_specification(
         %Experiment{
-          slot_ordering: _slot_ordering,
-          slot_statuses: orig_slot_statuses,
-          slot_dependencies: _slot_dependencies
-        } = experiment,
-        slot_name,
-        new_slot_status
+          num_variants: num_variants,
+          num_chains: num_chains,
+          num_generations: num_generations,
+          num_players: num_players,
+          slot_ordering: slot_ordering,
+          slot_statuses: slot_statuses,
+          slot_dependencies: slot_dependencies,
+          slot_attempt_counts: slot_attempt_counts,
+          copy_number: copy_number
+        } = experiment
       ) do
-    new_slot_statuses = Map.put(orig_slot_statuses, slot_name, new_slot_status)
-    Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
-  end
-
-  def generate_slots_from_ulc_specification(%{
-        num_variants: num_variants,
-        num_chains: num_chains,
-        num_generations: num_generations,
-        num_players: num_players
-      }) do
     # When we newly create the entries, we're always at the first copy of it all.
-    copy_number = 1
+    updated_copy_number = copy_number + 1
 
-    {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts} =
-      Enum.reduce(1..num_chains, {[], %{}, %{}, %{}}, fn chain, acc ->
-        Enum.reduce(1..num_variants, acc, fn variant, acc ->
-          Enum.reduce(1..num_generations, acc, fn generation, acc ->
-            Enum.reduce(1..num_players, acc, fn player,
-                                                {slot_ordering, slot_statuses, slot_dependencies,
-                                                 slot_attempt_counts} ->
-              slot_name = "#{copy_number}_#{chain}:#{variant}:#{generation}:#{player}"
-              updated_slot_ordering = [slot_name | slot_ordering]
-              updated_slot_statuses = Map.put(slot_statuses, slot_name, "hold")
-              updated_slot_attempt_counts = Map.put(slot_attempt_counts, slot_name, 0)
+    {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies,
+     updated_slot_attempt_counts} =
+      Enum.reduce(
+        1..num_chains,
+        {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts},
+        fn chain, acc ->
+          Enum.reduce(1..num_variants, acc, fn variant, acc ->
+            Enum.reduce(1..num_generations, acc, fn generation, acc ->
+              Enum.reduce(1..num_players, acc, fn player,
+                                                  {slot_ordering, slot_statuses,
+                                                   slot_dependencies, slot_attempt_counts} ->
+                slot_name = "#{updated_copy_number}_#{chain}:#{variant}:#{generation}:#{player}"
+                updated_slot_ordering = slot_ordering ++ [slot_name]
+                updated_slot_statuses = Map.put(slot_statuses, slot_name, "hold")
+                updated_slot_attempt_counts = Map.put(slot_attempt_counts, slot_name, 0)
 
-              dependent_slots =
-                if generation > 1 do
-                  Enum.reduce(1..num_players, [], fn cur_player, acc ->
-                    dependency_slot_name =
-                      "#{copy_number}_#{chain}:#{variant}:#{generation - 1}:#{cur_player}"
+                dependent_slots =
+                  if generation > 1 do
+                    Enum.reduce(1..num_players, [], fn cur_player, acc ->
+                      dependency_slot_name =
+                        "#{updated_copy_number}_#{chain}:#{variant}:#{generation - 1}:#{cur_player}"
 
-                    [dependency_slot_name | acc]
-                  end)
-                else
-                  []
-                end
+                      [dependency_slot_name | acc]
+                    end)
+                  else
+                    []
+                  end
 
-              updated_slot_dependencies = Map.put(slot_dependencies, slot_name, dependent_slots)
+                updated_slot_dependencies = Map.put(slot_dependencies, slot_name, dependent_slots)
 
-              {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies,
-               updated_slot_attempt_counts}
+                {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies,
+                 updated_slot_attempt_counts}
+              end)
             end)
           end)
-        end)
-      end)
+        end
+      )
 
-    {Enum.reverse(slot_ordering), slot_statuses, slot_dependencies, slot_attempt_counts}
+    Experiments.update_experiment(experiment, %{
+      slot_ordering: updated_slot_ordering,
+      slot_statuses: updated_slot_statuses,
+      slot_dependencies: updated_slot_dependencies,
+      slot_attempt_counts: updated_slot_attempt_counts,
+      copy_number: updated_copy_number
+    })
   end
 end

@@ -72,4 +72,46 @@ defmodule Magpie.Experiments.Slots do
     new_slot_statuses = Map.put(orig_slot_statuses, slot_name, new_slot_status)
     Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
   end
+
+  def generate_slots_from_ulc_specification(%{
+        num_variants: num_variants,
+        num_chains: num_chains,
+        num_generations: num_generations,
+        num_players: num_players
+      }) do
+    # When we newly create the entries, we're always at the first copy of it all.
+    copy_number = 1
+
+    {slot_ordering, slot_statuses, slot_dependencies} =
+      Enum.reduce(1..num_chains, {[], %{}, %{}}, fn chain, acc ->
+        Enum.reduce(1..num_variants, acc, fn variant, acc ->
+          Enum.reduce(1..num_generations, acc, fn generation, acc ->
+            Enum.reduce(1..num_players, acc, fn player,
+                                                {slot_ordering, slot_statuses, slot_dependencies} ->
+              slot_name = "#{copy_number}_#{chain}:#{variant}:#{generation}:#{player}"
+              updated_slot_ordering = [slot_name | slot_ordering]
+              updated_slot_statuses = Map.put(slot_statuses, slot_name, "hold")
+
+              dependent_slots =
+                if generation > 1 do
+                  Enum.reduce(1..num_players, [], fn cur_player, acc ->
+                    dependency_slot_name =
+                      "#{copy_number}_#{chain}:#{variant}:#{generation - 1}:#{cur_player}"
+
+                    [dependency_slot_name | acc]
+                  end)
+                else
+                  []
+                end
+
+              updated_slot_dependencies = Map.put(slot_dependencies, slot_name, dependent_slots)
+
+              {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies}
+            end)
+          end)
+        end)
+      end)
+
+    {Enum.reverse(slot_ordering), slot_statuses, slot_dependencies}
+  end
 end

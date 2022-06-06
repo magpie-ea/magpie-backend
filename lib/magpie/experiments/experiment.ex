@@ -5,6 +5,7 @@ defmodule Magpie.Experiments.Experiment do
   use MagpieWeb, :model
 
   alias Ecto.Changeset
+  alias Magpie.Experiments.Slots
 
   schema "experiments" do
     field :name, :string, null: false
@@ -123,41 +124,17 @@ defmodule Magpie.Experiments.Experiment do
     num_generations = Changeset.get_field(changeset, :num_generations)
     num_players = Changeset.get_field(changeset, :num_players)
 
-    # When we newly create the entries, we're always at the first copy of it all.
-    copy_number = 1
+    {slot_ordering, slot_statuses, slot_dependencies} =
+      Slots.generate_slots_from_ulc_specification(%{
+        num_variants: num_variants,
+        num_chains: num_chains,
+        num_generations: num_generations,
+        num_players: num_players
+      })
 
-    slot_ordering = []
-    slot_statuses = %{}
-    slot_dependencies = %{}
-
-    Enum.reduce(1..num_variants, {slot_ordering, slot_statuses, slot_dependencies}, fn variant,
-                                                                                       acc ->
-      Enum.reduce(1..num_chains, acc, fn chain, acc ->
-        Enum.reduce(1..num_generations, acc, fn generation, acc ->
-          Enum.reduce(1..num_players, acc, fn player,
-                                              {slot_ordering, slot_statuses, slot_dependencies} ->
-            slot_name = "#{copy_number}_#{chain}:#{variant}:#{generation}:#{player}"
-            updated_slot_ordering = [slot_name | slot_ordering]
-            updated_slot_statuses = Map.put(slot_statuses, slot_name, "hold")
-
-            dependent_slots =
-              if generation > 1 do
-                Enum.reduce(1..num_players, [], fn cur_player, acc ->
-                  dependency_slot_name =
-                    "#{copy_number}_#{chain}:#{variant}:#{generation - 1}:#{cur_player}"
-
-                  [dependency_slot_name | acc]
-                end)
-              else
-                []
-              end
-
-            updated_slot_dependencies = Map.put(slot_dependencies, slot_name, dependent_slots)
-
-            {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies}
-          end)
-        end)
-      end)
-    end)
+    changeset
+    |> Changeset.put_change(:slot_ordering, slot_ordering)
+    |> Changeset.put_change(:slot_statuses, slot_statuses)
+    |> Changeset.put_change(:slot_dependencies, slot_dependencies)
   end
 end

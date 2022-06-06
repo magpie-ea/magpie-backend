@@ -71,7 +71,26 @@ defmodule Magpie.Experiments.SlotsTest do
         "1_2:2:2:2" => ["1_2:2:1:2", "1_2:2:1:1"]
       }
 
-      assert {slot_ordering, slot_statuses, slot_dependencies} ==
+      slot_attempt_counts = %{
+        "1_1:1:1:1" => 0,
+        "1_1:1:1:2" => 0,
+        "1_1:1:2:1" => 0,
+        "1_1:1:2:2" => 0,
+        "1_1:2:1:1" => 0,
+        "1_1:2:1:2" => 0,
+        "1_1:2:2:1" => 0,
+        "1_1:2:2:2" => 0,
+        "1_2:1:1:1" => 0,
+        "1_2:1:1:2" => 0,
+        "1_2:1:2:1" => 0,
+        "1_2:1:2:2" => 0,
+        "1_2:2:1:1" => 0,
+        "1_2:2:1:2" => 0,
+        "1_2:2:2:1" => 0,
+        "1_2:2:2:2" => 0
+      }
+
+      assert {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts} ==
                Slots.generate_slots_from_ulc_specification(tuple_spec)
     end
   end

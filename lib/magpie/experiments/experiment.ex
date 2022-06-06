@@ -37,6 +37,7 @@ defmodule Magpie.Experiments.Experiment do
     field :slot_ordering, {:array, :string}
     field :slot_statuses, :map
     field :slot_dependencies, :map
+    field :slot_attempt_counts, :map
 
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)
@@ -58,7 +59,8 @@ defmodule Magpie.Experiments.Experiment do
       :experiment_result_columns,
       :slot_ordering,
       :slot_statuses,
-      :slot_dependencies
+      :slot_dependencies,
+      :slot_attempt_counts
     ])
     |> validate_required([:name, :author])
     |> validate_dynamic_experiment_requirements()
@@ -124,7 +126,7 @@ defmodule Magpie.Experiments.Experiment do
     num_generations = Changeset.get_field(changeset, :num_generations)
     num_players = Changeset.get_field(changeset, :num_players)
 
-    {slot_ordering, slot_statuses, slot_dependencies} =
+    {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts} =
       Slots.generate_slots_from_ulc_specification(%{
         num_variants: num_variants,
         num_chains: num_chains,
@@ -136,5 +138,6 @@ defmodule Magpie.Experiments.Experiment do
     |> Changeset.put_change(:slot_ordering, slot_ordering)
     |> Changeset.put_change(:slot_statuses, slot_statuses)
     |> Changeset.put_change(:slot_dependencies, slot_dependencies)
+    |> Changeset.put_change(:slot_attempt_counts, slot_attempt_counts)
   end
 end

@@ -13,7 +13,7 @@ defmodule Magpie.ExperimentController do
   Page to create an experiment record
   """
   def new(conn, _params) do
-    changeset = Experiment.changeset(%Experiment{})
+    changeset = Experiment.create_changeset(%Experiment{})
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -38,13 +38,13 @@ defmodule Magpie.ExperimentController do
 
       _ ->
         conn
-        |> render("new.html", changeset: Experiment.changeset(%Experiment{}))
+        |> render("new.html", changeset: Experiment.create_changeset(%Experiment{}))
     end
   end
 
   def edit(conn, %{"id" => id}) do
     experiment = Experiments.get_experiment!(id)
-    changeset = Experiment.changeset(experiment)
+    changeset = Experiment.update_changeset(experiment)
     render(conn, "edit.html", experiment: experiment, changeset: changeset)
   end
 

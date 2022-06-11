@@ -4,9 +4,6 @@ defmodule Magpie.Experiments.Experiment do
   """
   use MagpieWeb, :model
 
-  alias Ecto.Changeset
-  alias Magpie.Experiments.Slots
-
   schema "experiments" do
     field :name, :string, null: false
     field :author, :string, null: false
@@ -66,9 +63,6 @@ defmodule Magpie.Experiments.Experiment do
       :copy_count
     ])
     |> validate_required([:name, :author])
-    |> validate_dynamic_experiment_requirements()
-
-    # |> initialize_slot_related_fields()
   end
 
   def create_changeset(struct, params \\ %{}) do
@@ -90,7 +84,6 @@ defmodule Magpie.Experiments.Experiment do
     ])
     |> validate_required([:name, :author])
     |> validate_dynamic_experiment_requirements()
-    |> initialize_slot_related_fields()
   end
 
   # If the experiment is dynamic, those three numbers must be present.
@@ -123,26 +116,4 @@ defmodule Magpie.Experiments.Experiment do
       end
     end
   end
-
-  # Initialize slot-related fields when the user uses the default variant, chain, generation, player specification we provide.
-  # defp initialize_slot_related_fields(changeset) do
-  #   num_variants = Changeset.get_field(changeset, :num_variants)
-  #   num_chains = Changeset.get_field(changeset, :num_chains)
-  #   num_generations = Changeset.get_field(changeset, :num_generations)
-  #   num_players = Changeset.get_field(changeset, :num_players)
-
-  #   {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts} =
-  #     Slots.update_slots_from_ulc_specification(%{
-  #       num_variants: num_variants,
-  #       num_chains: num_chains,
-  #       num_generations: num_generations,
-  #       num_players: num_players
-  #     })
-
-  #   changeset
-  #   |> Changeset.put_change(:slot_ordering, slot_ordering)
-  #   |> Changeset.put_change(:slot_statuses, slot_statuses)
-  #   |> Changeset.put_change(:slot_dependencies, slot_dependencies)
-  #   |> Changeset.put_change(:slot_attempt_counts, slot_attempt_counts)
-  # end
 end

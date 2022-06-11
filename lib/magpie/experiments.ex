@@ -15,41 +15,43 @@ defmodule Magpie.Experiments do
     changeset_experiment = Experiment.create_changeset(%Experiment{}, experiment_params)
 
     changeset_experiment
-    |> create_experiment_make_multi_with_insert()
-    |> Repo.transaction()
+    |> Repo.insert()
+
+    # |> create_experiment_make_multi_with_insert()
+    # |> Repo.transaction()
   end
 
-  defp create_experiment_make_multi_with_insert(changeset_experiment) do
-    Multi.new()
-    |> Multi.insert(:experiment, changeset_experiment)
-    |> Multi.merge(fn %{experiment: experiment} ->
-      # TODO: Of course we should be able to use insert_all... But this could be left as a further improvement I guess.
-      Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
-        Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
-          Enum.reduce(1..experiment.num_generations, multi, fn generation, multi ->
-            Enum.reduce(1..experiment.num_players, multi, fn player, multi ->
-              params = %{
-                experiment_id: experiment.id,
-                variant: variant,
-                chain: chain,
-                generation: generation,
-                player: player,
-                status: 0
-              }
+  # defp create_experiment_make_multi_with_insert(changeset_experiment) do
+  #   Multi.new()
+  #   |> Multi.insert(:experiment, changeset_experiment)
+  #   |> Multi.merge(fn %{experiment: experiment} ->
+  #     # TODO: Of course we should be able to use insert_all... But this could be left as a further improvement I guess.
+  #     Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
+  #       Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
+  #         Enum.reduce(1..experiment.num_generations, multi, fn generation, multi ->
+  #           Enum.reduce(1..experiment.num_players, multi, fn player, multi ->
+  #             params = %{
+  #               experiment_id: experiment.id,
+  #               variant: variant,
+  #               chain: chain,
+  #               generation: generation,
+  #               player: player,
+  #               status: 0
+  #             }
 
-              changeset = ExperimentStatus.changeset(%ExperimentStatus{}, params)
+  #             changeset = ExperimentStatus.changeset(%ExperimentStatus{}, params)
 
-              multi
-              |> Multi.insert(
-                String.to_atom("experiment_status_#{chain}_#{variant}_#{generation}_#{player}"),
-                changeset
-              )
-            end)
-          end)
-        end)
-      end)
-    end)
-  end
+  #             multi
+  #             |> Multi.insert(
+  #               String.to_atom("experiment_status_#{chain}_#{variant}_#{generation}_#{player}"),
+  #               changeset
+  #             )
+  #           end)
+  #         end)
+  #       end)
+  #     end)
+  #   end)
+  # end
 
   def list_experiments do
     Experiment

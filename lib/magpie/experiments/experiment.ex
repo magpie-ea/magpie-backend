@@ -60,7 +60,7 @@ defmodule Magpie.Experiments.Experiment do
       :slot_statuses,
       :slot_dependencies,
       :slot_attempt_counts,
-      :copy_count
+      :copy_number
     ])
     |> validate_required([:name, :author])
   end
@@ -84,6 +84,7 @@ defmodule Magpie.Experiments.Experiment do
     ])
     |> validate_required([:name, :author])
     |> validate_dynamic_experiment_requirements()
+    |> maybe_initialize_slot_fields()
   end
 
   # If the experiment is dynamic, those three numbers must be present.
@@ -114,6 +115,16 @@ defmodule Magpie.Experiments.Experiment do
       else
         changeset
       end
+    end
+  end
+
+  defp maybe_initialize_slot_fields(changeset) do
+    if Ecto.Changeset.get_field(changeset, :is_dynamic) do
+      changeset
+      |> put_change(:slot_ordering, [])
+      |> put_change(:slot_statuses, %{})
+      |> put_change(:slot_dependencies, %{})
+      |> put_change(:slot_attempt_counts, %{})
     end
   end
 end

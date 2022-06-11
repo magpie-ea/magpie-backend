@@ -9,14 +9,14 @@ defmodule Magpie.Experiments.Slots do
   Since slot_ordering is an ordered list, we only need to find the first entry in the list which is available.
 
   Note that we'll need to perform an expansion in the situation where the slots are all exhausted.
+
+  Need to call these functions in a transaction. Otherwise some other process might try to call free_slots and expand_experiment at the same time.
   """
-  def get_next_free_slot(
-        %Experiment{
-          slot_ordering: slot_ordering,
-          slot_statuses: slot_statuses,
-          slot_dependencies: _slot_dependencies
-        } = experiment
-      ) do
+  def get_next_free_slot(%Experiment{} = experiment) do
+    # Actually, we may need to always call `free_slots/1` at the beginning of this function call. Let's see.
+    {:ok, %Experiment{slot_ordering: slot_ordering, slot_statuses: slot_statuses} = experiment} =
+      free_slots(experiment)
+
     next_slot =
       Enum.find(slot_ordering, fn slot_name ->
         Map.get(slot_statuses, slot_name) == "available"
@@ -24,7 +24,7 @@ defmodule Magpie.Experiments.Slots do
 
     case next_slot do
       nil ->
-        expanded_experiment = expand_experiment(experiment)
+        {:ok, expanded_experiment} = expand_experiment(experiment)
         get_next_free_slot(expanded_experiment)
 
       _ ->
@@ -32,7 +32,7 @@ defmodule Magpie.Experiments.Slots do
     end
   end
 
-  def expand_experiment(%Experiment{is_ulc: true} = experiment) do
+  defp expand_experiment(%Experiment{is_ulc: true} = experiment) do
     update_slots_from_ulc_specification(experiment)
   end
 
@@ -55,7 +55,7 @@ defmodule Magpie.Experiments.Slots do
     # Do everything in one pass. Should be more efficient!
     new_slot_statuses =
       Enum.reduce(orig_slot_statuses, orig_slot_statuses, fn
-        {slot_name, slot_status} ->
+        {slot_name, slot_status}, orig_slot_statuses ->
           if slot_status == "hold" && all_dependencies_done?(slot_name, experiment) do
             Map.put(orig_slot_statuses, slot_name, "available")
           else
@@ -63,7 +63,7 @@ defmodule Magpie.Experiments.Slots do
           end
       end)
 
-    Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
+    Experiments.update_experiment(experiment, %{slot_statuses: new_slot_statuses})
   end
 
   defp all_dependencies_done?(slot_name, %Experiment{

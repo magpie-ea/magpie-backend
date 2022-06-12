@@ -669,5 +669,185 @@ defmodule Magpie.Experiments.SlotsTest do
                slot_attempt_counts: ^expected_slot_attempt_counts
              } = Experiments.get_experiment!(experiment.id)
     end
+
+    test "expands the slots correctly for plain experiments" do
+      starting_slot_ordering = [
+        "1_1:1:1:1",
+        "1_2:1:1:1",
+        "1_3:1:1:1",
+        "1_4:1:1:1",
+        "1_5:1:1:1",
+        "1_6:1:1:1",
+        "1_7:1:1:1",
+        "1_8:1:1:1",
+        "1_9:1:1:1",
+        "1_10:1:1:1"
+      ]
+
+      starting_slot_statuses = %{
+        "1_1:1:1:1" => "in_progress",
+        "1_2:1:1:1" => "in_progress",
+        "1_3:1:1:1" => "in_progress",
+        "1_4:1:1:1" => "in_progress",
+        "1_5:1:1:1" => "in_progress",
+        "1_6:1:1:1" => "in_progress",
+        "1_7:1:1:1" => "in_progress",
+        "1_8:1:1:1" => "in_progress",
+        "1_9:1:1:1" => "in_progress",
+        "1_10:1:1:1" => "in_progress"
+      }
+
+      starting_slot_dependencies = %{
+        "1_1:1:1:1" => [],
+        "1_2:1:1:1" => [],
+        "1_3:1:1:1" => [],
+        "1_4:1:1:1" => [],
+        "1_5:1:1:1" => [],
+        "1_6:1:1:1" => [],
+        "1_7:1:1:1" => [],
+        "1_8:1:1:1" => [],
+        "1_9:1:1:1" => [],
+        "1_10:1:1:1" => []
+      }
+
+      starting_slot_attempt_counts = %{
+        "1_1:1:1:1" => 1,
+        "1_2:1:1:1" => 1,
+        "1_3:1:1:1" => 1,
+        "1_4:1:1:1" => 1,
+        "1_5:1:1:1" => 1,
+        "1_6:1:1:1" => 1,
+        "1_7:1:1:1" => 1,
+        "1_8:1:1:1" => 1,
+        "1_9:1:1:1" => 1,
+        "1_10:1:1:1" => 1
+      }
+
+      expected_slot_ordering = [
+        "1_1:1:1:1",
+        "1_2:1:1:1",
+        "1_3:1:1:1",
+        "1_4:1:1:1",
+        "1_5:1:1:1",
+        "1_6:1:1:1",
+        "1_7:1:1:1",
+        "1_8:1:1:1",
+        "1_9:1:1:1",
+        "1_10:1:1:1",
+        "2_1:1:1:1",
+        "2_2:1:1:1",
+        "2_3:1:1:1",
+        "2_4:1:1:1",
+        "2_5:1:1:1",
+        "2_6:1:1:1",
+        "2_7:1:1:1",
+        "2_8:1:1:1",
+        "2_9:1:1:1",
+        "2_10:1:1:1"
+      ]
+
+      expected_slot_statuses = %{
+        "1_1:1:1:1" => "in_progress",
+        "1_2:1:1:1" => "in_progress",
+        "1_3:1:1:1" => "in_progress",
+        "1_4:1:1:1" => "in_progress",
+        "1_5:1:1:1" => "in_progress",
+        "1_6:1:1:1" => "in_progress",
+        "1_7:1:1:1" => "in_progress",
+        "1_8:1:1:1" => "in_progress",
+        "1_9:1:1:1" => "in_progress",
+        "1_10:1:1:1" => "in_progress",
+        "2_1:1:1:1" => "in_progress",
+        "2_2:1:1:1" => "available",
+        "2_3:1:1:1" => "available",
+        "2_4:1:1:1" => "available",
+        "2_5:1:1:1" => "available",
+        "2_6:1:1:1" => "available",
+        "2_7:1:1:1" => "available",
+        "2_8:1:1:1" => "available",
+        "2_9:1:1:1" => "available",
+        "2_10:1:1:1" => "available"
+      }
+
+      expected_slot_dependencies = %{
+        "1_1:1:1:1" => [],
+        "1_2:1:1:1" => [],
+        "1_3:1:1:1" => [],
+        "1_4:1:1:1" => [],
+        "1_5:1:1:1" => [],
+        "1_6:1:1:1" => [],
+        "1_7:1:1:1" => [],
+        "1_8:1:1:1" => [],
+        "1_9:1:1:1" => [],
+        "1_10:1:1:1" => [],
+        "2_1:1:1:1" => [],
+        "2_2:1:1:1" => [],
+        "2_3:1:1:1" => [],
+        "2_4:1:1:1" => [],
+        "2_5:1:1:1" => [],
+        "2_6:1:1:1" => [],
+        "2_7:1:1:1" => [],
+        "2_8:1:1:1" => [],
+        "2_9:1:1:1" => [],
+        "2_10:1:1:1" => []
+      }
+
+      expected_slot_attempt_counts = %{
+        "1_1:1:1:1" => 1,
+        "1_2:1:1:1" => 1,
+        "1_3:1:1:1" => 1,
+        "1_4:1:1:1" => 1,
+        "1_5:1:1:1" => 1,
+        "1_6:1:1:1" => 1,
+        "1_7:1:1:1" => 1,
+        "1_8:1:1:1" => 1,
+        "1_9:1:1:1" => 1,
+        "1_10:1:1:1" => 1,
+        "2_1:1:1:1" => 1,
+        "2_2:1:1:1" => 0,
+        "2_3:1:1:1" => 0,
+        "2_4:1:1:1" => 0,
+        "2_5:1:1:1" => 0,
+        "2_6:1:1:1" => 0,
+        "2_7:1:1:1" => 0,
+        "2_8:1:1:1" => 0,
+        "2_9:1:1:1" => 0,
+        "2_10:1:1:1" => 0
+      }
+
+      {:ok, experiment} =
+        Experiments.create_experiment(%{
+          name: "some name",
+          author: "some author",
+          description: "some description",
+          active: true,
+          is_dynamic: true,
+          num_variants: 1,
+          num_chains: 10,
+          num_generations: 1,
+          num_players: 1
+        })
+
+      {:ok, experiment} =
+        Experiments.update_experiment(
+          experiment,
+          %{
+            slot_statuses: starting_slot_statuses,
+            slot_ordering: starting_slot_ordering,
+            slot_dependencies: starting_slot_dependencies,
+            slot_attempt_counts: starting_slot_attempt_counts,
+            copy_number: 1
+          }
+        )
+
+      assert {:ok, "2_1:1:1:1"} == Slots.get_and_set_to_in_progress_next_free_slot(experiment)
+
+      assert %Experiment{
+               slot_ordering: ^expected_slot_ordering,
+               slot_statuses: ^expected_slot_statuses,
+               slot_dependencies: ^expected_slot_dependencies,
+               slot_attempt_counts: ^expected_slot_attempt_counts
+             } = Experiments.get_experiment!(experiment.id)
+    end
   end
 end

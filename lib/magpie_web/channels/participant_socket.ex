@@ -16,7 +16,7 @@ defmodule Magpie.ParticipantSocket do
 
   alias Magpie.Repo
   alias Magpie.Experiments
-  alias Magpie.Experiments.{AssignmentIdentifier, Experiment}
+  alias Magpie.Experiments.{AssignmentIdentifier, Experiment, Slots}
 
   require Ecto.Query
   require Logger
@@ -56,11 +56,11 @@ defmodule Magpie.ParticipantSocket do
     with false <- participant_id == "",
          experiment when not is_nil(experiment) <- Repo.get(Experiment, experiment_id),
          true <- experiment.active,
-         {:ok, next_assignment} when not is_nil(next_assignment) <-
-           Experiments.get_and_set_to_in_progress_next_available_assignment(experiment_id) do
+         {:ok, next_slot} when not is_nil(next_slot) <-
+           Slots.get_and_set_to_in_progress_next_free_slot(experiment) do
       Logger.log(
         :info,
-        "participant with id #{participant_id} is joining. They are assigned the assignment #{AssignmentIdentifier.to_string(next_assignment)}"
+        "participant with id #{participant_id} is joining. They are assigned the assignment #{next_slot}"
       )
 
       {:ok,
@@ -68,7 +68,7 @@ defmodule Magpie.ParticipantSocket do
        |> assign(:participant_id, participant_id)
        |> assign(
          :assignment_identifier,
-         AssignmentIdentifier.from_experiment_status(next_assignment)
+         next_slot
        )
        # Only need to keep track of this so that we know when to start an interactive experiment.
        |> assign(:num_players, experiment.num_players)}

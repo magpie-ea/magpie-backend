@@ -4,6 +4,7 @@ defmodule Magpie.Experiments.Slots do
   """
   alias Magpie.Experiments
   alias Magpie.Experiments.Experiment
+  alias Magpie.Repo
 
   @doc """
   Since slot_ordering is an ordered list, we only need to find the first entry in the list which is available.
@@ -12,24 +13,39 @@ defmodule Magpie.Experiments.Slots do
 
   Need to call these functions in a transaction. Otherwise some other process might try to call free_slots and expand_experiment at the same time.
   """
-  def get_next_free_slot(%Experiment{} = experiment) do
-    # Actually, we may need to always call `free_slots/1` at the beginning of this function call. Let's see.
-    {:ok, %Experiment{slot_ordering: slot_ordering, slot_statuses: slot_statuses} = experiment} =
-      free_slots(experiment)
+  def get_and_set_to_in_progress_next_free_slot(%Experiment{} = experiment) do
+    # Actually, we may need to always call `free_slots/1` at the beginning of this function call.
+    result =
+      Repo.transaction(fn ->
+        {:ok,
+         %Experiment{slot_ordering: slot_ordering, slot_statuses: slot_statuses} =
+           freed_experiment} = free_slots(experiment)
 
-    next_slot =
-      Enum.find(slot_ordering, fn slot_name ->
-        Map.get(slot_statuses, slot_name) == "available"
+        next_slot =
+          Enum.find(slot_ordering, fn slot_name ->
+            Map.get(slot_statuses, slot_name) == "available"
+          end)
+
+        case next_slot do
+          nil ->
+            {:ok, expanded_experiment} = expand_experiment(freed_experiment)
+            # This could result in a transaction within a transaction...
+            # which should be fine, but we'll need to take care of unwrapping the return value?
+            # Weird, ha.
+            {:ok, next_slot} = get_and_set_to_in_progress_next_free_slot(expanded_experiment)
+            next_slot
+
+          _ ->
+            updated_statuses = Map.put(slot_statuses, next_slot, "in_progress")
+
+            {:ok, _} =
+              Experiments.update_experiment(freed_experiment, %{slot_statuses: updated_statuses})
+
+            next_slot
+        end
       end)
 
-    case next_slot do
-      nil ->
-        {:ok, expanded_experiment} = expand_experiment(experiment)
-        get_next_free_slot(expanded_experiment)
-
-      _ ->
-        next_slot
-    end
+    result
   end
 
   defp expand_experiment(%Experiment{is_ulc: true} = experiment) do

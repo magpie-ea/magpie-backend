@@ -290,8 +290,27 @@ defmodule Magpie.Experiments.SlotsTest do
     end
   end
 
-  describe "get_next_free_slot/1" do
-    test "get the next free slot according to slot_ordering" do
+  describe "get_and_set_to_in_progress_next_free_slot/1" do
+    test "get and set the status of the next free slot according to slot_ordering" do
+      expected_slot_statuses = %{
+        "1_1:1:1:1" => "in_progress",
+        "1_1:1:1:2" => "available",
+        "1_1:1:2:1" => "hold",
+        "1_1:1:2:2" => "hold",
+        "1_1:2:1:1" => "available",
+        "1_1:2:1:2" => "available",
+        "1_1:2:2:1" => "hold",
+        "1_1:2:2:2" => "hold",
+        "1_2:1:1:1" => "available",
+        "1_2:1:1:2" => "available",
+        "1_2:1:2:1" => "hold",
+        "1_2:1:2:2" => "hold",
+        "1_2:2:1:1" => "available",
+        "1_2:2:1:2" => "available",
+        "1_2:2:2:1" => "hold",
+        "1_2:2:2:2" => "hold"
+      }
+
       {:ok, experiment} =
         Experiments.create_experiment(%{
           name: "some name",
@@ -307,7 +326,12 @@ defmodule Magpie.Experiments.SlotsTest do
 
       {:ok, updated_experiment} = Slots.update_slots_from_ulc_specification(experiment)
 
-      assert "1_1:1:1:1" == Slots.get_next_free_slot(updated_experiment)
+      assert {:ok, "1_1:1:1:1"} ==
+               Slots.get_and_set_to_in_progress_next_free_slot(updated_experiment)
+
+      assert %Experiment{
+               slot_statuses: ^expected_slot_statuses
+             } = Experiments.get_experiment!(experiment.id)
     end
 
     test "expands the slots correctly" do
@@ -439,7 +463,7 @@ defmodule Magpie.Experiments.SlotsTest do
         "1_2:2:1:2" => "done",
         "1_2:2:2:1" => "done",
         "1_2:2:2:2" => "done",
-        "2_1:1:1:1" => "available",
+        "2_1:1:1:1" => "in_progress",
         "2_1:1:1:2" => "available",
         "2_1:1:2:1" => "hold",
         "2_1:1:2:2" => "hold",
@@ -552,7 +576,7 @@ defmodule Magpie.Experiments.SlotsTest do
           }
         )
 
-      assert "2_1:1:1:1" == Slots.get_next_free_slot(experiment)
+      assert {:ok, "2_1:1:1:1"} == Slots.get_and_set_to_in_progress_next_free_slot(experiment)
 
       assert %Experiment{
                slot_ordering: ^expected_slot_ordering,

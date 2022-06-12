@@ -533,7 +533,7 @@ defmodule Magpie.Experiments.SlotsTest do
         "1_2:2:1:2" => 1,
         "1_2:2:2:1" => 1,
         "1_2:2:2:2" => 1,
-        "2_1:1:1:1" => 0,
+        "2_1:1:1:1" => 1,
         "2_1:1:1:2" => 0,
         "2_1:1:2:1" => 0,
         "2_1:1:2:2" => 0,
@@ -561,6 +561,90 @@ defmodule Magpie.Experiments.SlotsTest do
           num_variants: 2,
           num_chains: 2,
           num_generations: 2,
+          num_players: 2
+        })
+
+      {:ok, experiment} =
+        Experiments.update_experiment(
+          experiment,
+          %{
+            slot_statuses: starting_slot_statuses,
+            slot_ordering: starting_slot_ordering,
+            slot_dependencies: starting_slot_dependencies,
+            slot_attempt_counts: starting_slot_attempt_counts,
+            copy_number: 1
+          }
+        )
+
+      assert {:ok, "2_1:1:1:1"} == Slots.get_and_set_to_in_progress_next_free_slot(experiment)
+
+      assert %Experiment{
+               slot_ordering: ^expected_slot_ordering,
+               slot_statuses: ^expected_slot_statuses,
+               slot_dependencies: ^expected_slot_dependencies,
+               slot_attempt_counts: ^expected_slot_attempt_counts
+             } = Experiments.get_experiment!(experiment.id)
+    end
+
+    test "expands the slots correctly for interactive-only experiments" do
+      starting_slot_ordering = [
+        "1_1:1:1:1",
+        "1_1:1:1:2"
+      ]
+
+      starting_slot_statuses = %{
+        "1_1:1:1:1" => "in_progress",
+        "1_1:1:1:2" => "in_progress"
+      }
+
+      starting_slot_dependencies = %{
+        "1_1:1:1:1" => [],
+        "1_1:1:1:2" => []
+      }
+
+      starting_slot_attempt_counts = %{
+        "1_1:1:1:1" => 1,
+        "1_1:1:1:2" => 1
+      }
+
+      expected_slot_ordering = [
+        "1_1:1:1:1",
+        "1_1:1:1:2",
+        "2_1:1:1:1",
+        "2_1:1:1:2"
+      ]
+
+      expected_slot_statuses = %{
+        "1_1:1:1:1" => "in_progress",
+        "1_1:1:1:2" => "in_progress",
+        "2_1:1:1:1" => "in_progress",
+        "2_1:1:1:2" => "available"
+      }
+
+      expected_slot_dependencies = %{
+        "1_1:1:1:1" => [],
+        "1_1:1:1:2" => [],
+        "2_1:1:1:1" => [],
+        "2_1:1:1:2" => []
+      }
+
+      expected_slot_attempt_counts = %{
+        "1_1:1:1:1" => 1,
+        "1_1:1:1:2" => 1,
+        "2_1:1:1:1" => 1,
+        "2_1:1:1:2" => 0
+      }
+
+      {:ok, experiment} =
+        Experiments.create_experiment(%{
+          name: "some name",
+          author: "some author",
+          description: "some description",
+          active: true,
+          is_dynamic: true,
+          num_variants: 1,
+          num_chains: 1,
+          num_generations: 1,
           num_players: 2
         })
 

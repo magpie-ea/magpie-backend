@@ -18,8 +18,11 @@ defmodule Magpie.Experiments.Slots do
     result =
       Repo.transaction(fn ->
         {:ok,
-         %Experiment{slot_ordering: slot_ordering, slot_statuses: slot_statuses} =
-           freed_experiment} = free_slots(experiment)
+         %Experiment{
+           slot_ordering: slot_ordering,
+           slot_statuses: slot_statuses,
+           slot_attempt_counts: slot_attempt_counts
+         } = freed_experiment} = free_slots(experiment)
 
         next_slot =
           Enum.find(slot_ordering, fn slot_name ->
@@ -38,8 +41,16 @@ defmodule Magpie.Experiments.Slots do
           _ ->
             updated_statuses = Map.put(slot_statuses, next_slot, "in_progress")
 
+            updated_attempt_counts =
+              Map.update!(slot_attempt_counts, next_slot, fn previous_attempt_count ->
+                previous_attempt_count + 1
+              end)
+
             {:ok, _} =
-              Experiments.update_experiment(freed_experiment, %{slot_statuses: updated_statuses})
+              Experiments.update_experiment(freed_experiment, %{
+                slot_statuses: updated_statuses,
+                slot_attempt_counts: updated_attempt_counts
+              })
 
             next_slot
         end

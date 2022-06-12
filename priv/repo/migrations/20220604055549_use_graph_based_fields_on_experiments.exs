@@ -3,6 +3,9 @@ defmodule Magpie.Repo.Migrations.UseGraphBasedFieldsOnExperiments do
 
   def change do
     alter table(:experiments) do
+      remove :is_dynamic
+      remove :is_interactive
+
       add :is_ulc, :boolean, default: true
       add :copy_number, :integer, default: 0
       add :slot_ordering, {:array, :string}

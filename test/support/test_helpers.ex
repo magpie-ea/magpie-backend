@@ -9,7 +9,6 @@ defmodule Magpie.TestHelpers do
     description: "some description",
     active: true,
     dynamic_retrieval_keys: ["key1", "key2", "key3"],
-    is_dynamic: true,
     num_variants: 2,
     num_chains: 5,
     num_generations: 3
@@ -19,8 +18,7 @@ defmodule Magpie.TestHelpers do
     name: "some name",
     author: "some author",
     description: "some description",
-    active: true,
-    is_dynamic: false
+    active: true
   }
 
   @custom_record_attrs %{

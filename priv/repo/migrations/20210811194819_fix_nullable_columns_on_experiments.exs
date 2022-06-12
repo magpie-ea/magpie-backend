@@ -6,41 +6,59 @@ defmodule Magpie.Repo.Migrations.FixNullableColumnsOnExperiments do
   alias Magpie.Repo
 
   def up do
-    non_dynamic_experiments_query =
-      from e in Experiment,
-      where: e.is_dynamic == false
+    num_players_null_experiments_query =
+      from(e in Experiment,
+        where: is_nil(e.num_players)
+      )
 
-    Repo.update_all(non_dynamic_experiments_query, set: [num_variants: 1, num_chains: 1, num_generations: 1])
+    Repo.update_all(num_players_null_experiments_query, set: [num_players: 1])
 
-    non_dynamic_experiment_results_query =
-      from er in ExperimentResult,
-      join: e in Experiment,
-      where: e.is_dynamic == false,
-      where: er.experiment_id == e.id
+    num_chains_null_experiments_query =
+      from(e in Experiment,
+        where: is_nil(e.num_chains)
+      )
 
-    Repo.update_all(non_dynamic_experiment_results_query, set: [variant: 1, chain: 1, generation: 1, player: 1])
+    Repo.update_all(num_chains_null_experiments_query, set: [num_chains: 1])
+
+    num_variants_null_experiments_query =
+      from(e in Experiment,
+        where: is_nil(e.num_variants)
+      )
+
+    Repo.update_all(num_variants_null_experiments_query, set: [num_variants: 1])
+
+    num_generations_null_experiments_query =
+      from(e in Experiment,
+        where: is_nil(e.num_generations)
+      )
+
+    Repo.update_all(num_generations_null_experiments_query, set: [num_generations: 1])
 
     player_null_experiment_results_query =
-      from er in ExperimentResult,
-      where: is_nil(er.player)
+      from(er in ExperimentResult,
+        where: is_nil(er.player)
+      )
 
     Repo.update_all(player_null_experiment_results_query, set: [player: 1])
 
     variant_null_experiment_results_query =
-      from er in ExperimentResult,
-      where: is_nil(er.variant)
+      from(er in ExperimentResult,
+        where: is_nil(er.variant)
+      )
 
     Repo.update_all(variant_null_experiment_results_query, set: [variant: 1])
 
     chain_null_experiment_results_query =
-      from er in ExperimentResult,
-      where: is_nil(er.chain)
+      from(er in ExperimentResult,
+        where: is_nil(er.chain)
+      )
 
     Repo.update_all(chain_null_experiment_results_query, set: [chain: 1])
 
     generation_null_experiment_results_query =
-      from er in ExperimentResult,
-      where: is_nil(er.generation)
+      from(er in ExperimentResult,
+        where: is_nil(er.generation)
+      )
 
     Repo.update_all(generation_null_experiment_results_query, set: [generation: 1])
 

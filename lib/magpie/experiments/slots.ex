@@ -142,7 +142,7 @@ defmodule Magpie.Experiments.Slots do
               Enum.reduce(1..num_players, acc, fn player,
                                                   {slot_ordering, slot_statuses,
                                                    slot_dependencies, slot_attempt_counts} ->
-                slot_name = "#{updated_copy_number}_#{chain}:#{variant}:#{generation}:#{player}"
+                slot_name = "#{updated_copy_number}_#{chain}:#{variant}:#{generation}_#{player}"
                 updated_slot_ordering = slot_ordering ++ [slot_name]
                 updated_slot_statuses = Map.put(slot_statuses, slot_name, "hold")
                 updated_slot_attempt_counts = Map.put(slot_attempt_counts, slot_name, 0)
@@ -151,7 +151,7 @@ defmodule Magpie.Experiments.Slots do
                   if generation > 1 do
                     Enum.reduce(1..num_players, [], fn cur_player, acc ->
                       dependency_slot_name =
-                        "#{updated_copy_number}_#{chain}:#{variant}:#{generation - 1}:#{cur_player}"
+                        "#{updated_copy_number}_#{chain}:#{variant}:#{generation - 1}_#{cur_player}"
 
                       [dependency_slot_name | acc]
                     end)

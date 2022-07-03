@@ -2,21 +2,12 @@ defmodule Magpie.ParticipantSocket do
   @moduledoc """
   The socket that every experiment participant connects to.
 
-  At the moment, all the channels in Magpie are based on this socket.
-
-  Flow of a complex experiment:
-  1. The participant connects with this socket
-  2. If the experiment is interactive, the participant joins InteractiveRoomChannel under the room `experiment_id:chain:variant:generation`.
-    Once the number of participants is reached, the experiment starts.
-  3. If the experiment is dynamic, the participant joins IteratedLobbyChannel under the room `experiment_id:chain:variant:generation`. Note that the assignment identifier for the lobby does NOT refer to the assignment identifier of the participant themselves, but rather, the assignment identifier on which the participant intends to wait for results to become available.
-    Once the result from the experiment `experiment_id:chain:variant:generation` is available, the experiment starts.
-
-  Note: There is no restriction on an experiment being both interactive AND dynamic. In this case, the participant will join both channels described in 2. and 3. It's up to the frontend to decide when to start the experiment.
+  After the refactoring, it might simply be the case that every experiment participant, regardless of the experiment type, connects to this socket, so that we have a uniform experience.
   """
 
-  alias Magpie.Repo
   alias Magpie.Experiments
   alias Magpie.Experiments.{AssignmentIdentifier, Experiment, Slots}
+  alias Magpie.Repo
 
   require Ecto.Query
   require Logger
@@ -32,7 +23,8 @@ defmodule Magpie.ParticipantSocket do
   # Interactive room is for interactive experiments where multiple participants are present.
   channel("interactive_room:*", Magpie.InteractiveRoomChannel)
 
-  # Iterated lobby is for iterated experiments where future generations need to wait on results from previous generations.
+  # Iterated lobby is for iterated experiments
+  # where future generations need to wait on results from previous generations.
   channel("iterated_lobby:*", Magpie.IteratedLobbyChannel)
 
   # Socket params are passed from the client and can
@@ -58,9 +50,13 @@ defmodule Magpie.ParticipantSocket do
          true <- experiment.active,
          {:ok, next_slot} when not is_nil(next_slot) <-
            Slots.get_and_set_to_in_progress_next_free_slot(experiment) do
+      num_players = Map.get(experiment.trial_players, next_slot)
+
+      assignment_identifier = "#{experiment_id}_#{next_slot}"
+
       Logger.log(
         :info,
-        "participant with id #{participant_id} is joining. They are assigned the assignment #{next_slot}"
+        "participant with id #{participant_id} is joining. They are assigned the assignment #{assignment_identifier}"
       )
 
       {:ok,
@@ -68,10 +64,9 @@ defmodule Magpie.ParticipantSocket do
        |> assign(:participant_id, participant_id)
        |> assign(
          :assignment_identifier,
-         next_slot
+         assignment_identifier
        )
-       # Only need to keep track of this so that we know when to start an interactive experiment.
-       |> assign(:num_players, experiment.num_players)}
+       |> assign(:num_players, num_players)}
     else
       # It seems that socket doesn't allow for sending specialized error messages. Just send :error
       _ -> :error

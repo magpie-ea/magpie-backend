@@ -12,7 +12,7 @@ defmodule Magpie.InteractiveRoomChannel do
   @doc """
   Let the participant join the lobby and wait in there.
 
-  One lobby is created for one combination of experiment_id:chain:variant:generation combination
+  One lobby is created for one assignment identifier, excluding the player part.
   """
   # I'm a bit confused here though: Apparently the "socket" is the real socket. Then what happened to the channel process itself?
   def join("interactive_room:" <> room_identifier, _payload, socket) do

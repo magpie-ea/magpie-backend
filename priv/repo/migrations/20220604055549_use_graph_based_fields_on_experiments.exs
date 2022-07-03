@@ -12,6 +12,7 @@ defmodule Magpie.Repo.Migrations.UseGraphBasedFieldsOnExperiments do
       add :slot_statuses, :map
       add :slot_dependencies, :map
       add :slot_attempt_counts, :map
+      add :trial_players, :map
     end
   end
 end

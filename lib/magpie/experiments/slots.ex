@@ -60,7 +60,7 @@ defmodule Magpie.Experiments.Slots do
   end
 
   defp expand_experiment(%Experiment{is_ulc: true} = experiment) do
-    update_slots_from_ulc_specification(experiment)
+    initialize_slots_from_ulc_specification(experiment)
   end
 
   @doc """
@@ -115,7 +115,7 @@ defmodule Magpie.Experiments.Slots do
   #   Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
   # end
 
-  def update_slots_from_ulc_specification(
+  def initialize_slots_from_ulc_specification(
         %Experiment{
           num_variants: num_variants,
           num_chains: num_chains,
@@ -125,6 +125,7 @@ defmodule Magpie.Experiments.Slots do
           slot_statuses: slot_statuses,
           slot_dependencies: slot_dependencies,
           slot_attempt_counts: slot_attempt_counts,
+          trial_players: trial_players,
           copy_number: copy_number
         } = experiment
       ) do
@@ -132,16 +133,18 @@ defmodule Magpie.Experiments.Slots do
     updated_copy_number = copy_number + 1
 
     {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies,
-     updated_slot_attempt_counts} =
+     updated_slot_attempt_counts,
+     updated_trial_players} =
       Enum.reduce(
         1..num_chains,
-        {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts},
+        {slot_ordering, slot_statuses, slot_dependencies, slot_attempt_counts, trial_players},
         fn chain, acc ->
           Enum.reduce(1..num_variants, acc, fn variant, acc ->
             Enum.reduce(1..num_generations, acc, fn generation, acc ->
               Enum.reduce(1..num_players, acc, fn player,
                                                   {slot_ordering, slot_statuses,
-                                                   slot_dependencies, slot_attempt_counts} ->
+                                                   slot_dependencies, slot_attempt_counts,
+                                                   trial_players} ->
                 slot_name = "#{updated_copy_number}_#{chain}:#{variant}:#{generation}_#{player}"
                 updated_slot_ordering = slot_ordering ++ [slot_name]
                 updated_slot_statuses = Map.put(slot_statuses, slot_name, "hold")
@@ -161,8 +164,10 @@ defmodule Magpie.Experiments.Slots do
 
                 updated_slot_dependencies = Map.put(slot_dependencies, slot_name, dependent_slots)
 
+                updated_trial_players = Map.put(trial_players, slot_name, num_players)
+
                 {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies,
-                 updated_slot_attempt_counts}
+                 updated_slot_attempt_counts, updated_trial_players}
               end)
             end)
           end)
@@ -174,6 +179,7 @@ defmodule Magpie.Experiments.Slots do
       slot_statuses: updated_slot_statuses,
       slot_dependencies: updated_slot_dependencies,
       slot_attempt_counts: updated_slot_attempt_counts,
+      trial_players: updated_trial_players,
       copy_number: updated_copy_number
     })
   end

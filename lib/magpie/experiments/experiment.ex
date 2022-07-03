@@ -33,6 +33,7 @@ defmodule Magpie.Experiments.Experiment do
     field :slot_statuses, :map
     field :slot_dependencies, :map
     field :slot_attempt_counts, :map
+    field :trial_players, :map
 
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
     has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)
@@ -56,11 +57,13 @@ defmodule Magpie.Experiments.Experiment do
       :slot_statuses,
       :slot_dependencies,
       :slot_attempt_counts,
+      :trial_players,
       :copy_number
     ])
     |> validate_required([:name, :author])
   end
 
+  # This is actually the changeset for ULC? Let's see.
   def create_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
@@ -100,5 +103,6 @@ defmodule Magpie.Experiments.Experiment do
     |> put_change(:slot_statuses, %{})
     |> put_change(:slot_dependencies, %{})
     |> put_change(:slot_attempt_counts, %{})
+    |> put_change(:trial_players, %{})
   end
 end

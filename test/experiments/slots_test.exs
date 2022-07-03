@@ -23,8 +23,8 @@ defmodule Magpie.Experiments.SlotsTest do
     experiment
   end
 
-  describe "update_slots_from_ulc_specification/1" do
-    test "correctly updates slot specs for the given Experiment" do
+  describe "initialize_slots_from_ulc_specification/1" do
+    test "correctly initializes slot specs for the given Experiment" do
       slot_ordering = [
         "1_1:1:1_1",
         "1_1:1:1_2",
@@ -61,6 +61,25 @@ defmodule Magpie.Experiments.SlotsTest do
         "1_2:2:1_2" => "hold",
         "1_2:2:2_1" => "hold",
         "1_2:2:2_2" => "hold"
+      }
+
+      trial_players = %{
+        "1_1:1:1_1" => 2,
+        "1_1:1:1_2" => 2,
+        "1_1:1:2_1" => 2,
+        "1_1:1:2_2" => 2,
+        "1_1:2:1_1" => 2,
+        "1_1:2:1_2" => 2,
+        "1_1:2:2_1" => 2,
+        "1_1:2:2_2" => 2,
+        "1_2:1:1_1" => 2,
+        "1_2:1:1_2" => 2,
+        "1_2:1:2_1" => 2,
+        "1_2:1:2_2" => 2,
+        "1_2:2:1_1" => 2,
+        "1_2:2:1_2" => 2,
+        "1_2:2:2_1" => 2,
+        "1_2:2:2_2" => 2
       }
 
       slot_dependencies = %{
@@ -118,8 +137,10 @@ defmodule Magpie.Experiments.SlotsTest do
                 slot_ordering: ^slot_ordering,
                 slot_statuses: ^slot_statuses,
                 slot_dependencies: ^slot_dependencies,
-                slot_attempt_counts: ^slot_attempt_counts
-              }} = Slots.update_slots_from_ulc_specification(experiment)
+                slot_attempt_counts: ^slot_attempt_counts,
+                trial_players: ^trial_players,
+                copy_number: 1
+              }} = Slots.initialize_slots_from_ulc_specification(experiment)
     end
   end
 
@@ -156,7 +177,7 @@ defmodule Magpie.Experiments.SlotsTest do
           num_players: 2
         })
 
-      {:ok, experiment} = Slots.update_slots_from_ulc_specification(experiment)
+      {:ok, experiment} = Slots.initialize_slots_from_ulc_specification(experiment)
 
       assert {:ok, %Experiment{slot_statuses: ^expected_slot_statuses}} =
                Slots.free_slots(experiment)
@@ -319,7 +340,7 @@ defmodule Magpie.Experiments.SlotsTest do
           num_players: 2
         })
 
-      {:ok, updated_experiment} = Slots.update_slots_from_ulc_specification(experiment)
+      {:ok, updated_experiment} = Slots.initialize_slots_from_ulc_specification(experiment)
 
       assert {:ok, "1_1:1:1_1"} ==
                Slots.get_and_set_to_in_progress_next_free_slot(updated_experiment)

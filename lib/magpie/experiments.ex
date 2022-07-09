@@ -3,6 +3,8 @@ defmodule Magpie.Experiments do
   Context for experiments
   """
   alias Magpie.Experiments.{AssignmentIdentifier, Experiment, ExperimentResult, ExperimentStatus}
+  alias Magpie.Slots
+
   alias Magpie.Repo
 
   alias Ecto.Multi
@@ -107,6 +109,17 @@ defmodule Magpie.Experiments do
     |> Repo.insert()
   end
 
+  def create_experiment_result(experiment, assignment_identifier, results) do
+    experiment
+    |> Ecto.build_assoc(:experiment_results)
+    |> ExperimentResult.changeset(%{
+      "assignment_identifier" => assignment_identifier,
+      "results" => results,
+      "is_intermediate" => false
+    })
+    |> Repo.insert()
+  end
+
   def submit_experiment(experiment_id, results) do
     with experiment when not is_nil(experiment) <- get_experiment(experiment_id),
          true <- experiment.active,
@@ -205,6 +218,9 @@ defmodule Magpie.Experiments do
     Repo.update_all(relevant_in_progress_experiment_statuses, set: [status: :open])
   end
 
+  # Right, just as expected, there was indeed another workflow for "interactive" experiments
+  # The confusing thing is, have we been using this endpoint for all iterative experiments all the time? I would imagine yes then.
+  # OK, I'll then need to refactor the REST endpoint as well so that we support it. Or alternatively get rid of it, which I don't think we'll ever do.
   def submit_and_complete_assignment_for_interactive_exp(
         %AssignmentIdentifier{} = assignment_identifier,
         results
@@ -237,6 +253,20 @@ defmodule Magpie.Experiments do
     )
     |> Multi.insert(:experiment_result, experiment_result_changeset)
     |> Repo.transaction()
+  end
+
+  def submit_experiment_results(
+        experiment_id,
+        %AssignmentIdentifier{} = assignment_identifier,
+        results
+      ) do
+    with experiment <- get_experiment!(experiment_id),
+         {:ok, _updated_experiment} <-
+           Slots.set_slot_as_complete(experiment, assignment_identifier),
+         {:ok, _experiment_result} <-
+           create_experiment_result(experiment, assignment_identifier, results) do
+      :ok
+    end
   end
 
   def save_intermediate_experiment_results(

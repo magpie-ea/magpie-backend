@@ -183,4 +183,24 @@ defmodule Magpie.Experiments.Slots do
       copy_number: updated_copy_number
     })
   end
+
+  def set_slot_as_complete(
+        %Experiment{
+          num_variants: num_variants,
+          num_chains: num_chains,
+          num_generations: num_generations,
+          num_players: num_players,
+          slot_ordering: slot_ordering,
+          slot_statuses: slot_statuses,
+          slot_dependencies: slot_dependencies,
+          slot_attempt_counts: slot_attempt_counts,
+          trial_players: trial_players,
+          copy_number: copy_number
+        } = experiment,
+        slot_identifier
+      ) do
+    new_slot_statuses = Map.put(slot_statuses, slot_identifier, "complete")
+
+    Experiments.update_experiment(experiment, %{slot_statuses: new_slot_statuses})
+  end
 end

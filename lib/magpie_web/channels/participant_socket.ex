@@ -62,6 +62,7 @@ defmodule Magpie.ParticipantSocket do
       {:ok,
        socket
        |> assign(:participant_id, participant_id)
+       |> assign(:experiment_id, experiment_id)
        |> assign(
          :assignment_identifier,
          assignment_identifier

@@ -76,12 +76,14 @@ defmodule Magpie.ParticipantChannel do
 
   # Record the submission when the client finishes the experiment. Set the experiment status to 2 (finished)
   # We might still allow the submissions via the REST API anyways. Both should be viable options.
+
   def handle_in("submit_results", payload, socket) do
-    case Experiments.submit_and_complete_assignment_for_interactive_exp(
+    case Experiments.submit_experiment_results(
+           socket.assigns.experiment_id,
            socket.assigns.assignment_identifier,
            payload["results"]
          ) do
-      {:ok, _} ->
+      :ok ->
         Logger.log(
           :info,
           "Experiment results successfully saved for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}"
@@ -100,11 +102,10 @@ defmodule Magpie.ParticipantChannel do
         # Send a simple ack reply to the submitting client.
         {:reply, :ok, socket}
 
-      {:error, failed_operation, failed_value, changes_so_far} ->
+      {:error, error} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}, operation
-          #{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{inspect(changes_so_far)}"
+          "Saving experiment results failed for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)} with the errors: #{inspect(error)}"
         )
 
         {:reply, :error, socket}
@@ -116,7 +117,8 @@ defmodule Magpie.ParticipantChannel do
   def handle_in("save_intermediate_results", payload, socket) do
     intermediate_results = payload["results"]
 
-    case Experiments.save_intermediate_experiment_results(
+    case Experiments.save_experiment_results(
+           socket.assigns.experiment_id,
            socket.assigns.assignment_identifier,
            intermediate_results
          ) do

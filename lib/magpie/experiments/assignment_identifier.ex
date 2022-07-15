@@ -1,16 +1,15 @@
 defmodule Magpie.Experiments.AssignmentIdentifier do
   @derive Jason.Encoder
-  defstruct [:experiment_id, :copy_number, :trial, :player_number]
-
-  alias Magpie.Experiments.ExperimentStatus
+  defstruct [:experiment_id, :copy_number, :attempt_count, :trial, :player_number]
 
   def from_string(identifier_string) when is_binary(identifier_string) do
     case String.split(identifier_string, "_") do
-      [experiment_id, copy_number, trial, player_number] ->
+      [experiment_id, copy_number, attempt_count, trial, player_number] ->
         {:ok,
          %__MODULE__{
            experiment_id: experiment_id,
            copy_number: copy_number,
+           attempt_count: attempt_count,
            trial: trial,
            player_number: player_number
          }}
@@ -34,7 +33,7 @@ defmodule Magpie.Experiments.AssignmentIdentifier do
 
   def to_string(%__MODULE__{} = assignment_identifier, include_player) do
     base =
-      "#{assignment_identifier.experiment_id}_#{assignment_identifier.copy_number}_#{assignment_identifier.trial}"
+      "#{assignment_identifier.experiment_id}_#{assignment_identifier.copy_number}_#{assignment_identifier.attempt_count}_#{assignment_identifier.trial}"
 
     if include_player do
       base <> "_#{assignment_identifier.player_number}"

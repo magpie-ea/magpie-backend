@@ -28,6 +28,7 @@ defmodule Magpie.Experiments.Experiment do
     field :num_generations, :integer, null: true, default: 1
     field :num_players, :integer, null: true, default: 1
 
+    # This field is indeed global to an experiment. Once it has incremented, there's no reason to decrement it again.
     field :copy_number, :integer, default: 0
     field :slot_ordering, {:array, :string}
     field :slot_statuses, :map

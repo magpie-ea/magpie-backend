@@ -132,6 +132,9 @@ defmodule Magpie.Experiments.Slots do
     # When we newly create the entries, we're always at the first copy of it all.
     updated_copy_number = copy_number + 1
 
+    # The attempt count is always 0 at initialization time for every slot.
+    initial_attempt_count = 0
+
     {updated_slot_ordering, updated_slot_statuses, updated_slot_dependencies,
      updated_slot_attempt_counts,
      updated_trial_players} =
@@ -145,16 +148,20 @@ defmodule Magpie.Experiments.Slots do
                                                   {slot_ordering, slot_statuses,
                                                    slot_dependencies, slot_attempt_counts,
                                                    trial_players} ->
-                slot_name = "#{updated_copy_number}_#{chain}:#{variant}:#{generation}_#{player}"
+                slot_name =
+                  "#{updated_copy_number}_#{initial_attempt_count}_#{chain}:#{variant}:#{generation}_#{player}"
+
                 updated_slot_ordering = slot_ordering ++ [slot_name]
                 updated_slot_statuses = Map.put(slot_statuses, slot_name, "hold")
-                updated_slot_attempt_counts = Map.put(slot_attempt_counts, slot_name, 0)
+
+                updated_slot_attempt_counts =
+                  Map.put(slot_attempt_counts, slot_name, initial_attempt_count)
 
                 dependent_slots =
                   if generation > 1 do
                     Enum.reduce(1..num_players, [], fn cur_player, acc ->
                       dependency_slot_name =
-                        "#{updated_copy_number}_#{chain}:#{variant}:#{generation - 1}_#{cur_player}"
+                        "#{updated_copy_number}_#{initial_attempt_count}_#{chain}:#{variant}:#{generation - 1}_#{cur_player}"
 
                       [dependency_slot_name | acc]
                     end)

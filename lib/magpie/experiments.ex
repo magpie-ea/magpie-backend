@@ -2,8 +2,13 @@ defmodule Magpie.Experiments do
   @moduledoc """
   Context for experiments
   """
-  alias Magpie.Experiments.{AssignmentIdentifier, Experiment, ExperimentResult, ExperimentStatus}
-  alias Magpie.Slots
+  alias Magpie.Experiments.{
+    AssignmentIdentifier,
+    Experiment,
+    ExperimentResult,
+    ExperimentStatus,
+    Slots
+  }
 
   alias Magpie.Repo
 
@@ -260,13 +265,24 @@ defmodule Magpie.Experiments do
         %AssignmentIdentifier{} = assignment_identifier,
         results
       ) do
-    with experiment <- get_experiment!(experiment_id),
-         {:ok, _updated_experiment} <-
-           Slots.set_slot_as_complete(experiment, assignment_identifier),
-         {:ok, _experiment_result} <-
-           create_experiment_result(experiment, assignment_identifier, results) do
-      :ok
-    end
+    Repo.transaction(fn ->
+      with experiment <- get_experiment!(experiment_id),
+           {:ok, _experiment_result} <-
+             create_experiment_result(experiment, assignment_identifier, results),
+           {:ok, updated_experiment} <-
+             Slots.set_slot_as_complete(experiment, assignment_identifier),
+           {{:ok, %Experiment{} = _freed_experiment}, freed_count} <-
+             Slots.free_slots(updated_experiment) do
+        case freed_count do
+          0 ->
+            freed_count
+
+          _ ->
+            Magpie.Endpoint.broadcast!("waiting_queue:#{experiment_id}", "slot_available", %{})
+            freed_count
+        end
+      end
+    end)
   end
 
   def save_intermediate_experiment_results(

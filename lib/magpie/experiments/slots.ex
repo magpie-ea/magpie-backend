@@ -13,16 +13,28 @@ defmodule Magpie.Experiments.Slots do
 
   Need to call these functions in a transaction. Otherwise some other process might try to call free_slots and expand_experiment at the same time.
   """
-  def get_and_set_to_in_progress_next_free_slot(%Experiment{} = experiment) do
-    # Actually, we may need to always call `free_slots/1` at the beginning of this function call.
+  def get_and_set_to_in_progress_next_free_slot(experiment_id) when is_integer(experiment_id) do
+    experiment = Experiments.get_experiment!(experiment_id)
+    get_and_set_to_in_progress_next_free_slot(experiment)
+  end
+
+  def get_and_set_to_in_progress_next_free_slot(
+        %Experiment{
+          slot_ordering: slot_ordering,
+          slot_statuses: slot_statuses,
+          slot_attempt_counts: slot_attempt_counts
+        } = experiment
+      ) do
     result =
       Repo.transaction(fn ->
-        {:ok,
-         %Experiment{
-           slot_ordering: slot_ordering,
-           slot_statuses: slot_statuses,
-           slot_attempt_counts: slot_attempt_counts
-         } = freed_experiment} = free_slots(experiment)
+        # Hmm, might be the best to free slots only upon submitting an experiment and expanding an experiment... Which one is better then. Let's see.
+        # Theoretically calling it here also works, but can get expensive really soon. Let me not do it for now then.
+        # {:ok,
+        #  %Experiment{
+        #    slot_ordering: slot_ordering,
+        #    slot_statuses: slot_statuses,
+        #    slot_attempt_counts: slot_attempt_counts
+        #  } = freed_experiment} = free_slots(experiment)
 
         next_slot =
           Enum.find(slot_ordering, fn slot_name ->
@@ -31,7 +43,7 @@ defmodule Magpie.Experiments.Slots do
 
         case next_slot do
           nil ->
-            {:ok, expanded_experiment} = expand_experiment(freed_experiment)
+            {:ok, expanded_experiment} = expand_experiment(experiment)
             # This could result in a transaction within a transaction...
             # which should be fine, but we'll need to take care of unwrapping the return value?
             # Weird, ha.
@@ -47,7 +59,7 @@ defmodule Magpie.Experiments.Slots do
               end)
 
             {:ok, _} =
-              Experiments.update_experiment(freed_experiment, %{
+              Experiments.update_experiment(experiment, %{
                 slot_statuses: updated_statuses,
                 slot_attempt_counts: updated_attempt_counts
               })
@@ -80,17 +92,17 @@ defmodule Magpie.Experiments.Slots do
         } = experiment
       ) do
     # Do everything in one pass. Should be more efficient!
-    new_slot_statuses =
-      Enum.reduce(orig_slot_statuses, orig_slot_statuses, fn
-        {slot_name, slot_status}, orig_slot_statuses ->
+    {new_slot_statuses, freed_count} =
+      Enum.reduce(orig_slot_statuses, {orig_slot_statuses, 0}, fn
+        {slot_name, slot_status}, {orig_slot_statuses, freed_count} ->
           if slot_status == "hold" && all_dependencies_done?(slot_name, experiment) do
-            Map.put(orig_slot_statuses, slot_name, "available")
+            {Map.put(orig_slot_statuses, slot_name, "available"), freed_count + 1}
           else
-            orig_slot_statuses
+            {orig_slot_statuses, freed_count}
           end
       end)
 
-    Experiments.update_experiment(experiment, %{slot_statuses: new_slot_statuses})
+    {Experiments.update_experiment(experiment, %{slot_statuses: new_slot_statuses}), freed_count}
   end
 
   defp all_dependencies_done?(slot_name, %Experiment{
@@ -186,16 +198,7 @@ defmodule Magpie.Experiments.Slots do
 
   def set_slot_as_complete(
         %Experiment{
-          num_variants: num_variants,
-          num_chains: num_chains,
-          num_generations: num_generations,
-          num_players: num_players,
-          slot_ordering: slot_ordering,
-          slot_statuses: slot_statuses,
-          slot_dependencies: slot_dependencies,
-          slot_attempt_counts: slot_attempt_counts,
-          trial_players: trial_players,
-          copy_number: copy_number
+          slot_statuses: slot_statuses
         } = experiment,
         slot_identifier
       ) do

@@ -7,7 +7,15 @@ defmodule Magpie.ParticipantChannel do
 
   alias Ecto.Multi
   alias Magpie.Experiments
-  alias Magpie.Experiments.{AssignmentIdentifier, ExperimentStatus, ExperimentResult}
+
+  alias Magpie.Experiments.{
+    AssignmentIdentifier,
+    ChannelWatcher,
+    ExperimentResult,
+    ExperimentStatus,
+    Slots
+  }
+
   alias Magpie.Presence
   alias Magpie.Repo
 
@@ -16,14 +24,26 @@ defmodule Magpie.ParticipantChannel do
   require Ecto.Query
   require Logger
 
+  ### API for calls from the outside
+  # So this is the same as the GenServer mechanism then. Right.
+  # I guess there's also no inherent reason why this function has to live in this module... It just simply makes more organizational sense to do so then. Ha.
+  def broadcast_next_slot_to_participant(next_slot, participant_id) do
+    Phoenix.PubSub.broadcast(
+      Magpie.PubSub,
+      "participant:#{participant_id}",
+      {:slot_available, next_slot}
+    )
+  end
+
   @doc """
   The first step after establishing connection for any participant is to log in with a (randomly generated in the frontend) participant_id
   """
   def join("participant:" <> participant_id, _payload, socket) do
-    # The participant_id should have been stored in the socket assigns already, and should match what the client tries to send us.
+    # The participant_id should have been stored in the socket assigns already,
+    # and should match what the client tries to send us.
     if socket.assigns.participant_id == participant_id do
       :ok =
-        Magpie.Experiments.ChannelWatcher.monitor(
+        ChannelWatcher.monitor(
           :participants,
           self(),
           {__MODULE__, :handle_leave, [socket, participant_id]}
@@ -31,7 +51,6 @@ defmodule Magpie.ParticipantChannel do
 
       send(self(), :after_participant_join)
 
-      # Seems that we'll have to first return {:ok, socket} before we're able to broadcast anything to them? I'm not actually sure anymore lol. Let's still do it this way anyways.
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -47,26 +66,39 @@ defmodule Magpie.ParticipantChannel do
     # If the user is still in the waiting queue, remove them from it.
     WaitingQueueWorker.dequeue_participant(participant_id)
 
-    # We should probably reset the whole set of statuses, even if only one participant breaks out.
-    # Note that we only deal with experiments with status 1, i.e. if any of other participants already saved the entire result and thus set the status to 2, the results would not be affected.
-    Experiments.reset_in_progress_assignments_for_interactive_exp(
-      socket.assigns.assignment_identifier
-    )
+    # TODO: Handle the case where the participant has already begun the experiment.
   end
 
+  def handle_info({:slot_available, next_slot}, socket) do
+    push(socket, "slot_available", next_slot)
+
+    {:noreply, socket}
+  end
+
+  # Should the participant channel already try to find a slot? I'm not sure. There might also be the issue where some previously joined participants were still waiting, since the 5-sec interval for the AssignExperimentSlotsWorker has not been reached yet, while the newly joined participant gets the slot.
+  # Let's always queue them to the back of the slot then.
   def handle_info(:after_participant_join, socket) do
-    case Slots.get_and_set_to_in_progress_next_free_slot(socket.assigns.experiment_id) do
-      {:ok, slot_identifier} ->
-        broadcast(socket, "slot_available", slot_identifier)
-
-      :no_free_slot_available ->
-        :ok = WaitingQueueWorker.queue_participant(socket.assigns.participant_id)
-
-        broadcast(socket, "waiting_in_queue", %{})
-
-      error ->
-        broadcast(socket, "error_upon_joining", %{error: inspect(error)})
+    case WaitingQueueWorker.queue_participant(
+           socket.assigns.participant_id,
+           socket.assigns.experiment_id
+         ) do
+      :ok -> broadcast(socket, "waiting_in_queue", %{})
+      error -> broadcast(socket, "error_upon_joining", %{error: inspect(error)})
     end
+
+    # :ok =
+    #   case Slots.get_and_set_to_in_progress_next_free_slot(socket.assigns.experiment_id) do
+    #     {:ok, slot_identifier} ->
+    #       broadcast(socket, "slot_available", slot_identifier)
+
+    #     :no_free_slot_available ->
+    #       :ok = WaitingQueueWorker.queue_participant(socket.assigns.participant_id)
+
+    #       broadcast(socket, "waiting_in_queue", %{})
+
+    #     error ->
+    #       nil
+    #   end
 
     {:noreply, socket}
   end

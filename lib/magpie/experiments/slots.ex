@@ -25,50 +25,49 @@ defmodule Magpie.Experiments.Slots do
           slot_attempt_counts: slot_attempt_counts
         } = experiment
       ) do
-    result =
-      Repo.transaction(fn ->
-        # Hmm, might be the best to free slots only upon submitting an experiment and expanding an experiment... Which one is better then. Let's see.
-        # Theoretically always calling it here also works, but can get expensive really soon. Let me not do it for now then.
-        # {:ok,
-        #  %Experiment{
-        #    slot_ordering: slot_ordering,
-        #    slot_statuses: slot_statuses,
-        #    slot_attempt_counts: slot_attempt_counts
-        #  } = freed_experiment} = free_slots(experiment)
+    Repo.transaction(fn ->
+      # Hmm, might be the best to free slots only upon submitting an experiment and expanding an experiment... Which one is better then. Let's see.
+      # Theoretically always calling it here also works, but can get expensive really soon. Let me not do it for now then.
+      # {:ok,
+      #  %Experiment{
+      #    slot_ordering: slot_ordering,
+      #    slot_statuses: slot_statuses,
+      #    slot_attempt_counts: slot_attempt_counts
+      #  } = freed_experiment} = free_slots(experiment)
 
-        next_slot =
-          Enum.find(slot_ordering, fn slot_name ->
-            Map.get(slot_statuses, slot_name) == "available"
-          end)
+      next_slot =
+        Enum.find(slot_ordering, fn slot_name ->
+          Map.get(slot_statuses, slot_name) == "available"
+        end)
 
-        case next_slot do
-          nil ->
-            {:ok, expanded_experiment} = expand_experiment(experiment)
-            # This could result in a transaction within a transaction...
-            # which should be fine, but we'll need to take care of unwrapping the return value?
-            # Weird, ha.
-            {:ok, next_slot} = get_and_set_to_in_progress_next_free_slot(expanded_experiment)
-            next_slot
+      case next_slot do
+        nil ->
+          {:ok, expanded_experiment} = expand_experiment(experiment)
+          # This could result in a transaction within a transaction...
+          # which should be fine, but we'll need to take care of unwrapping the return value?
+          # Weird, ha.
+          {:ok, next_slot} = get_and_set_to_in_progress_next_free_slot(expanded_experiment)
+          # The transaction automatically wraps the result in an {:ok, } tuple.
+          next_slot
 
-          _ ->
-            updated_statuses = Map.put(slot_statuses, next_slot, "in_progress")
+        _ ->
+          updated_statuses = Map.put(slot_statuses, next_slot, "in_progress")
 
-            updated_attempt_counts =
-              Map.update!(slot_attempt_counts, next_slot, fn previous_attempt_count ->
-                previous_attempt_count + 1
-              end)
+          updated_attempt_counts =
+            Map.update!(slot_attempt_counts, next_slot, fn previous_attempt_count ->
+              previous_attempt_count + 1
+            end)
 
-            {:ok, _} =
-              Experiments.update_experiment(experiment, %{
-                slot_statuses: updated_statuses,
-                slot_attempt_counts: updated_attempt_counts
-              })
+          {:ok, _} =
+            Experiments.update_experiment(experiment, %{
+              slot_statuses: updated_statuses,
+              slot_attempt_counts: updated_attempt_counts
+            })
 
-            next_slot
-        end
-      end)
-
-    result
+          # The transaction automatically wraps the result in an {:ok, } tuple.
+          next_slot
+      end
+    end)
   end
 
   defp expand_experiment(%Experiment{is_ulc: true} = experiment) do

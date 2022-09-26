@@ -15,10 +15,14 @@ defmodule Magpie.Experiments.AssignExperimentSlotsWorker do
                                      else: 10 * 1000
 
   # It probably needs to keep track of the experiment_id it's responsible of...
-  def start_link(experiment_id) do
-    GenServer.start_link(__MODULE__, experiment_id,
-      name: "assign_experiment_slots_worker_#{experiment_id}"
-    )
+  # def start_link(experiment_id) do
+  #   GenServer.start_link(__MODULE__, experiment_id,
+  #     name: "assign_experiment_slots_worker_#{experiment_id}"
+  #   )
+  # end
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   @impl true
@@ -38,7 +42,20 @@ defmodule Magpie.Experiments.AssignExperimentSlotsWorker do
     # that corresponds to the number of participants waiting in the queue?
     # Oh wait, don't we always have available slots?
     # I guess that's not actually true. It does depend on the strategy doesn't it.
-    {:ok, participants} = WaitingQueueWorker.get_all_enqueued_participants()
+    # {:ok, participants} = WaitingQueueWorker.get_all_enqueued_participants()
+    {:ok, queues} = WaitingQueueWorker.get_all_queues()
+
+    Enum.each(queues, fn {experiment_id, queue} ->
+      Enum.each(queue, fn participant_id ->
+        case Slots.get_and_set_to_in_progress_next_free_slot(experiment_id) do
+          {:ok, next_slot} ->
+            Magpie.ParticipantChannel.broadcast_next_slot_to_participant(
+              next_slot,
+              participant_id
+            )
+        end
+      end)
+    end)
 
     # Enum.each(participants, fn participant ->
     #   case Slots.get_and_set_to_in_progress_next_free_slot() do
@@ -46,5 +63,7 @@ defmodule Magpie.Experiments.AssignExperimentSlotsWorker do
     #       nil
     #   end
     # end)
+
+    {:noreply, state}
   end
 end

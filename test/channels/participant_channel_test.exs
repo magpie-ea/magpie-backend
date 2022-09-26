@@ -21,39 +21,39 @@ defmodule Magpie.ParticipantChannelTest do
     assert {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
   end
 
-  test "Receives the trituple denoting the next available experiment slot after joining", %{
-    socket: socket,
-    experiment: _experiment,
-    participant_id: participant_id,
-    assignment_identifier: assignment_identifier
-  } do
-    {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+  # test "Receives the trituple denoting the next available experiment slot after joining", %{
+  #   socket: socket,
+  #   experiment: _experiment,
+  #   participant_id: participant_id,
+  #   assignment_identifier: assignment_identifier
+  # } do
+  #   {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-    variant = assignment_identifier.variant
-    chain = assignment_identifier.chain
-    generation = assignment_identifier.generation
+  #   variant = assignment_identifier.variant
+  #   chain = assignment_identifier.chain
+  #   generation = assignment_identifier.generation
 
-    assert_broadcast("experiment_available", %{
-      variant: ^variant,
-      chain: ^chain,
-      generation: ^generation
-    })
-  end
+  #   assert_broadcast("experiment_available", %{
+  #     variant: ^variant,
+  #     chain: ^chain,
+  #     generation: ^generation
+  #   })
+  # end
 
-  test "The experiment status is set to 1 after a participant joins", %{
-    socket: socket,
-    experiment: _experiment,
-    participant_id: participant_id,
-    assignment_identifier: assignment_identifier
-  } do
-    {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+  # test "The experiment status is set to 1 after a participant joins", %{
+  #   socket: socket,
+  #   experiment: _experiment,
+  #   participant_id: participant_id,
+  #   assignment_identifier: assignment_identifier
+  # } do
+  #   {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-    Process.sleep(100)
+  #   Process.sleep(100)
 
-    experiment_status = Experiments.get_experiment_status(assignment_identifier)
+  #   experiment_status = Experiments.get_experiment_status(assignment_identifier)
 
-    assert experiment_status.status === :in_progress
-  end
+  #   assert experiment_status.status === :in_progress
+  # end
 
   # The issue with SQL Sandbox is solved with Elixir 1.8.0+ and DBConnection 2.0.4+
   # TODO: This method of resetting the experiment status will be obsolete once we implement the polling.

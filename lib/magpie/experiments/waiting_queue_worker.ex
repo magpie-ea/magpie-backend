@@ -6,16 +6,23 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   """
   use GenServer
 
-  def start_link(experiment_id) do
-    GenServer.start_link(__MODULE__, %{queue: []}, name: "waiting_queue_worker_#{experiment_id}")
+  # An alternative version we can use to have one worker per experiment.
+  # def start_link(experiment_id) do
+  #   GenServer.start_link(__MODULE__, %{queue: []}, name: "waiting_queue_worker_#{experiment_id}")
+  # end
+
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
   ### API
   @doc """
   Add a participant to the queue by participant_id.
+
+  It is a must to pass in the experiment id so that we know which queue the participant should go to.
   """
-  def queue_participant(participant_id) do
-    GenServer.call(__MODULE__, {:queue_participant, participant_id})
+  def queue_participant(experiment_id, participant_id) do
+    GenServer.call(__MODULE__, {:queue_participant, {experiment_id, participant_id}})
   end
 
   @doc """
@@ -32,11 +39,18 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
     GenServer.call(__MODULE__, :pop_participant)
   end
 
+  # @doc """
+  # Returns all the waiting participants in the queue.
+  # """
+  # def get_all_enqueued_participants do
+  #   GenServer.call(__MODULE__, :get_all_enqueued_participants)
+  # end
+
   @doc """
-  Returns all the waiting participants in the queue.
+  Get all queues in a map, with experiment_id as keys and queue as values.
   """
-  def get_all_enqueued_participants do
-    GenServer.call(__MODULE__, :get_all_enqueued_participants)
+  def get_all_queues do
+    GenServer.call(__MODULE__, :get_all_queues)
   end
 
   # def poll_waiting_queue do
@@ -55,24 +69,54 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   end
 
   @impl true
-  def handle_call({:queue_participant, participant_id}, _from, old_queue) do
-    {:reply, :ok, old_queue ++ [participant_id]}
+  def handle_call({:queue_participant, {experiment_id, participant_id}}, _from, old_queues) do
+    # queue_for_experiment = Map.get(old_queues, experiment_id, [])
+    updated_queues =
+      Map.get_and_update(old_queues, experiment_id, fn
+        nil -> [participant_id]
+        old_queue -> old_queue ++ [participant_id]
+      end)
+
+    {:reply, :ok, updated_queues}
   end
 
   # The queue is already empty.
-  @impl true
-  def handle_call(:pop_participant, _from, []) do
-    {:reply, {:error, :queue_empty}, []}
-  end
+  # @impl true
+  # def handle_call(:pop_participant, _experiment_id, _from, []) do
+  #   {:reply, {:error, :queue_empty}, []}
+  # end
 
   # We still have somebody in the queue.
+  # @impl true
+  # def handle_call(:pop_participant, experiment_id, _from, [first_in_the_queue | tail]) do
+  #   {:reply, {:ok, first_in_the_queue}, tail}
+  # end
+
   @impl true
-  def handle_call(:pop_participant, _from, [first_in_the_queue | tail]) do
-    {:reply, {:ok, first_in_the_queue}, tail}
+  def handle_call({:pop_participant, experiment_id}, _from, queues) do
+    queue_for_experiment = Map.get(queues, experiment_id, [])
+
+    case queue_for_experiment do
+      [] ->
+        {:reply, {:error, :queue_empty}, queues}
+
+      [first_in_the_queue | tail] ->
+        {:reply, {:ok, first_in_the_queue}, Map.put(queues, experiment_id, tail)}
+    end
+  end
+
+  # @impl true
+  # def handle_call(:get_all_enqueued_participants, _from, participants) do
+  #   {:reply, {:ok, participants}, participants}
+  # end
+
+  @impl true
+  def handle_call({:get_queue, experiment_id}, _from, queues) do
+    {:reply, {:ok, Map.get(queues, experiment_id, [])}, queues}
   end
 
   @impl true
-  def handle_call(:get_all_enqueued_participants, _from, participants) do
-    {:reply, {:ok, participants}, participants}
+  def handle_call(:get_all_queues, _from, queues) do
+    {:reply, {:ok, queues}, queues}
   end
 end

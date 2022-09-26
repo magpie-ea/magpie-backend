@@ -25,13 +25,14 @@ defmodule Magpie.Application do
       # Starts a worker by calling: Magpie.Worker.start_link(arg)
       # {Magpie.Worker, arg},
       # {Magpie.Experiments.ExperimentStatusResetWorker, []},
+      {Magpie.Experiments.ChannelWatcher, :participants},
+      {Magpie.Experiments.WaitingQueueWorker, []}
+      # {Magpie.Experiments.AssignExperimentSlotsWorker, []}
 
-      # Registry for keeping track of the workers.
-      {Registry, keys: :unique, name: Magpie.Registry},
-      # DynamicSupervisor to supervise the workers.
-      {DynamicSupervisor, strategy: :one_for_one, name: Magpie.DynamicSupervisor},
-      {Magpie.Experiments.ChannelWatcher, :participants}
-      # {Magpie.Experiments.WaitingQueueWorker, []}
+      # Registry for keeping track of the workers. Not useful with the current implementation.
+      # {Registry, keys: :unique, name: Magpie.Registry},
+      # DynamicSupervisor to supervise the workers. Not useful with the current implementation.
+      # {DynamicSupervisor, strategy: :one_for_one, name: Magpie.DynamicSupervisor},
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
@@ -39,20 +40,21 @@ defmodule Magpie.Application do
     opts = [strategy: :one_for_one, name: Magpie.Supervisor]
     result = Supervisor.start_link(children, opts)
 
-    # I can also just start all the workers under the dynamic supervisor here.
-    experiments = Magpie.Repo.all(Magpie.Experiments.Experiment)
+    # Let's first try out the simpler setup where there's only one worker globally for both types.
+    # We can go on to use dynamic supervisors later if the single worker can't handle the traffic.
+    # experiments = Magpie.Repo.all(Magpie.Experiments.Experiment)
 
-    Enum.each(experiments, fn experiment ->
-      DynamicSupervisor.start_child(
-        Magpie.DynamicSupervisor,
-        {Magpie.Experiments.AssignExperimentSlotsWorker, experiment.id}
-      )
+    # Enum.each(experiments, fn experiment ->
+    #   DynamicSupervisor.start_child(
+    #     Magpie.DynamicSupervisor,
+    #     {Magpie.Experiments.AssignExperimentSlotsWorker, experiment.id}
+    #   )
 
-      DynamicSupervisor.start_child(
-        Magpie.DynamicSupervisor,
-        {Magpie.Experiments.WaitingQueueWorker, experiment.id}
-      )
-    end)
+    #   DynamicSupervisor.start_child(
+    #     Magpie.DynamicSupervisor,
+    #     {Magpie.Experiments.WaitingQueueWorker, experiment.id}
+    #   )
+    # end)
 
     result
   end

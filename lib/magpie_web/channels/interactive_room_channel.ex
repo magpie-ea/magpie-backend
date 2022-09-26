@@ -15,6 +15,7 @@ defmodule Magpie.InteractiveRoomChannel do
   One lobby is created for one assignment identifier, excluding the player part.
   """
   # I'm a bit confused here though: Apparently the "socket" is the real socket. Then what happened to the channel process itself?
+  # Well, that sounds like somewhat of a stupid question: Of course an Elixir process is under the hood of every socket connection, eh?
   def join("interactive_room:" <> room_identifier, _payload, socket) do
     if room_identifier ==
          AssignmentIdentifier.to_string(socket.assigns.assignment_identifier, false) do
@@ -28,21 +29,16 @@ defmodule Magpie.InteractiveRoomChannel do
 
   def handle_info(:after_participant_join, socket) do
     # Add this participant to the list of all participants waiting in the lobby of this experiment.
-    # Let me just make the following assumption: An interactive experiment must happen between participants of the same chain, variant and generation.
-    # If they need something more complicated in the future, change the structure by then.
+    # With the new experiment structure, they will all be under the same slot.
     # This Presence can also be helpful in informing participants when one participant drops out.
 
-    # Oh OK, I think I now understood how it works. With some magic under the hood, even though we're passing in "socket" as the first argument here, it automagically figures out that we're actually tracking this *channel*, which is of course room  `experiment_id:chain:variant:generation`.
-    # There is another function Presence.track/4 which allows you to track any process by topic and key: track(pid, topic, key, meta)
-    # But still it seems to me that the grouping key should be the assignment_identifier instead of the particular participant_id? I'm a bit confused at how this worked. Let's see.
-    topic = AssignmentIdentifier.to_string(socket.assigns.assignment_identifier, false)
+    key = AssignmentIdentifier.to_string(socket.assigns.assignment_identifier, false)
 
     Presence.track(
       socket,
-      "#{topic}",
+      "#{key}",
       %{
         participant_id: socket.assigns.participant_id,
-        # This came from the official example.
         online_at: inspect(System.system_time(:second))
       }
     )
@@ -69,7 +65,7 @@ defmodule Magpie.InteractiveRoomChannel do
     existing_participants =
       socket
       |> Presence.list()
-      |> Map.get(topic)
+      |> Map.get(key)
       |> Map.get(:metas)
 
     # Start the experiment if the predefined number of players is reached.

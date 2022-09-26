@@ -7,7 +7,8 @@ defmodule Magpie.Experiments do
     Experiment,
     ExperimentResult,
     ExperimentStatus,
-    Slots
+    Slots,
+    WaitingQueueWorker
   }
 
   alias Magpie.Repo
@@ -277,12 +278,23 @@ defmodule Magpie.Experiments do
           0 ->
             freed_count
 
+          # Just call the GenServer here.
+          # Or do I actually want to call the assign_slots function below?
           _ ->
             Magpie.Endpoint.broadcast!("waiting_queue:#{experiment_id}", "slot_available", %{})
             freed_count
         end
       end
     end)
+  end
+
+  def assign_slots_to_waiting_participants(freed_count) do
+    # We would need to call the pop_participant function from WaitingQueueWorker
+    # We get a participant id here.
+    # We should then broadcast a message for the participant to join the experiment.
+    # So we would actually need the actual slot identifiers here?
+    # OK, fuck this. I think I know what to do now: Let's actually schedule a worker to constantly poll the queue. Architecture-wise this decouples things much more and makes it so much simpler. Let's go on then. Let's go eh. Let's go. asdfasdf.
+    {:ok, participant_id} = WaitingQueueWorker.pop_participant()
   end
 
   def save_intermediate_experiment_results(

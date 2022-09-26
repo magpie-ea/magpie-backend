@@ -1,5 +1,8 @@
 defmodule Magpie.Application do
+  @moduledoc false
   use Application
+
+  alias Magpie.Repo
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
@@ -22,14 +25,36 @@ defmodule Magpie.Application do
       # Starts a worker by calling: Magpie.Worker.start_link(arg)
       # {Magpie.Worker, arg},
       # {Magpie.Experiments.ExperimentStatusResetWorker, []},
-      {Magpie.Experiments.ChannelWatcher, :participants},
-      {Magpie.Experiments.WaitingQueueWorker, []}
+
+      # Registry for keeping track of the workers.
+      {Registry, keys: :unique, name: Magpie.Registry},
+      # DynamicSupervisor to supervise the workers.
+      {DynamicSupervisor, strategy: :one_for_one, name: Magpie.DynamicSupervisor},
+      {Magpie.Experiments.ChannelWatcher, :participants}
+      # {Magpie.Experiments.WaitingQueueWorker, []}
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Magpie.Supervisor]
-    Supervisor.start_link(children, opts)
+    result = Supervisor.start_link(children, opts)
+
+    # I can also just start all the workers under the dynamic supervisor here.
+    experiments = Magpie.Repo.all(Magpie.Experiments.Experiment)
+
+    Enum.each(experiments, fn experiment ->
+      DynamicSupervisor.start_child(
+        Magpie.DynamicSupervisor,
+        {Magpie.Experiments.AssignExperimentSlotsWorker, experiment.id}
+      )
+
+      DynamicSupervisor.start_child(
+        Magpie.DynamicSupervisor,
+        {Magpie.Experiments.WaitingQueueWorker, experiment.id}
+      )
+    end)
+
+    result
   end
 
   # Tell Phoenix to update the endpoint configuration

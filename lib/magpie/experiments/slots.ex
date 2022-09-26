@@ -28,7 +28,7 @@ defmodule Magpie.Experiments.Slots do
     result =
       Repo.transaction(fn ->
         # Hmm, might be the best to free slots only upon submitting an experiment and expanding an experiment... Which one is better then. Let's see.
-        # Theoretically calling it here also works, but can get expensive really soon. Let me not do it for now then.
+        # Theoretically always calling it here also works, but can get expensive really soon. Let me not do it for now then.
         # {:ok,
         #  %Experiment{
         #    slot_ordering: slot_ordering,

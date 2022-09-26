@@ -1,11 +1,13 @@
 defmodule Magpie.Experiments.WaitingQueueWorker do
   @moduledoc """
     Worker to maintain a waiting queue for newly joined participants.
+
+    Oh well, do we actually need to spawn up a GenServer for each experiment? I think we do!
   """
   use GenServer
 
-  def start_link(_opts) do
-    GenServer.start_link(__MODULE__, %{queue: []}, name: __MODULE__)
+  def start_link(experiment_id) do
+    GenServer.start_link(__MODULE__, %{queue: []}, name: "waiting_queue_worker_#{experiment_id}")
   end
 
   ### API
@@ -29,6 +31,17 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   def pop_participant do
     GenServer.call(__MODULE__, :pop_participant)
   end
+
+  @doc """
+  Returns all the waiting participants in the queue.
+  """
+  def get_all_enqueued_participants do
+    GenServer.call(__MODULE__, :get_all_enqueued_participants)
+  end
+
+  # def poll_waiting_queue do
+
+  # end
 
   ### Callbacks
   @impl true
@@ -56,5 +69,10 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   @impl true
   def handle_call(:pop_participant, _from, [first_in_the_queue | tail]) do
     {:reply, {:ok, first_in_the_queue}, tail}
+  end
+
+  @impl true
+  def handle_call(:get_all_enqueued_participants, _from, participants) do
+    {:reply, {:ok, participants}, participants}
   end
 end

@@ -35,8 +35,8 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   @doc """
   Just return the participant at the front of the queue and removes them from the queue. Usually called when there is an available spot.
   """
-  def pop_participant do
-    GenServer.call(__MODULE__, :pop_participant)
+  def pop_participant(experiment_id) do
+    GenServer.call(__MODULE__, {:pop_participant, experiment_id})
   end
 
   # @doc """

@@ -5,7 +5,8 @@ defmodule Magpie.ParticipantChannelTest do
   use Magpie.ChannelCase, async: false
 
   # alias Magpie.ParticipantChannel
-  alias Magpie.Experiments
+  # alias Magpie.Experiments
+  alias Magpie.Experiments.WaitingQueueWorker
   alias Magpie.ParticipantSocket
 
   setup do
@@ -13,12 +14,14 @@ defmodule Magpie.ParticipantChannelTest do
     create_and_subscribe_participant(experiment)
   end
 
-  test "joins the participant channel successfully", %{
+  test "joins the participant channel successfully and gets queued", %{
     socket: socket,
-    experiment: _experiment,
+    experiment: experiment,
     participant_id: participant_id
   } do
     assert {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+
+    assert {:ok, participant_id} == WaitingQueueWorker.pop_participant(experiment.id)
   end
 
   # test "Receives the trituple denoting the next available experiment slot after joining", %{

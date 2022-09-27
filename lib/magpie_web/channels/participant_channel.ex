@@ -79,8 +79,8 @@ defmodule Magpie.ParticipantChannel do
   # Let's always queue them to the back of the slot then.
   def handle_info(:after_participant_join, socket) do
     case WaitingQueueWorker.queue_participant(
-           socket.assigns.participant_id,
-           socket.assigns.experiment_id
+           socket.assigns.experiment_id,
+           socket.assigns.participant_id
          ) do
       :ok -> broadcast(socket, "waiting_in_queue", %{})
       error -> broadcast(socket, "error_upon_joining", %{error: inspect(error)})

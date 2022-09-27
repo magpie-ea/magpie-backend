@@ -14,6 +14,18 @@ defmodule Magpie.TestHelpers do
     num_generations: 3
   }
 
+  @ulc_experiment_attrs %{
+    name: "some name",
+    author: "some author",
+    description: "some description",
+    active: true,
+    dynamic_retrieval_keys: ["key1", "key2", "key3"],
+    num_variants: 2,
+    num_chains: 5,
+    num_generations: 3,
+    is_url: true
+  }
+
   @experiment_attrs %{
     name: "some name",
     author: "some author",
@@ -40,6 +52,17 @@ defmodule Magpie.TestHelpers do
       )
 
     {:ok, %{experiment: experiment}} = Magpie.Experiments.create_experiment(changes)
+    experiment
+  end
+
+  def insert_ulc_experiment(attrs \\ %{}) do
+    changes =
+      Map.merge(
+        @ulc_experiment_attrs,
+        attrs
+      )
+
+    {:ok, experiment} = Magpie.Experiments.create_experiment(changes)
     experiment
   end
 

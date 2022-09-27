@@ -6,6 +6,7 @@ defmodule Magpie.ParticipantSocket do
   """
 
   alias Magpie.Repo
+  alias Magpie.Experiments
 
   require Ecto.Query
   require Logger
@@ -40,7 +41,7 @@ defmodule Magpie.ParticipantSocket do
   # So yeah, turns out the backend doesn't need to do anything. The frontend will need to join the participant channel immediately afterwards. Indeed.
   def connect(%{"participant_id" => participant_id, "experiment_id" => experiment_id}, socket) do
     with false <- participant_id == "",
-         experiment when not is_nil(experiment) <- Repo.get(Experiment, experiment_id),
+         experiment when not is_nil(experiment) <- Experiments.get_experiment(experiment_id),
          true <- experiment.active do
       {:ok,
        socket

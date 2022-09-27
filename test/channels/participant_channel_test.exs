@@ -7,11 +7,27 @@ defmodule Magpie.ParticipantChannelTest do
   # alias Magpie.ParticipantChannel
   # alias Magpie.Experiments
   alias Magpie.Experiments.WaitingQueueWorker
+  alias Magpie.ParticipantChannel
   alias Magpie.ParticipantSocket
 
   setup do
     experiment = insert_ulc_experiment()
     create_and_subscribe_participant(experiment)
+  end
+
+  describe "broadcast_next_slot_to_participant/2" do
+    test "a call to this function successfully broadcasts the message to a participant in the channel",
+         %{
+           socket: socket,
+           experiment: experiment,
+           participant_id: participant_id
+         } do
+      assert {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+
+      ParticipantChannel.broadcast_next_slot_to_participant(participant_id, "slot_id")
+
+      assert_broadcast("slot_available", "slot_id")
+    end
   end
 
   test "joins the participant channel successfully and gets queued", %{

@@ -28,8 +28,8 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   @doc """
   Remove a participant from the queue, usually because they have disconnected.
   """
-  def dequeue_participant(participant_id) do
-    GenServer.cast(__MODULE__, {:dequeue_participant, participant_id})
+  def dequeue_participant(experiment_id, participant_id) do
+    GenServer.cast(__MODULE__, {:dequeue_participant, {experiment_id, participant_id}})
   end
 
   @doc """
@@ -64,8 +64,13 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   end
 
   @impl true
-  def handle_cast({:dequeue_participant, participant_id}, old_queue) do
-    {:noreply, List.delete(old_queue, participant_id)}
+  def handle_cast({:dequeue_participant, {experiment_id, participant_id}}, old_queues) do
+    updated_queues =
+      Map.update(old_queues, experiment_id, [], fn old_queue ->
+        List.delete(old_queue, participant_id)
+      end)
+
+    {:noreply, updated_queues}
   end
 
   @impl true

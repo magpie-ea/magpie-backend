@@ -5,19 +5,12 @@ defmodule Magpie.ParticipantChannel do
 
   use MagpieWeb, :channel
 
-  alias Ecto.Multi
   alias Magpie.Experiments
 
   alias Magpie.Experiments.{
     AssignmentIdentifier,
-    ChannelWatcher,
-    ExperimentResult,
-    ExperimentStatus,
-    Slots
+    ChannelWatcher
   }
-
-  alias Magpie.Presence
-  alias Magpie.Repo
 
   alias Magpie.Experiments.WaitingQueueWorker
 
@@ -25,14 +18,10 @@ defmodule Magpie.ParticipantChannel do
   require Logger
 
   ### API for calls from the outside
-  # So this is the same as the GenServer mechanism then. Right.
-  # I guess there's also no inherent reason why this function has to live in this module... It just simply makes more organizational sense to do so then. Ha.
-  def broadcast_next_slot_to_participant(next_slot, participant_id) do
-    Phoenix.PubSub.broadcast(
-      Magpie.PubSub,
-      "participant:#{participant_id}",
-      {:slot_available, next_slot}
-    )
+  # So this is the same as the GenServer mechanism.
+  # I guess there's also no inherent reason why this function has to live in this module... It just simply makes more organizational sense to do so.
+  def broadcast_next_slot_to_participant(participant_id, next_slot) do
+    Magpie.Endpoint.broadcast("participant:#{participant_id}", "slot_available", next_slot)
   end
 
   @doc """
@@ -64,7 +53,7 @@ defmodule Magpie.ParticipantChannel do
   """
   def handle_leave(socket, participant_id) do
     # If the user is still in the waiting queue, remove them from it.
-    WaitingQueueWorker.dequeue_participant(participant_id)
+    WaitingQueueWorker.dequeue_participant(socket.assigns.experiment_id, participant_id)
 
     # TODO: Handle the case where the participant has already begun the experiment.
   end

@@ -5,7 +5,6 @@ defmodule Magpie.ParticipantSocket do
   After the refactoring, it might simply be the case that every experiment participant, regardless of the experiment type, connects to this socket, so that we have a uniform experience.
   """
 
-  alias Magpie.Repo
   alias Magpie.Experiments
 
   require Ecto.Query

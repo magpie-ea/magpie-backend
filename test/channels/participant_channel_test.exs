@@ -9,7 +9,7 @@ defmodule Magpie.ParticipantChannelTest do
   alias Magpie.ParticipantSocket
 
   setup do
-    experiment = insert_dynamic_experiment()
+    experiment = insert_ulc_experiment()
     create_and_subscribe_participant(experiment)
   end
 

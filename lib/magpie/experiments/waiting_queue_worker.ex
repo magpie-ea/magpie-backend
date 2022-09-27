@@ -70,11 +70,9 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
 
   @impl true
   def handle_call({:queue_participant, {experiment_id, participant_id}}, _from, old_queues) do
-    # queue_for_experiment = Map.get(old_queues, experiment_id, [])
     updated_queues =
-      Map.get_and_update(old_queues, experiment_id, fn
-        nil -> [participant_id]
-        old_queue -> old_queue ++ [participant_id]
+      Map.update(old_queues, experiment_id, [participant_id], fn old_queue ->
+        old_queue ++ [participant_id]
       end)
 
     {:reply, :ok, updated_queues}

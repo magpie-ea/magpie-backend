@@ -66,17 +66,6 @@ defmodule Magpie.TestHelpers do
     experiment
   end
 
-  def insert_experiment(attrs \\ %{}) do
-    changes =
-      Map.merge(
-        @experiment_attrs,
-        attrs
-      )
-
-    {:ok, %{experiment: experiment}} = Magpie.Experiments.create_experiment(changes)
-    experiment
-  end
-
   def insert_custom_record(attrs \\ %{}) do
     changes =
       Map.merge(

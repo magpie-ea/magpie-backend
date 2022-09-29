@@ -57,8 +57,8 @@ defmodule ExperimentControllerTest do
 
   describe "index/2" do
     test "index/2 responds with all experiments", %{conn: conn} do
-      insert_experiment()
-      insert_experiment(%{name: "some other name", author: "some other author"})
+      insert_ulc_experiment()
+      insert_ulc_experiment(%{name: "some other name", author: "some other author"})
 
       conn =
         conn
@@ -116,7 +116,7 @@ defmodule ExperimentControllerTest do
 
   describe "edit/2" do
     test "edit/2 responds with the experiment edit page", %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn =
         conn
@@ -130,7 +130,7 @@ defmodule ExperimentControllerTest do
 
   describe "update/2" do
     test "update/2 correctly updates the experiment name", %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn =
         conn
@@ -147,7 +147,7 @@ defmodule ExperimentControllerTest do
 
   describe "delete/2" do
     test "delete/2 succeeds and redirects to the experiment index page", %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn =
         conn
@@ -162,7 +162,7 @@ defmodule ExperimentControllerTest do
     test "Related ExperimentResult entries are also deleted after deleting an experiment", %{
       conn: conn
     } do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
       insert_experiment_result(%{"experiment_id" => experiment.id})
       insert_experiment_result(%{"experiment_id" => experiment.id})
 
@@ -201,7 +201,7 @@ defmodule ExperimentControllerTest do
     test "toggle/2 toggles an active experiment to be inactive", %{
       conn: conn
     } do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn
       |> using_basic_auth()
@@ -212,7 +212,7 @@ defmodule ExperimentControllerTest do
     end
 
     test "toggle/2 toggles an inactive experiment to be active", %{conn: conn} do
-      experiment = insert_experiment(%{active: false})
+      experiment = insert_ulc_experiment(%{active: false})
 
       conn
       |> using_basic_auth()
@@ -254,7 +254,7 @@ defmodule ExperimentControllerTest do
     test "Related ExperimentResult entries are deleted after resetting an experiment", %{
       conn: conn
     } do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
       insert_experiment_result(%{"experiment_id" => experiment.id})
       insert_experiment_result(%{"experiment_id" => experiment.id})
 
@@ -296,7 +296,7 @@ defmodule ExperimentControllerTest do
 
   describe "check_valid/2" do
     test "Validity check returns 200 for an existing and valid experiment", %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn =
         conn
@@ -314,7 +314,7 @@ defmodule ExperimentControllerTest do
     end
 
     test "Validity check returns 403 for an existing but inactive experiment", %{conn: conn} do
-      experiment = insert_experiment(%{active: false})
+      experiment = insert_ulc_experiment(%{active: false})
 
       conn =
         conn
@@ -326,7 +326,7 @@ defmodule ExperimentControllerTest do
 
   describe "retrieve_as_csv/2" do
     test "retrieve_as_csv/2 produces a CSV file with expected contents", %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
       insert_experiment_result(%{"experiment_id" => experiment.id})
       submission_id = Repo.one!(ExperimentResult).id
 
@@ -345,7 +345,7 @@ defmodule ExperimentControllerTest do
 
   describe "retrieve_as_json/2" do
     test "Dynamic retrieval returns 403 if no keys are specified", %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
       insert_experiment_result(%{"experiment_id" => experiment.id})
 
       conn =
@@ -357,7 +357,7 @@ defmodule ExperimentControllerTest do
     end
 
     test "Dynamic retrieval returns exactly the data specified", %{conn: conn} do
-      experiment = insert_experiment(%{dynamic_retrieval_keys: ["a"]})
+      experiment = insert_ulc_experiment(%{dynamic_retrieval_keys: ["a"]})
       insert_experiment_result(%{"experiment_id" => experiment.id})
       # Insert twice so that we have two "participants" submitting their results
       insert_experiment_result(%{"experiment_id" => experiment.id})
@@ -385,7 +385,7 @@ defmodule ExperimentControllerTest do
     test "Dynamic retrieval returns 404 for an existing experiment without any submissions", %{
       conn: conn
     } do
-      experiment = insert_experiment(%{dynamic_retrieval_keys: ["a"]})
+      experiment = insert_ulc_experiment(%{dynamic_retrieval_keys: ["a"]})
 
       conn =
         conn
@@ -405,7 +405,7 @@ defmodule ExperimentControllerTest do
 
   describe "retrieve_assignment/2" do
     test "correctly returns the data in JSON format", %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       chain = 4
       variant = 2
@@ -441,7 +441,7 @@ defmodule ExperimentControllerTest do
   describe "submit/2" do
     test "Submission of active experiment succeeds with 201 (created) and successfully stores the results in the DB",
          %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn =
         conn
@@ -457,7 +457,7 @@ defmodule ExperimentControllerTest do
     test "Submission of inactive experiment fails with 403 and wouldn't store the data", %{
       conn: conn
     } do
-      experiment = insert_experiment(%{active: false})
+      experiment = insert_ulc_experiment(%{active: false})
 
       conn =
         conn
@@ -484,7 +484,7 @@ defmodule ExperimentControllerTest do
 
     test "Submission of empty experiment results fails with 422 (unprocessable entity) and wouldn't store the data",
          %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn =
         conn
@@ -498,7 +498,7 @@ defmodule ExperimentControllerTest do
 
     test "Submission of malformed experiment results fails with 422 (unprocessable entity) and wouldn't store the data",
          %{conn: conn} do
-      experiment = insert_experiment()
+      experiment = insert_ulc_experiment()
 
       conn =
         conn

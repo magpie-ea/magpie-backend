@@ -26,25 +26,12 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   end
 
   @doc """
-  Remove a participant from the queue, usually because they have disconnected.
+  Remove a participant from the queue.
+  Originally we also had a `pop_participant` function which removes and returns the participant at the same time. However, that might not be the best approach, as we may only want to remove the participant after we're sure the broadcasting of new slot went through. Therefore, the dequeue_participant function might actually be more useful.
   """
   def dequeue_participant(experiment_id, participant_id) do
     GenServer.cast(__MODULE__, {:dequeue_participant, {experiment_id, participant_id}})
   end
-
-  @doc """
-  Just return the participant at the front of the queue and removes them from the queue. Usually called when there is an available spot.
-  """
-  def pop_participant(experiment_id) do
-    GenServer.call(__MODULE__, {:pop_participant, experiment_id})
-  end
-
-  # @doc """
-  # Returns all the waiting participants in the queue.
-  # """
-  # def get_all_enqueued_participants do
-  #   GenServer.call(__MODULE__, :get_all_enqueued_participants)
-  # end
 
   @doc """
   Get all queues in a map, with experiment_id as keys and queue as values.
@@ -52,10 +39,6 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
   def get_all_queues do
     GenServer.call(__MODULE__, :get_all_queues)
   end
-
-  # def poll_waiting_queue do
-
-  # end
 
   ### Callbacks
   @impl true
@@ -83,40 +66,11 @@ defmodule Magpie.Experiments.WaitingQueueWorker do
     {:reply, :ok, updated_queues}
   end
 
-  # The queue is already empty.
+  # Unused
   # @impl true
-  # def handle_call(:pop_participant, _experiment_id, _from, []) do
-  #   {:reply, {:error, :queue_empty}, []}
+  # def handle_call({:get_queue_for_experiment, experiment_id}, _from, queues) do
+  #   {:reply, {:ok, Map.get(queues, experiment_id, [])}, queues}
   # end
-
-  # We still have somebody in the queue.
-  # @impl true
-  # def handle_call(:pop_participant, experiment_id, _from, [first_in_the_queue | tail]) do
-  #   {:reply, {:ok, first_in_the_queue}, tail}
-  # end
-
-  @impl true
-  def handle_call({:pop_participant, experiment_id}, _from, queues) do
-    queue_for_experiment = Map.get(queues, experiment_id, [])
-
-    case queue_for_experiment do
-      [] ->
-        {:reply, {:error, :queue_empty}, queues}
-
-      [first_in_the_queue | tail] ->
-        {:reply, {:ok, first_in_the_queue}, Map.put(queues, experiment_id, tail)}
-    end
-  end
-
-  # @impl true
-  # def handle_call(:get_all_enqueued_participants, _from, participants) do
-  #   {:reply, {:ok, participants}, participants}
-  # end
-
-  @impl true
-  def handle_call({:get_queue, experiment_id}, _from, queues) do
-    {:reply, {:ok, Map.get(queues, experiment_id, [])}, queues}
-  end
 
   @impl true
   def handle_call(:get_all_queues, _from, queues) do

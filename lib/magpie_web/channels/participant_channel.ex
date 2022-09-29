@@ -6,6 +6,7 @@ defmodule Magpie.ParticipantChannel do
   use MagpieWeb, :channel
 
   alias Magpie.Experiments
+  alias Magpie.Experiments.Slots
 
   alias Magpie.Experiments.{
     AssignmentIdentifier,
@@ -58,12 +59,6 @@ defmodule Magpie.ParticipantChannel do
     # TODO: Handle the case where the participant has already begun the experiment.
   end
 
-  def handle_info({:slot_available, next_slot}, socket) do
-    push(socket, "slot_available", next_slot)
-
-    {:noreply, socket}
-  end
-
   # Should the participant channel already try to find a slot? I'm not sure. There might also be the issue where some previously joined participants were still waiting, since the 5-sec interval for the AssignExperimentSlotsWorker has not been reached yet, while the newly joined participant gets the slot.
   # Let's always queue them to the back of the slot then.
   def handle_info(:after_participant_join, socket) do
@@ -75,20 +70,6 @@ defmodule Magpie.ParticipantChannel do
       error -> broadcast(socket, "error_upon_joining", %{error: inspect(error)})
     end
 
-    # :ok =
-    #   case Slots.get_and_set_to_in_progress_next_free_slot(socket.assigns.experiment_id) do
-    #     {:ok, slot_identifier} ->
-    #       broadcast(socket, "slot_available", slot_identifier)
-
-    #     :no_free_slot_available ->
-    #       :ok = WaitingQueueWorker.queue_participant(socket.assigns.participant_id)
-
-    #       broadcast(socket, "waiting_in_queue", %{})
-
-    #     error ->
-    #       nil
-    #   end
-
     {:noreply, socket}
   end
 
@@ -99,6 +80,26 @@ defmodule Magpie.ParticipantChannel do
     Experiments.report_heartbeat(socket.assigns.assignment_identifier)
 
     {:reply, :ok, socket}
+  end
+
+  def handle_in("take_free_slot", slot_id, socket) do
+    with {:ok, _experiment} <-
+           Slots.set_slot_to_in_progress(socket.assigns.experiment_id, slot_id),
+         :ok <-
+           WaitingQueueWorker.dequeue_participant(
+             socket.assigns.experiment_id,
+             socket.assigns.participant_id
+           ) do
+      {:reply, :ok, socket}
+    else
+      error ->
+        Logger.log(
+          :error,
+          "take_free_slot failed for participant #{socket.assigns.participant_identifier} with the errors: #{inspect(error)}"
+        )
+
+        {:reply, :error, socket}
+    end
   end
 
   # Record the submission when the client finishes the experiment. Set the experiment status to 2 (finished)
@@ -117,19 +118,7 @@ defmodule Magpie.ParticipantChannel do
         )
 
         # No need to monitor this participant anymore
-        Magpie.Experiments.ChannelWatcher.demonitor(:participants, self())
-
-        # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
-        # I think now we can actually simply ask the next-in-line to join again.
-        # So, we should actually broadcast in private to the ParticipantChannel of that user directly, instead of to the waiting room as a whole.
-        # The waiting room is just a mechanism for us to get the id of the next participant.
-
-        next_participant_id =
-          Magpie.Endpoint.broadcast!(
-            "iterated_lobby:#{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}",
-            "finished",
-            %{results: payload["results"]}
-          )
+        ChannelWatcher.demonitor(:participants, self())
 
         # Send a simple ack reply to the submitting client.
         {:reply, :ok, socket}
@@ -173,24 +162,4 @@ defmodule Magpie.ParticipantChannel do
         {:reply, :error, socket}
     end
   end
-
-  #   defp assign_to_slot_or_to_waiting_queue(socket) do
-  #     case Slots.get_and_set_to_in_progress_next_free_slot(socket.assigns.experiment_id) do
-  #       {:ok, slot_identifier} ->
-  #         broadcast(socket, "slot_available", slot_identifier)
-  #         :ok
-
-  #       :no_free_slot_available ->
-  #         with :ok <- WaitingQueueWorker.queue_participant(socket.assigns.participant_id) do
-  #           {:ok, :queued_up}
-  #         end
-
-  #         broadcast(socket, "waiting_in_queue", %{})
-
-  #         :ok
-
-  #       _ ->
-  #         :error
-  #     end
-  #   end
 end

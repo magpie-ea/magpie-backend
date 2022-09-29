@@ -7,6 +7,47 @@ defmodule Magpie.Experiments.Slots do
   alias Magpie.Repo
 
   @doc """
+  Get all slots that are free, in the order that's specificed in the :slot_ordering array.
+  """
+  def get_all_free_slots(experiment_id) when is_integer(experiment_id) do
+    experiment = Experiments.get_experiment!(experiment_id)
+    get_all_free_slots(experiment)
+  end
+
+  def get_all_free_slots(%Experiment{
+        slot_ordering: slot_ordering,
+        slot_statuses: slot_statuses
+      }) do
+    Enum.filter(slot_ordering, fn slot_name ->
+      Map.get(slot_statuses, slot_name) == "available"
+    end)
+  end
+
+  def set_slot_to_in_progress(experiment_id, slot_id) do
+    Repo.transaction(fn ->
+      %Experiment{
+        slot_statuses: slot_statuses,
+        slot_attempt_counts: slot_attempt_counts
+      } = experiment = Experiments.get_experiment!(experiment_id)
+
+      updated_statuses = Map.put(slot_statuses, slot_id, "in_progress")
+
+      updated_attempt_counts =
+        Map.update!(slot_attempt_counts, slot_id, fn previous_attempt_count ->
+          previous_attempt_count + 1
+        end)
+
+      {:ok, experiment} =
+        Experiments.update_experiment(experiment, %{
+          slot_statuses: updated_statuses,
+          slot_attempt_counts: updated_attempt_counts
+        })
+
+      experiment
+    end)
+  end
+
+  @doc """
   Since slot_ordering is an ordered list, we only need to find the first entry in the list which is available.
 
   Note that we'll need to perform an expansion in the situation where the slots are all exhausted.

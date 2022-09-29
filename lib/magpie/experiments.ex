@@ -29,6 +29,18 @@ defmodule Magpie.Experiments do
     # |> Repo.transaction()
   end
 
+  def create_and_initialize_ulc_experiment(experiment_params) do
+    {:ok, experiment} =
+      %Experiment{}
+      |> Experiment.create_changeset_ulc(experiment_params)
+      |> Repo.insert()
+
+    {:ok, initialized_experiment} =
+      Slots.initialize_or_update_slots_from_ulc_specification(experiment)
+
+    Slots.free_slots(initialized_experiment)
+  end
+
   # defp create_experiment_make_multi_with_insert(changeset_experiment) do
   #   Multi.new()
   #   |> Multi.insert(:experiment, changeset_experiment)

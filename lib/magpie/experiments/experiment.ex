@@ -90,6 +90,27 @@ defmodule Magpie.Experiments.Experiment do
     |> initialize_slot_fields()
   end
 
+  def create_changeset_ulc(struct, params \\ %{}) do
+    struct
+    |> cast(params, [
+      :name,
+      :author,
+      :description,
+      :active,
+      :dynamic_retrieval_keys,
+      :expansion_strategy,
+      :experiment_result_columns,
+      :num_variants,
+      :num_chains,
+      :num_generations,
+      :num_players,
+      :is_ulc
+    ])
+    |> validate_required([:name, :author])
+    |> validate_ulc_experiment_requirements()
+    |> initialize_slot_fields()
+  end
+
   defp validate_ulc_experiment_requirements(changeset) do
     if Ecto.Changeset.get_field(changeset, :is_ulc) do
       changeset

@@ -184,7 +184,6 @@ defmodule Magpie.Experiments.Slots do
         end
       )
 
-    # {:ok, experiment} =
     Experiments.update_experiment(experiment, %{
       slot_ordering: updated_slot_ordering,
       slot_statuses: updated_slot_statuses,
@@ -193,8 +192,6 @@ defmodule Magpie.Experiments.Slots do
       trial_players: updated_trial_players,
       copy_number: updated_copy_number
     })
-
-    # free_slots(experiment)
   end
 
   def set_slot_as_complete(

@@ -8,19 +8,31 @@ defmodule Magpie.Experiments.Slots do
 
   @doc """
   Get all slots that are free, in the order that's specificed in the :slot_ordering array.
+
+  It does seem that the most natural place to perform "expand" would be within this function. We'd just need to make sure that we lock the table during the expansion.
   """
   def get_all_free_slots(experiment_id) when is_integer(experiment_id) do
     experiment = Experiments.get_experiment!(experiment_id)
     get_all_free_slots(experiment)
   end
 
-  def get_all_free_slots(%Experiment{
-        slot_ordering: slot_ordering,
-        slot_statuses: slot_statuses
-      }) do
-    Enum.filter(slot_ordering, fn slot_name ->
-      Map.get(slot_statuses, slot_name) == "available"
-    end)
+  def get_all_free_slots(
+        %Experiment{
+          slot_ordering: slot_ordering,
+          slot_statuses: slot_statuses
+        } = experiment
+      ) do
+    ordered_free_slots =
+      Enum.filter(slot_ordering, fn slot_name ->
+        Map.get(slot_statuses, slot_name) == "available"
+      end)
+
+    if Enum.empty?(ordered_free_slots) do
+      expanded_experiment = expand_experiment(experiment)
+      get_all_free_slots(expanded_experiment)
+    else
+      ordered_free_slots
+    end
   end
 
   def set_slot_to_in_progress(experiment_id, slot_id) do
@@ -47,72 +59,8 @@ defmodule Magpie.Experiments.Slots do
     end)
   end
 
-  @doc """
-  Since slot_ordering is an ordered list, we only need to find the first entry in the list which is available.
-
-  Note that we'll need to perform an expansion in the situation where the slots are all exhausted.
-
-  Need to call these functions in a transaction. Otherwise some other process might try to call free_slots and expand_experiment at the same time.
-  """
-  def get_and_set_to_in_progress_next_free_slot(experiment_id) when is_integer(experiment_id) do
-    experiment = Experiments.get_experiment!(experiment_id)
-    get_and_set_to_in_progress_next_free_slot(experiment)
-  end
-
-  def get_and_set_to_in_progress_next_free_slot(
-        %Experiment{
-          slot_ordering: slot_ordering,
-          slot_statuses: slot_statuses,
-          slot_attempt_counts: slot_attempt_counts
-        } = experiment
-      ) do
-    Repo.transaction(fn ->
-      # Hmm, might be the best to free slots only upon submitting an experiment and expanding an experiment... Which one is better then. Let's see.
-      # Theoretically always calling it here also works, but can get expensive really soon. Let me not do it for now then.
-      # {:ok,
-      #  %Experiment{
-      #    slot_ordering: slot_ordering,
-      #    slot_statuses: slot_statuses,
-      #    slot_attempt_counts: slot_attempt_counts
-      #  } = freed_experiment} = free_slots(experiment)
-
-      next_slot =
-        Enum.find(slot_ordering, fn slot_name ->
-          Map.get(slot_statuses, slot_name) == "available"
-        end)
-
-      case next_slot do
-        nil ->
-          {:ok, expanded_experiment} = expand_experiment(experiment)
-          # This could result in a transaction within a transaction...
-          # which should be fine, but we'll need to take care of unwrapping the return value?
-          # Weird, ha.
-          {:ok, next_slot} = get_and_set_to_in_progress_next_free_slot(expanded_experiment)
-          # The transaction automatically wraps the result in an {:ok, } tuple.
-          next_slot
-
-        _ ->
-          updated_statuses = Map.put(slot_statuses, next_slot, "in_progress")
-
-          updated_attempt_counts =
-            Map.update!(slot_attempt_counts, next_slot, fn previous_attempt_count ->
-              previous_attempt_count + 1
-            end)
-
-          {:ok, _} =
-            Experiments.update_experiment(experiment, %{
-              slot_statuses: updated_statuses,
-              slot_attempt_counts: updated_attempt_counts
-            })
-
-          # The transaction automatically wraps the result in an {:ok, } tuple.
-          next_slot
-      end
-    end)
-  end
-
   defp expand_experiment(%Experiment{is_ulc: true} = experiment) do
-    initialize_slots_from_ulc_specification(experiment)
+    initialize_or_update_slots_from_ulc_specification(experiment)
   end
 
   @doc """
@@ -167,7 +115,7 @@ defmodule Magpie.Experiments.Slots do
   #   Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
   # end
 
-  def initialize_slots_from_ulc_specification(
+  def initialize_or_update_slots_from_ulc_specification(
         %Experiment{
           num_variants: num_variants,
           num_chains: num_chains,

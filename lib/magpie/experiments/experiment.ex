@@ -36,6 +36,10 @@ defmodule Magpie.Experiments.Experiment do
     field :slot_attempt_counts, :map
     field :trial_players, :map
 
+    field :expansion_strategy, Ecto.Enum,
+      values: [:expansive, :patient, :no_expansion],
+      default: :expansive
+
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
 
     timestamps(type: :utc_datetime)
@@ -52,6 +56,7 @@ defmodule Magpie.Experiments.Experiment do
       :description,
       :active,
       :dynamic_retrieval_keys,
+      :expansion_strategy,
       :experiment_result_columns,
       :slot_ordering,
       :slot_statuses,
@@ -72,6 +77,7 @@ defmodule Magpie.Experiments.Experiment do
       :description,
       :active,
       :dynamic_retrieval_keys,
+      :expansion_strategy,
       :experiment_result_columns,
       :num_variants,
       :num_chains,

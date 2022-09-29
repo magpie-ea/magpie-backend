@@ -39,7 +39,7 @@ defmodule Magpie.Experiments.AssignExperimentSlotsWorker do
       # I have a feeling that the way we think about "expansion" might be fundamentally flawed here. But it's hard to pinpoint this feeling. smh.
       # But, here's a but, maybe we can alleviate it by pre-creating enough slots as the very first step, so that this is already reasonably taken care of.
       # Then, we can indeed perform the expansion during the `free_slots` step, as we originally envisioned. Let's see then.
-      ordered_free_slots = Slots.get_all_free_slots(experiment_id)
+      ordered_free_slots = Slots.get_all_available_slots(experiment_id)
 
       # Match up the slots and the participants in the queue 1-to-1. Whichever is longer will get cut at the end.
       zipped = Enum.zip(ordered_free_slots, queue)

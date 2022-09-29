@@ -11,12 +11,12 @@ defmodule Magpie.Experiments.Slots do
 
   It does seem that the most natural place to perform "expand" would be within this function. We'd just need to make sure that we lock the table during the expansion.
   """
-  def get_all_free_slots(experiment_id) when is_integer(experiment_id) do
+  def get_all_available_slots(experiment_id) when is_integer(experiment_id) do
     experiment = Experiments.get_experiment!(experiment_id)
-    get_all_free_slots(experiment)
+    get_all_available_slots(experiment)
   end
 
-  def get_all_free_slots(
+  def get_all_available_slots(
         %Experiment{
           slot_ordering: slot_ordering,
           slot_statuses: slot_statuses
@@ -28,8 +28,9 @@ defmodule Magpie.Experiments.Slots do
       end)
 
     if Enum.empty?(ordered_free_slots) do
-      expanded_experiment = expand_experiment(experiment)
-      get_all_free_slots(expanded_experiment)
+      {:ok, expanded_experiment} = expand_experiment(experiment)
+      {:ok, expanded_experiment_with_freed_slots} = free_slots(expanded_experiment)
+      get_all_available_slots(expanded_experiment_with_freed_slots)
     else
       ordered_free_slots
     end
@@ -71,6 +72,8 @@ defmodule Magpie.Experiments.Slots do
   Guess we'll need to go through all the slots for this check.
 
   Seems that the ordering might be irrelevant in this case.
+
+  Note that this function only tries to free the slots. It doesn't perform the expansion.
   """
   def free_slots(
         %Experiment{
@@ -80,7 +83,8 @@ defmodule Magpie.Experiments.Slots do
         } = experiment
       ) do
     # Do everything in one pass. Should be more efficient!
-    {new_slot_statuses, freed_count} =
+    # We don't have a use for freed_count now. Ignoring it for now.
+    {new_slot_statuses, _freed_count} =
       Enum.reduce(orig_slot_statuses, {orig_slot_statuses, 0}, fn
         {slot_name, slot_status}, {orig_slot_statuses, freed_count} ->
           if slot_status == "hold" && all_dependencies_done?(slot_name, experiment) do
@@ -90,7 +94,8 @@ defmodule Magpie.Experiments.Slots do
           end
       end)
 
-    {Experiments.update_experiment(experiment, %{slot_statuses: new_slot_statuses}), freed_count}
+    # {Experiments.update_experiment(experiment, %{slot_statuses: new_slot_statuses}), freed_count}
+    Experiments.update_experiment(experiment, %{slot_statuses: new_slot_statuses})
   end
 
   defp all_dependencies_done?(slot_name, %Experiment{
@@ -115,6 +120,11 @@ defmodule Magpie.Experiments.Slots do
   #   Experiments.update_experiment(experiment, slot_statuses: new_slot_statuses)
   # end
 
+  @doc """
+  This function is called both when the experiment is first created, and when it runs out of slots and needs to be expanded.
+
+  It will also try to free slots at the end of the action.
+  """
   def initialize_or_update_slots_from_ulc_specification(
         %Experiment{
           num_variants: num_variants,
@@ -174,6 +184,7 @@ defmodule Magpie.Experiments.Slots do
         end
       )
 
+    # {:ok, experiment} =
     Experiments.update_experiment(experiment, %{
       slot_ordering: updated_slot_ordering,
       slot_statuses: updated_slot_statuses,
@@ -182,6 +193,8 @@ defmodule Magpie.Experiments.Slots do
       trial_players: updated_trial_players,
       copy_number: updated_copy_number
     })
+
+    # free_slots(experiment)
   end
 
   def set_slot_as_complete(

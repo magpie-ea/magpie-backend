@@ -2,7 +2,15 @@ defmodule Magpie.Experiments do
   @moduledoc """
   Context for experiments
   """
-  alias Magpie.Experiments.{AssignmentIdentifier, Experiment, ExperimentResult, ExperimentStatus}
+  alias Magpie.Experiments.{
+    AssignmentIdentifier,
+    Experiment,
+    ExperimentResult,
+    ExperimentStatus,
+    Slots,
+    WaitingQueueWorker
+  }
+
   alias Magpie.Repo
 
   alias Ecto.Multi
@@ -12,44 +20,58 @@ defmodule Magpie.Experiments do
   require Logger
 
   def create_experiment(experiment_params) do
-    changeset_experiment = Experiment.changeset(%Experiment{}, experiment_params)
+    changeset_experiment = Experiment.create_changeset(%Experiment{}, experiment_params)
 
     changeset_experiment
-    |> create_experiment_make_multi_with_insert()
-    |> Repo.transaction()
+    |> Repo.insert()
+
+    # |> create_experiment_make_multi_with_insert()
+    # |> Repo.transaction()
   end
 
-  defp create_experiment_make_multi_with_insert(changeset_experiment) do
-    Multi.new()
-    |> Multi.insert(:experiment, changeset_experiment)
-    |> Multi.merge(fn %{experiment: experiment} ->
-      # TODO: Of course we should be able to use insert_all... But this could be left as a further improvement I guess.
-      Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
-        Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
-          Enum.reduce(1..experiment.num_generations, multi, fn generation, multi ->
-            Enum.reduce(1..experiment.num_players, multi, fn player, multi ->
-              params = %{
-                experiment_id: experiment.id,
-                variant: variant,
-                chain: chain,
-                generation: generation,
-                player: player,
-                status: 0
-              }
+  def create_and_initialize_ulc_experiment(experiment_params) do
+    {:ok, experiment} =
+      %Experiment{}
+      |> Experiment.create_changeset_ulc(experiment_params)
+      |> Repo.insert()
 
-              changeset = ExperimentStatus.changeset(%ExperimentStatus{}, params)
+    {:ok, initialized_experiment} =
+      Slots.initialize_or_update_slots_from_ulc_specification(experiment)
 
-              multi
-              |> Multi.insert(
-                String.to_atom("experiment_status_#{chain}_#{variant}_#{generation}_#{player}"),
-                changeset
-              )
-            end)
-          end)
-        end)
-      end)
-    end)
+    Slots.free_slots(initialized_experiment)
   end
+
+  # defp create_experiment_make_multi_with_insert(changeset_experiment) do
+  #   Multi.new()
+  #   |> Multi.insert(:experiment, changeset_experiment)
+  #   |> Multi.merge(fn %{experiment: experiment} ->
+  #     # TODO: Of course we should be able to use insert_all... But this could be left as a further improvement I guess.
+  #     Enum.reduce(1..experiment.num_variants, Multi.new(), fn variant, multi ->
+  #       Enum.reduce(1..experiment.num_chains, multi, fn chain, multi ->
+  #         Enum.reduce(1..experiment.num_generations, multi, fn generation, multi ->
+  #           Enum.reduce(1..experiment.num_players, multi, fn player, multi ->
+  #             params = %{
+  #               experiment_id: experiment.id,
+  #               variant: variant,
+  #               chain: chain,
+  #               generation: generation,
+  #               player: player,
+  #               status: 0
+  #             }
+
+  #             changeset = ExperimentStatus.changeset(%ExperimentStatus{}, params)
+
+  #             multi
+  #             |> Multi.insert(
+  #               String.to_atom("experiment_status_#{chain}_#{variant}_#{generation}_#{player}"),
+  #               changeset
+  #             )
+  #           end)
+  #         end)
+  #       end)
+  #     end)
+  #   end)
+  # end
 
   def list_experiments do
     Experiment
@@ -67,7 +89,7 @@ defmodule Magpie.Experiments do
 
   def update_experiment(%Experiment{} = experiment, attrs) do
     experiment
-    |> Experiment.changeset(attrs)
+    |> Experiment.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -102,6 +124,17 @@ defmodule Magpie.Experiments do
     # This creates an ExperimentResult struct with the :experiment_id field filled in
     |> Ecto.build_assoc(:experiment_results)
     |> ExperimentResult.changeset(%{"results" => results})
+    |> Repo.insert()
+  end
+
+  def create_experiment_result(experiment, assignment_identifier, results) do
+    experiment
+    |> Ecto.build_assoc(:experiment_results)
+    |> ExperimentResult.changeset(%{
+      "assignment_identifier" => assignment_identifier,
+      "results" => results,
+      "is_intermediate" => false
+    })
     |> Repo.insert()
   end
 
@@ -203,6 +236,9 @@ defmodule Magpie.Experiments do
     Repo.update_all(relevant_in_progress_experiment_statuses, set: [status: :open])
   end
 
+  # Right, just as expected, there was indeed another workflow for "interactive" experiments
+  # The confusing thing is, have we been using this endpoint for all iterative experiments all the time? I would imagine yes then.
+  # OK, I'll then need to refactor the REST endpoint as well so that we support it. Or alternatively get rid of it, which I don't think we'll ever do.
   def submit_and_complete_assignment_for_interactive_exp(
         %AssignmentIdentifier{} = assignment_identifier,
         results
@@ -235,6 +271,42 @@ defmodule Magpie.Experiments do
     )
     |> Multi.insert(:experiment_result, experiment_result_changeset)
     |> Repo.transaction()
+  end
+
+  def submit_experiment_results(
+        experiment_id,
+        %AssignmentIdentifier{} = assignment_identifier,
+        results
+      ) do
+    Repo.transaction(fn ->
+      with experiment <- get_experiment!(experiment_id),
+           {:ok, _experiment_result} <-
+             create_experiment_result(experiment, assignment_identifier, results),
+           {:ok, updated_experiment} <-
+             Slots.set_slot_as_complete(experiment, assignment_identifier),
+           {{:ok, %Experiment{} = _freed_experiment}, freed_count} <-
+             Slots.free_slots(updated_experiment) do
+        case freed_count do
+          0 ->
+            freed_count
+
+          # Just call the GenServer here.
+          # Or do I actually want to call the assign_slots function below?
+          _ ->
+            Magpie.Endpoint.broadcast!("waiting_queue:#{experiment_id}", "slot_available", %{})
+            freed_count
+        end
+      end
+    end)
+  end
+
+  def assign_slots_to_waiting_participants(freed_count) do
+    # We would need to call the pop_participant function from WaitingQueueWorker
+    # We get a participant id here.
+    # We should then broadcast a message for the participant to join the experiment.
+    # So we would actually need the actual slot identifiers here?
+    # OK, fuck this. I think I know what to do now: Let's actually schedule a worker to constantly poll the queue. Architecture-wise this decouples things much more and makes it so much simpler. Let's go on then. Let's go eh. Let's go. asdfasdf.
+    {:ok, participant_id} = WaitingQueueWorker.pop_participant()
   end
 
   def save_intermediate_experiment_results(

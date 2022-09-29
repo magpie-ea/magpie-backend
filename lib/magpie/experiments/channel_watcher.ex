@@ -54,9 +54,11 @@ defmodule Magpie.Experiments.ChannelWatcher do
     else
       _ ->
         case Map.fetch(state.participants, pid) do
+          # If the participant is not in the list we want to track anyways, don't care about it.
           :error ->
             {:noreply, state}
 
+          # If the participant is still supposed to be tracked in this list, but we don't find them anymore, we run the callback we registered (in this case in ParticipantChannel).
           {:ok, {mod, func, args}} ->
             Task.start_link(mod, func, args)
             {:noreply, drop_participant(state, pid)}

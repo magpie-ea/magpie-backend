@@ -53,7 +53,7 @@ defmodule Magpie.Mixfile do
       {:wallaby, "~> 0.29.0", [runtime: false, only: :test]},
       {:excoveralls, "~> 0.14.2", only: :test},
       # Error checking and linting
-      {:credo, "~> 1.5", only: [:dev, :test]},
+      {:credo, "~> 1.6", only: [:dev, :test]},
       {:dogma, "~> 0.1", only: [:dev]},
       # Frontend assets
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev}

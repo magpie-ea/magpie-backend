@@ -21,13 +21,14 @@ defmodule Magpie.ChannelCase do
       import Plug.Conn
       import Phoenix.ChannelTest
 
-      alias Magpie.Repo
-      alias Magpie.ParticipantSocket
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
 
       import Magpie.TestHelpers
+
+      alias Magpie.ParticipantSocket
+      alias Magpie.Repo
 
       # The default endpoint for testing
       @endpoint Magpie.Endpoint
@@ -41,13 +42,9 @@ defmodule Magpie.ChannelCase do
             "experiment_id" => experiment.id
           })
 
-        {:ok, _, _} = subscribe_and_join(socket, "participant:#{participant_id}")
+        # {:ok, _, _} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-        {:ok,
-         socket: socket,
-         experiment: experiment,
-         participant_id: participant_id,
-         assignment_identifier: socket.assigns.assignment_identifier}
+        {:ok, socket: socket, experiment: experiment, participant_id: participant_id}
       end
     end
   end

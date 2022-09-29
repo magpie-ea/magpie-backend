@@ -1,5 +1,8 @@
 defmodule Magpie.Application do
+  @moduledoc false
   use Application
+
+  alias Magpie.Repo
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
@@ -21,14 +24,39 @@ defmodule Magpie.Application do
       # worker(Magpie.Worker, [arg1, arg2, arg3]),
       # Starts a worker by calling: Magpie.Worker.start_link(arg)
       # {Magpie.Worker, arg},
-      {Magpie.Experiments.ExperimentStatusResetWorker, []},
-      {Magpie.Experiments.ChannelWatcher, :participants}
+      # {Magpie.Experiments.ExperimentStatusResetWorker, []},
+      {Magpie.Experiments.ChannelWatcher, :participants},
+      {Magpie.Experiments.WaitingQueueWorker, []}
+      # {Magpie.Experiments.AssignExperimentSlotsWorker, []}
+
+      # Registry for keeping track of the workers. Not useful with the current implementation.
+      # {Registry, keys: :unique, name: Magpie.Registry},
+      # DynamicSupervisor to supervise the workers. Not useful with the current implementation.
+      # {DynamicSupervisor, strategy: :one_for_one, name: Magpie.DynamicSupervisor},
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Magpie.Supervisor]
-    Supervisor.start_link(children, opts)
+    result = Supervisor.start_link(children, opts)
+
+    # Let's first try out the simpler setup where there's only one worker globally for both types.
+    # We can go on to use dynamic supervisors later if the single worker can't handle the traffic.
+    # experiments = Magpie.Repo.all(Magpie.Experiments.Experiment)
+
+    # Enum.each(experiments, fn experiment ->
+    #   DynamicSupervisor.start_child(
+    #     Magpie.DynamicSupervisor,
+    #     {Magpie.Experiments.AssignExperimentSlotsWorker, experiment.id}
+    #   )
+
+    #   DynamicSupervisor.start_child(
+    #     Magpie.DynamicSupervisor,
+    #     {Magpie.Experiments.WaitingQueueWorker, experiment.id}
+    #   )
+    # end)
+
+    result
   end
 
   # Tell Phoenix to update the endpoint configuration

@@ -16,22 +16,31 @@ defmodule Magpie.Experiments.Experiment do
     field :active, :boolean, default: true, null: false
     field :dynamic_retrieval_keys, {:array, :string}
 
-    field :is_dynamic, :boolean, default: false, null: false
-    field :is_interactive, :boolean, default: false, null: false
-
-    # For dynamic experiments.
-    field :num_variants, :integer, null: true, default: 1
-    field :num_chains, :integer, null: true, default: 1
-    field :num_generations, :integer, null: true, default: 1
-
-    # For interactive experiments.
-    field :num_players, :integer, null: true, default: 1
-
     # Accumulation of columns contained in each result JSON submission.
     field :experiment_result_columns, {:array, :string}
 
+    ### slots-related parts
+    field :is_ulc, :boolean, default: true
+
+    # ULC fields
+    field :num_variants, :integer, null: true, default: 1
+    field :num_chains, :integer, null: true, default: 1
+    field :num_generations, :integer, null: true, default: 1
+    field :num_players, :integer, null: true, default: 1
+
+    # This field is indeed global to an experiment. Once it has incremented, there's no reason to decrement it again.
+    field :copy_number, :integer, default: 0
+    field :slot_ordering, {:array, :string}
+    field :slot_statuses, :map
+    field :slot_dependencies, :map
+    field :slot_attempt_counts, :map
+    field :trial_players, :map
+
+    field :expansion_strategy, Ecto.Enum,
+      values: [:expansive, :patient, :no_expansion],
+      default: :expansive
+
     has_many(:experiment_results, Magpie.Experiments.ExperimentResult, on_delete: :delete_all)
-    has_many(:experiment_statuses, Magpie.Experiments.ExperimentStatus, on_delete: :delete_all)
 
     timestamps(type: :utc_datetime)
   end
@@ -39,7 +48,7 @@ defmodule Magpie.Experiments.Experiment do
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
-  def changeset(struct, params \\ %{}) do
+  def update_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
       :name,
@@ -47,27 +56,63 @@ defmodule Magpie.Experiments.Experiment do
       :description,
       :active,
       :dynamic_retrieval_keys,
+      :expansion_strategy,
+      :experiment_result_columns,
+      :slot_ordering,
+      :slot_statuses,
+      :slot_dependencies,
+      :slot_attempt_counts,
+      :trial_players,
+      :copy_number
+    ])
+    |> validate_required([:name, :author])
+  end
+
+  # This is actually the changeset for ULC? Let's see.
+  def create_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [
+      :name,
+      :author,
+      :description,
+      :active,
+      :dynamic_retrieval_keys,
+      :expansion_strategy,
       :experiment_result_columns,
       :num_variants,
       :num_chains,
       :num_generations,
       :num_players,
-      :is_dynamic,
-      :is_interactive
+      :is_ulc
     ])
     |> validate_required([:name, :author])
-    |> validate_dynamic_experiment_requirements()
+    |> validate_ulc_experiment_requirements()
+    |> initialize_slot_fields()
   end
 
-  # If the experiment is dynamic, those three numbers must be present.
-  # If the experiment is not dynamic, all of them must be absent, otherwise the user has made an error.
-  # This is still a bit ugly. Can we do it better?
-  # validate_change/3 is only applicable to one single field.
-  # A cleaner way would be to create a completely separate model for dynamic experiments, instead of containing everything within one model.
-  # For now let's first continue with this I guess.
-  defp validate_dynamic_experiment_requirements(changeset) do
-    if Ecto.Changeset.get_field(changeset, :is_dynamic) ||
-         Ecto.Changeset.get_field(changeset, :is_interactive) do
+  def create_changeset_ulc(struct, params \\ %{}) do
+    struct
+    |> cast(params, [
+      :name,
+      :author,
+      :description,
+      :active,
+      :dynamic_retrieval_keys,
+      :expansion_strategy,
+      :experiment_result_columns,
+      :num_variants,
+      :num_chains,
+      :num_generations,
+      :num_players,
+      :is_ulc
+    ])
+    |> validate_required([:name, :author])
+    |> validate_ulc_experiment_requirements()
+    |> initialize_slot_fields()
+  end
+
+  defp validate_ulc_experiment_requirements(changeset) do
+    if Ecto.Changeset.get_field(changeset, :is_ulc) do
       changeset
       |> validate_required([:num_variants, :num_chains, :num_generations, :num_players])
       |> validate_number(:num_variants, greater_than: 0)
@@ -75,18 +120,16 @@ defmodule Magpie.Experiments.Experiment do
       |> validate_number(:num_generations, greater_than: 0)
       |> validate_number(:num_players, greater_than: 0)
     else
-      if Ecto.Changeset.get_change(changeset, :num_variants) ||
-           Ecto.Changeset.get_change(changeset, :num_chains) ||
-           Ecto.Changeset.get_change(changeset, :num_generations) ||
-           Ecto.Changeset.get_change(changeset, :num_players) do
-        changeset
-        |> add_error(
-          :is_dynamic,
-          "The num_variant, num_chains, num_generations, num_players attributes are only for dynamic experiments!"
-        )
-      else
-        changeset
-      end
+      changeset
     end
+  end
+
+  defp initialize_slot_fields(changeset) do
+    changeset
+    |> put_change(:slot_ordering, [])
+    |> put_change(:slot_statuses, %{})
+    |> put_change(:slot_dependencies, %{})
+    |> put_change(:slot_attempt_counts, %{})
+    |> put_change(:trial_players, %{})
   end
 end

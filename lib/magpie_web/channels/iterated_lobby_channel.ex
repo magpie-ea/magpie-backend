@@ -5,27 +5,38 @@ defmodule Magpie.IteratedLobbyChannel do
   use MagpieWeb, :channel
   alias Magpie.Experiments
   alias Magpie.Experiments.AssignmentIdentifier
+  alias Magpie.Presence
 
   @doc """
-  A client can then decide which experiment results it wants to wait for. Once the experiment results are submitted, they will be informed.
-
-  Note that the assignment identifier should always be the experiment_id followed by the complete 4-tuple.
-
-  Example: "iterated_lobby:45:1:1:1:1"
+  When there is temporarily no free slot, a participant will join a queue of participants waiting for the next slot to open up.
   """
   def join(
-        "iterated_lobby:" <> assignment_identifier,
+        "iterated_lobby",
         _payload,
         socket
       ) do
-    case AssignmentIdentifier.from_string(assignment_identifier) do
-      {:ok, %AssignmentIdentifier{} = identifier_struct} ->
-        send(self(), {:after_participant_join, identifier_struct})
-        {:ok, socket}
+    send(self(), :after_participant_join)
+    {:ok, socket}
+  end
 
-      {:error, :invalid_format} ->
-        {:error, %{reason: "invalid_format"}}
-    end
+  def handle_info(:after_participant_join, socket) do
+    # Add this participant to the global queue of all participants waiting for the next slot to open up.
+    # How should we broadcast to only the next participant joining?
+    # Should probably be the assignment identifier, actually.
+    # Hmm... Wait a sec. Do I actually need presence tracking. I don't think I do? Let's think about it.
+    # But yeah, if I don't track it, how do I know that if some user is not waiting anymore. Seems this would still be the most convenient API then. Let's see.
+    # I have to say though, I do feel the design of the presence API to be somewhat cumbersome. Let's see if we can do better then. Let's see.
+    # Oh yeah, silly me. Of course we'd still need to use a key. The key should be the experiment identifier itself, so that we can easily group all participants of this experiment, eh?
+    # Mentally speaking, it's a bit draining to contain so much info in an identifier. I'm thinking whether it would simply be possible to abstract away all the other infos, and keep the "identifier" itself pure. But it's annoying isn't it. Let's see then. Let's see.
+    # Yeah, just the experiment id would suffice here. That's the point here.
+    Presence.track(
+      socket,
+      "waiting_room:#{socket.assigns.experiment_id}",
+      %{
+        participant_id: socket.assigns.participant_id,
+        online_at: inspect(System.system_time(:second))
+      }
+    )
   end
 
   def handle_info(

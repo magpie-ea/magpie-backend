@@ -5,55 +5,74 @@ defmodule Magpie.ParticipantChannelTest do
   use Magpie.ChannelCase, async: false
 
   # alias Magpie.ParticipantChannel
-  alias Magpie.Experiments
+  # alias Magpie.Experiments
+  alias Magpie.Experiments.WaitingQueueWorker
+  alias Magpie.ParticipantChannel
   alias Magpie.ParticipantSocket
 
   setup do
-    experiment = insert_dynamic_experiment()
+    experiment = insert_ulc_experiment()
     create_and_subscribe_participant(experiment)
   end
 
-  test "joins the participant channel successfully", %{
+  describe "broadcast_next_slot_to_participant/2" do
+    test "a call to this function successfully broadcasts the message to a participant in the channel",
+         %{
+           socket: socket,
+           experiment: experiment,
+           participant_id: participant_id
+         } do
+      assert {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+
+      ParticipantChannel.broadcast_next_slot_to_participant(participant_id, "slot_id")
+
+      assert_broadcast("slot_available", "slot_id")
+    end
+  end
+
+  test "joins the participant channel successfully and gets queued", %{
     socket: socket,
-    experiment: _experiment,
+    experiment: experiment,
     participant_id: participant_id
   } do
     assert {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+
+    assert {:ok, participant_id} == WaitingQueueWorker.pop_participant(experiment.id)
   end
 
-  test "Receives the trituple denoting the next available experiment slot after joining", %{
-    socket: socket,
-    experiment: _experiment,
-    participant_id: participant_id,
-    assignment_identifier: assignment_identifier
-  } do
-    {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+  # test "Receives the trituple denoting the next available experiment slot after joining", %{
+  #   socket: socket,
+  #   experiment: _experiment,
+  #   participant_id: participant_id,
+  #   assignment_identifier: assignment_identifier
+  # } do
+  #   {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-    variant = assignment_identifier.variant
-    chain = assignment_identifier.chain
-    generation = assignment_identifier.generation
+  #   variant = assignment_identifier.variant
+  #   chain = assignment_identifier.chain
+  #   generation = assignment_identifier.generation
 
-    assert_broadcast("experiment_available", %{
-      variant: ^variant,
-      chain: ^chain,
-      generation: ^generation
-    })
-  end
+  #   assert_broadcast("experiment_available", %{
+  #     variant: ^variant,
+  #     chain: ^chain,
+  #     generation: ^generation
+  #   })
+  # end
 
-  test "The experiment status is set to 1 after a participant joins", %{
-    socket: socket,
-    experiment: _experiment,
-    participant_id: participant_id,
-    assignment_identifier: assignment_identifier
-  } do
-    {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
+  # test "The experiment status is set to 1 after a participant joins", %{
+  #   socket: socket,
+  #   experiment: _experiment,
+  #   participant_id: participant_id,
+  #   assignment_identifier: assignment_identifier
+  # } do
+  #   {:ok, _, _socket} = subscribe_and_join(socket, "participant:#{participant_id}")
 
-    Process.sleep(100)
+  #   Process.sleep(100)
 
-    experiment_status = Experiments.get_experiment_status(assignment_identifier)
+  #   experiment_status = Experiments.get_experiment_status(assignment_identifier)
 
-    assert experiment_status.status === :in_progress
-  end
+  #   assert experiment_status.status === :in_progress
+  # end
 
   # The issue with SQL Sandbox is solved with Elixir 1.8.0+ and DBConnection 2.0.4+
   # TODO: This method of resetting the experiment status will be obsolete once we implement the polling.

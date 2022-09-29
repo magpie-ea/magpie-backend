@@ -4,27 +4,42 @@ defmodule Magpie.ParticipantChannel do
   """
 
   use MagpieWeb, :channel
+
   alias Magpie.Experiments
-  alias Magpie.Experiments.{AssignmentIdentifier, ExperimentStatus, ExperimentResult}
-  alias Magpie.Repo
-  alias Ecto.Multi
+  alias Magpie.Experiments.Slots
+
+  alias Magpie.Experiments.{
+    AssignmentIdentifier,
+    ChannelWatcher
+  }
+
+  alias Magpie.Experiments.WaitingQueueWorker
+
   require Ecto.Query
   require Logger
 
+  ### API for calls from the outside
+  # So this is the same as the GenServer mechanism.
+  # I guess there's also no inherent reason why this function has to live in this module... It just simply makes more organizational sense to do so.
+  def broadcast_next_slot_to_participant(participant_id, next_slot) do
+    Magpie.Endpoint.broadcast("participant:#{participant_id}", "slot_available", next_slot)
+  end
+
   @doc """
-  The first step after establishing connection for any participant is to log in with a (in most cases randomly generated in the frontend) participant_id
+  The first step after establishing connection for any participant is to log in with a (randomly generated in the frontend) participant_id
   """
   def join("participant:" <> participant_id, _payload, socket) do
-    # The participant_id should have been stored in the socket assigns already, and should match what the client tries to send us.
+    # The participant_id should have been stored in the socket assigns already,
+    # and should match what the client tries to send us.
     if socket.assigns.participant_id == participant_id do
-      send(self(), :after_participant_join)
-
       :ok =
-        Magpie.Experiments.ChannelWatcher.monitor(
+        ChannelWatcher.monitor(
           :participants,
           self(),
-          {__MODULE__, :handle_leave, [socket]}
+          {__MODULE__, :handle_leave, [socket, participant_id]}
         )
+
+      send(self(), :after_participant_join)
 
       {:ok, socket}
     else
@@ -35,32 +50,25 @@ defmodule Magpie.ParticipantChannel do
   @doc """
   Reset the experiment status when the user leaves halfway through (e.g. closes the tab)
 
-  N.B.: This callback might not catch situations where the connection times out, etc. A GenServer as mentioned in https://stackoverflow.com/questions/33934029/how-to-detect-if-a-user-left-a-phoenix-channel-due-to-a-network-disconnect could be useful.
+  An additional ChannelWatcher is also implemented according to https://stackoverflow.com/questions/33934029/how-to-detect-if-a-user-left-a-phoenix-channel-due-to-a-network-disconnect so that handle_leave/1 is invoked also when the user loses connection, not just when they close the tab.
   """
-  def handle_leave(socket) do
-    # We should probably reset the whole set of statuses, even if only one participant breaks out.
-    # Note that we only deal with experiments with status 1, i.e. if any of other participants already saved the entire result and thus set the status to 2, the results would not be affected.
-    Experiments.reset_in_progress_assignments_for_interactive_exp(
-      socket.assigns.assignment_identifier
-    )
+  def handle_leave(socket, participant_id) do
+    # If the user is still in the waiting queue, remove them from it.
+    WaitingQueueWorker.dequeue_participant(socket.assigns.experiment_id, participant_id)
+
+    # TODO: Handle the case where the participant has already begun the experiment.
   end
 
+  # Should the participant channel already try to find a slot? I'm not sure. There might also be the issue where some previously joined participants were still waiting, since the 5-sec interval for the AssignExperimentSlotsWorker has not been reached yet, while the newly joined participant gets the slot.
+  # Let's always queue them to the back of the slot then.
   def handle_info(:after_participant_join, socket) do
-    # Broadcast the tuple <variant-nr, chain-nr, generation-nr, player-nr> to the user.
-    # We know that the experiment is available already when we accept the participant in ParticipantSocket.
-    # However we can only broadcast the message after they've joined to the channel.
-    broadcast(
-      socket,
-      "experiment_available",
-      socket.assigns.assignment_identifier
-    )
-
-    # broadcast(socket, "experiment_available", %{
-    #   variant: socket.assigns.assignment_status.variant,
-    #   chain: socket.assigns.assignment_status.chain,
-    #   generation: socket.assigns.assignment_status.generation,
-    #   player: socket.assigns.assignment_status.player
-    # })
+    case WaitingQueueWorker.queue_participant(
+           socket.assigns.experiment_id,
+           socket.assigns.participant_id
+         ) do
+      :ok -> broadcast(socket, "waiting_in_queue", %{})
+      error -> broadcast(socket, "error_upon_joining", %{error: inspect(error)})
+    end
 
     {:noreply, socket}
   end
@@ -74,37 +82,51 @@ defmodule Magpie.ParticipantChannel do
     {:reply, :ok, socket}
   end
 
+  def handle_in("take_free_slot", slot_id, socket) do
+    with {:ok, _experiment} <-
+           Slots.set_slot_to_in_progress(socket.assigns.experiment_id, slot_id),
+         :ok <-
+           WaitingQueueWorker.dequeue_participant(
+             socket.assigns.experiment_id,
+             socket.assigns.participant_id
+           ) do
+      {:reply, :ok, socket}
+    else
+      error ->
+        Logger.log(
+          :error,
+          "take_free_slot failed for participant #{socket.assigns.participant_identifier} with the errors: #{inspect(error)}"
+        )
+
+        {:reply, :error, socket}
+    end
+  end
+
   # Record the submission when the client finishes the experiment. Set the experiment status to 2 (finished)
   # We might still allow the submissions via the REST API anyways. Both should be viable options.
+
   def handle_in("submit_results", payload, socket) do
-    case Experiments.submit_and_complete_assignment_for_interactive_exp(
+    case Experiments.submit_experiment_results(
+           socket.assigns.experiment_id,
            socket.assigns.assignment_identifier,
            payload["results"]
          ) do
-      {:ok, _} ->
+      :ok ->
         Logger.log(
           :info,
           "Experiment results successfully saved for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}"
         )
 
         # No need to monitor this participant anymore
-        Magpie.Experiments.ChannelWatcher.demonitor(:participants, self())
-
-        # Tell all clients that are waiting for results of this experiment that the experiment is finished, and send them the results.
-        Magpie.Endpoint.broadcast!(
-          "iterated_lobby:#{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}",
-          "finished",
-          %{results: payload["results"]}
-        )
+        ChannelWatcher.demonitor(:participants, self())
 
         # Send a simple ack reply to the submitting client.
         {:reply, :ok, socket}
 
-      {:error, failed_operation, failed_value, changes_so_far} ->
+      {:error, error} ->
         Logger.log(
           :error,
-          "Saving experiment results failed for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)}, operation
-          #{inspect(failed_operation)} failed with #{inspect(failed_value)}. Changes: #{inspect(changes_so_far)}"
+          "Saving experiment results failed for participant #{AssignmentIdentifier.to_string(socket.assigns.assignment_identifier)} with the errors: #{inspect(error)}"
         )
 
         {:reply, :error, socket}
@@ -116,7 +138,8 @@ defmodule Magpie.ParticipantChannel do
   def handle_in("save_intermediate_results", payload, socket) do
     intermediate_results = payload["results"]
 
-    case Experiments.save_intermediate_experiment_results(
+    case Experiments.save_experiment_results(
+           socket.assigns.experiment_id,
            socket.assigns.assignment_identifier,
            intermediate_results
          ) do

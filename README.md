@@ -183,7 +183,7 @@ There is an [official guide](https://hexdocs.pm/phoenix/heroku.html) from Phoeni
 
 7. You may want to change the application name instead of using the default name. In that case, run `heroku apps:rename newname`.
 
-8. Run `heroku config:set HOST="[app_name].herokuapp.com" PORT=443 CANONNICAL_URL="https://[app_name].herokuapp.com"` where `[app_name]` is the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277`, or the app name that you set at the previous step, e.g. `newname`).
+8. Run `heroku config:set HOST="[app_name].herokuapp.com" PORT=443 CANONICAL_URL="https://[app_name].herokuapp.com"` where `[app_name]` is the app name (shown when you first ran `heroku create`, e.g. `mysterious-meadow-6277`, or the app name that you set at the previous step, e.g. `newname`).
 
 9. Run
 

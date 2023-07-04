@@ -7,7 +7,6 @@ defmodule Magpie.Mixfile do
       version: "2.3.4",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -34,12 +33,13 @@ defmodule Magpie.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.7"},
+      {:phoenix, "~> 1.7.2"},
       # phoenix_ecto 3.x corresponds to Ecto 2.x. phoenix_ecto 4.x corresponds to Ecto 3.x
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.6"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 3.0"},
+      {:phoenix_html, "~> 3.3"},
+      {:phoenix_view, "~> 2.0"},
       {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:gettext, "~> 0.18"},
       {:cowboy, "~> 2.9"},
@@ -68,10 +68,12 @@ defmodule Magpie.Mixfile do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup"],
+      setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
+      "assets.setup": ["esbuild.install --if-missing"],
+      "assets.build": ["esbuild default"],
       "assets.deploy": ["esbuild default --minify", "phx.digest"]
     ]
   end

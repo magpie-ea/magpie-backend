@@ -14,7 +14,9 @@ config :magpie, Magpie.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "mUum0f5OpF/oj91tE+XldtHDV5RzRCwZ6GxdF3KDj1lau8GI6dq7HsB1pRMA5Z3z",
   render_errors: [view: Magpie.ErrorView, accepts: ~w(html json)],
-  pubsub_server: Magpie.PubSub
+  pubsub_server: Magpie.PubSub,
+  # In all envs server needs to be turned on (in test we run Wallaby)
+  server: true
 
 # Configure esbuild (the version is required)
 config :esbuild,
@@ -38,4 +40,4 @@ config :phoenix, :json_library, Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{Mix.env()}.exs"
+import_config "#{config_env()}.exs"

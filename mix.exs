@@ -47,7 +47,7 @@ defmodule Magpie.Mixfile do
       {:jason, "~> 1.2"},
       {:cors_plug, "~> 2.0"},
       # Temporary file download for experiment results
-      {:briefly, "~> 0.3"},
+      {:briefly, "~> 0.4"},
       {:csv, "~> 2.4"},
       {:calendar, "~> 1.0"},
       {:wallaby, "~> 0.29.0", [runtime: false, only: :test]},

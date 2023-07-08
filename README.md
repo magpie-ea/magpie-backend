@@ -24,7 +24,7 @@
 This is a server backend to run psychological experiments in the browser. It
 helps receive, store and retrieve data. It also provides communication channels for multi-participant interactive experiments.
 
-A [live demo](https://magpie-demo.herokuapp.com/) of the app is available. Note that this demo doesn't require user authentication.
+A [live demo](https://magpie-test.gigalixirapp.com/) of the app is available. Note that this demo doesn't require user authentication.
 
 If you encounter any bugs during your experiments please [submit an issue](https://github.com/magpie-ea/magpie-backend/issues).
 
@@ -117,7 +117,7 @@ A [minimal example](https://jsfiddle.net/SZJX/dp8ewnfx/) of frontend code using 
 ```javascript
 $.ajax({
   type: 'GET',
-  url: 'https://magpie-demo.herokuapp.com/api/retrieve_experiment/1',
+  url: 'https://magpie-test.gigalixirapp.com//api/retrieve_experiment/1',
   crossDomain: true,
   success: function(responseData, textStatus, jqXHR) {
     console.table(responseData);
@@ -244,7 +244,7 @@ For detailed documentation on the structure and deployment of experiments, pleas
 
   (However, currently if you actually submitted an object or array, the backend will still print it out, as it is. Good luck trying to parse that in your CSV output though!)
 
-- There is limited guarantee on database reliability on Heroku's Hobby (free) grade. If the magpie-demo site for your experiments, you should retrieve the experiment results and perform backups as soon as possible.
+- There is limited guarantee on database reliability on Heroku's Hobby (free) grade. If the magpie-test site for your experiments, you should retrieve the experiment results and perform backups as soon as possible.
 
 # Development
 

@@ -15,8 +15,8 @@
     - [Uploading a data record](#uploading-a-data-record)
     - [Retrieval of data records](#retrieval-of-data-records)
   - [Deploying the Server](#deploying-the-server)
-    - [Deployment with Heroku](#deployment-with-heroku)
-      - [Updating the Heroku deployment](#updating-the-heroku-deployment)
+    - [Deploying via Gigalixir](#deploying-via-gigalixir)
+    - [Deploying via Fly.io](#deploying-via-flyio)
     - [Local (Offline) Deployment with Docker](#local-offline-deployment-with-docker)
       - [First-time installation (requires internet connection)](#first-time-installation-requires-internet-connection)
 - [Experiments (Frontend)](#experiments-frontend)
@@ -164,10 +164,15 @@ This section documents some methods one can use to deploy the server, for both o
 pip3 install gigalixir --user
 gigalixir signup
 gigalixir login
+# Replace [your-app-name] with the desired name.
 gigalixir create -n [your-app-name]
 gigalixir pg:create --free
-gigalixir config:set PHX_HOST=${your-app-name}.gigalixirapp.com
+# Replace [your-app-name] with the desired name.
+gigalixir config:set PHX_HOST=[your-app-name].gigalixirapp.com
 gigalixir config:set PHX_SERVER=true
+# Replace with your desired auth username and password.
+gigalixir config:set AUTH_USERNAME=[your-auth-username]
+gigalixir config:set AUTH_PASSWORD=[your-password]
 git push -u gigalixir master
 ```
 
@@ -194,8 +199,9 @@ git push --force -u gigalixir master
 brew install flyctl
 fly auth signup
 fly auth login
-# Do not proceed to deployment yet at the launch step.
+# Do not proceed to deployment yet at the "whether to deploy" step.
 fly launch
+# Replace with your desired auth username and password.
 fly secrets set AUTH_USERNAME=[your-auth-username]
 fly secrets set AUTH_PASSWORD=[your-password]
 fly deploy

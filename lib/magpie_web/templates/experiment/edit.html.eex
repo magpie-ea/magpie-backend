@@ -1,7 +1,7 @@
 <h1>Edit Experiment</h1>
 
 <p>
-  Please refer to the following information when configuring an experiment based on <code>magpie-base</code>:
+  Please refer to the following information when configuring an experiment based on <a href="https://www.npmjs.com/package/magpie-base" <code>magpie-base</code></a>:
 </p>
 
 <ul>
@@ -12,7 +12,7 @@ socketUrl: '<%= get_socket_url() %>',</pre>
 </ul>
 
 <p>
-  (If you're basing your experiment on a frontend version that was before the <code>magpie-base</code> package, please note the full submission URL: <code><%= get_home_url() <> Magpie.Router.Helpers.experiment_path(Magpie.Endpoint, :submit, @experiment.id) %></code>)
+  (If you're basing your experiment on a frontend version that was before <a href="https://www.npmjs.com/package/magpie-base" the <code>magpie-base</code> package</a>, please note the full submission URL: <code><%= get_home_url() <> Magpie.Router.Helpers.experiment_path(Magpie.Endpoint, :submit, @experiment.id) %></code>)
 </p>
 
 <%= form_for @changeset, experiment_path(@conn, :update, @experiment), fn f -> %>

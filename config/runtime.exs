@@ -14,6 +14,12 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
+  config :magpie, Magpie.Repo,
+    # ssl: true,
+    url: database_url,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    socket_options: maybe_ipv6
+
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
       raise """
@@ -38,12 +44,6 @@ if config_env() == :prod do
     # Allow clients from anywhere to connect to use the interactive experiment facilities. We can't constrain where the user chooses to host the frontend anyways.
     check_origin: false
 
-  # Configure the database
-  config :magpie, Magpie.Repo,
-    # ssl: true,
-    url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
-    socket_options: maybe_ipv6
 
   config :logger,
     backends: [:console]

@@ -1,9 +1,7 @@
 import Config
 
 config :magpie, Magpie.Endpoint,
-  http: [port: 4001],
-  # Enable the server during tests
-  server: true
+  http: [port: 4001]
 
 # Configure your database
 config :magpie, Magpie.Repo,
@@ -17,6 +15,9 @@ config :magpie, :sql_sandbox, true
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+# Initialize plugs at runtime for faster test compilation
+config :phoenix, :plug_init_mode, :runtime
 
 # Used for basic_auth
 config :magpie, :authentication,

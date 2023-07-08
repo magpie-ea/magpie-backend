@@ -177,7 +177,8 @@ git push -u gigalixir master
 To deploy the app again after pulling in the latest updates:
 
 ```
-git pull master
+# The `origin` git remote should point to the Github repo, while the `gigalixir` git remote points to the Fly.io repo.
+git pull origin master
 git push -u gigalixir master
 ```
 
@@ -208,7 +209,8 @@ fly deploy
 To deploy the app again after pulling in the latest updates:
 
 ```
-git pull master
+# The `origin` git remote should point to the Github repo, while the `gigalixir` git remote points to the Fly.io repo.
+git pull origin master
 fly deploy
 ```
 

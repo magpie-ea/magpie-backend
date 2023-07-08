@@ -107,33 +107,20 @@ defmodule Magpie.ExperimentView do
   end
 
   def get_endpoint_url(type, id) do
-    base_url =
-      Application.get_env(
-        :magpie,
-        :canonical_url,
-        Magpie.Router.Helpers.page_url(Magpie.Endpoint, :index)
-      )
+    base_url = Magpie.Router.Helpers.page_url(Magpie.Endpoint, :index)
 
     path = Magpie.Router.Helpers.experiment_path(Magpie.Endpoint, type, id)
     base_url <> path
   end
 
   def get_home_url() do
-    base_url =
-      Application.get_env(
-        :magpie,
-        :canonical_url,
-        Magpie.Router.Helpers.page_url(Magpie.Endpoint, :index)
-      )
-
-    home_path = Magpie.Router.Helpers.page_path(Magpie.Endpoint, :index)
-    base_url <> home_path
+    Magpie.Endpoint.url()
   end
 
   def get_socket_url() do
     get_home_url()
     |> String.replace_leading("http", "ws")
-    |> Kernel.<>("socket")
+    |> Kernel.<>("/socket")
   end
 
   def format_timestamp(timestamp, timezone) do

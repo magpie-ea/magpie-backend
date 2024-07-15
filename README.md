@@ -28,7 +28,7 @@ A [live demo](https://magpie-test.gigalixirapp.com/) of the app is available. No
 
 If you encounter any bugs during your experiments please [submit an issue](https://github.com/magpie-ea/magpie-backend/issues).
 
-Please also refer to the [\_magpie project site](https://magpie-ea.github.io/magpie-site) and its [section on the server app](https://magpie-ea.github.io/magpie-site/serverapp/overview.html) for additional documentation.
+Please also refer to the (new) [\_magpie project site](https://magpie-experiments.org) for additional documentation.
 
 Work on this project was funded via the project
 [Pro^3](http://www.xprag.de/?page_id=4759), which is part of the [XPRAG.de](http://www.xprag.de/) funded by the German Research
@@ -44,7 +44,7 @@ The app now comes with [Basic access Authentication](https://en.wikipedia.org/wi
 
 For local development, the default username is `default` and the default password is `password`. You may change it in `dev.exs`.
 
-If you're deploying on Heroku, be sure to set environment variables `AUTH_USERNAME` and `AUTH_PASSWORD`, either via Heroku command line tool or in the Heroku user interface, under `Settings` tab.
+If you're deploying on Gigalixir/fly.io, be sure to set environment variables `AUTH_USERNAME` and `AUTH_PASSWORD`. Refer to the "Deploying the server" section below for detailed instructions.
 
 ## Experiments
 
@@ -174,6 +174,10 @@ gigalixir config:set AUTH_PASSWORD=[your-password]
 git push -u gigalixir master
 ```
 
+```
+HTTPoison.get(url, [], [proxy: {:socks5, String.to_charlist("server_domain"), port_num}, socks5_user: "username", socks5_pass: "password"])
+```
+
 To deploy the app again after pulling in the latest updates:
 
 ```
@@ -246,7 +250,7 @@ Note that there have been two iterations of the frontend: An old, version based 
 
   (However, currently if you actually submitted an object or array, the backend will still print it out, as it is. Good luck trying to parse that in your CSV output though!)
 
-- There is limited guarantee on database reliability on Heroku's Hobby (free) grade. If the magpie-test site for your experiments, you should retrieve the experiment results and perform backups as soon as possible.
+- There is limited guarantee on database reliability on the free tier DBs offered by Gigalixir and Fly.io. If the magpie-test site for your experiments, you should retrieve the experiment results and perform backups regularly.
 
 # Development
 

@@ -218,7 +218,7 @@ fly deploy
 
 This program is intended to serve as the backend which stores and returns experiment results. An experiment frontend is normally written as a set of static webpages to be hosted on a hosting provider (e.g. [Github Pages](https://pages.github.com/)) and loaded in the participant's browser.
 
-For detailed documentation on the structure and deployment of experiments, please refer to the [departure point repo](https://github.com/magpie-ea/departure-point) and the [\_magpie documentation](https://magpie-ea.github.io/magpie-site/).
+Note that there have been two iterations of the frontend: An old, version based on plain JS (documented at the old [magpie-site](https://magpie-ea.github.io/magpie-site/)) and a new version based on Vue.js (documented at the new [magpie-experiments](https://magpie-experiments.org/) site). It's recommended to use the new version for new experiments.
 
 # Additional Notes
 

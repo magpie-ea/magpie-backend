@@ -86,11 +86,6 @@ The server expects to receive a JSON **array** as the set of experiment results,
 
 All objects of the array should contain a set of identical keys. Each object normally stands for one trial in the experiment, together with any additional information that is not associated with a particular trial, for example, the native language spoken by the participant.
 
-<!-- Additionally, an optional array named `trial_keys_order`, which specifies the order in which the trial data should be -->
-<!--  printed in the CSV output, can be included. If this array is not included, the trial data will be printed in alphabetical order, which might not be ideal. -->
-
-[Here](https://jsfiddle.net/SZJX/Lg3vmk41/) you can find a minimal working example. The [Minimal Template](https://github.com/magpie-ea/MinimalTemplate) contains a full example experiment.
-
 Note that to [POST a JSON object correctly](https://stackoverflow.com/questions/12693947/jquery-ajax-how-to-send-json-instead-of-querystring),
 one needs to specify the `Content-Type` header as `application/json`, and use `JSON.stringify` to encode the data first.
 

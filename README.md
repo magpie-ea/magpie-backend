@@ -200,6 +200,7 @@ fly auth login
 # Do not proceed to deployment yet at the "whether to deploy" step.
 fly launch
 # Replace with your desired auth username and password.
+fly secrets set PHX_SERVER=true
 fly secrets set AUTH_USERNAME=[your-auth-username]
 fly secrets set AUTH_PASSWORD=[your-password]
 fly deploy

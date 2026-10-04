@@ -130,9 +130,11 @@ defmodule Magpie.Experiments do
   end
 
   def retrieve_experiment_results_as_csv(%Experiment{} = experiment) do
+         # Not ideal but on the uni server the access to the /tmp folder was broken, resulting in broken downloads
+         file_path = "#{:code.priv_dir(:magpie)}/#{experiment.id}.csv"
     with [_submission | _] = experiment_submissions <-
            Repo.all(Ecto.assoc(experiment, :experiment_results)),
-         {:ok, file_path} <- Briefly.create(),
+         # {:ok, file_path} <- Briefly.create(),
          file <- File.open!(file_path, [:write, :utf8]),
          [_key | _] = keys <-
            get_keys_for_csv_download(experiment.experiment_result_columns, experiment_submissions) do
